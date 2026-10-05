@@ -1,13 +1,24 @@
 import type { MetadataRoute } from 'next';
-
-const baseUrl = 'https://orbclinic.pages.dev';
+import { SITE_URL } from './lib/clinic';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-    },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    rules: [
+      {
+        userAgent: [
+          'Googlebot',
+          'Yeti',
+          'GPTBot',
+          'OAI-SearchBot',
+          'PerplexityBot',
+          'ClaudeBot',
+          'Google-Extended',
+          '*',
+        ],
+        allow: '/',
+        disallow: ['/admin', '/api/admin'],
+      },
+    ],
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

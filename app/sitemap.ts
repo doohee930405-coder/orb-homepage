@@ -1,62 +1,120 @@
 import type { MetadataRoute } from 'next';
-
-const baseUrl = 'https://orbclinic.pages.dev';
-const treatmentPaths = [
-  '/treatments/pain-chuna',
-  '/treatments/autonomic-qeeg',
-  '/treatments/stress-neurosis',
-  '/treatments/weight-metabolism',
-];
-const informationPaths = [
-  '/about',
-  '/first-visit',
-  '/column',
-  '/column/wet-qeeg-guide',
-  '/column/qeeg-process',
-  '/column/autonomic-top-down-bottom-up',
-];
+import { SITE_URL } from './lib/clinic';
+import { getAllColumns } from './lib/columns';
+import { CLINIC_CATEGORIES } from './lib/columnTypes';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const corePages: MetadataRoute.Sitemap = [
+  const columns = getAllColumns();
+  const now = new Date();
+
+  // Core Pages
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-      alternates: {
-        languages: {
-          ko: baseUrl,
-          en: `${baseUrl}/en`,
-        },
-      },
+      url: `${SITE_URL}/`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 1.0,
     },
     {
-      url: `${baseUrl}/en`,
-      lastModified: new Date(),
+      url: `${SITE_URL}/columns`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.95,
+    },
+    {
+      url: `${SITE_URL}/treatments/autonomic-qeeg`,
+      lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
-      alternates: {
-        languages: {
-          ko: baseUrl,
-          en: `${baseUrl}/en`,
-        },
-      },
+    },
+    {
+      url: `${SITE_URL}/treatments/pain-chuna`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/treatments/stress-neurosis`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/treatments/weight-metabolism`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/en`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/en/treatments/autonomic-qeeg`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/en/treatments/pain-chuna`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/en/treatments/stress-neurosis`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/en/treatments/weight-metabolism`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/privacy`,
+      lastModified: now,
+      changeFrequency: 'yearly',
+      priority: 0.2,
+    },
+    {
+      url: `${SITE_URL}/en/privacy`,
+      lastModified: now,
+      changeFrequency: 'yearly',
+      priority: 0.2,
     },
   ];
 
-  const treatmentPages: MetadataRoute.Sitemap = treatmentPaths.map((path) => ({
-    url: `${baseUrl}${path}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.8,
+  // 8 Category Topic Cluster Hubs
+  const categoryRoutes: MetadataRoute.Sitemap = CLINIC_CATEGORIES.map((cat) => ({
+    url: `${SITE_URL}/columns?category=${encodeURIComponent(cat)}`,
+    lastModified: now,
+    changeFrequency: 'weekly',
+    priority: 0.85,
   }));
 
-  const informationPages: MetadataRoute.Sitemap = informationPaths.map((path) => ({
-    url: `${baseUrl}${path}`,
-    lastModified: new Date(),
-    changeFrequency: path.startsWith('/column') ? 'monthly' : 'yearly',
-    priority: path === '/column' ? 0.8 : 0.7,
-  }));
+  // Dynamic Column Detail Routes
+  const columnRoutes: MetadataRoute.Sitemap = columns.map((col) => {
+    let dateObj = now;
+    if (col.updatedAt || col.date) {
+      const parsedDate = new Date(col.updatedAt || col.date);
+      if (!isNaN(parsedDate.getTime())) {
+        dateObj = parsedDate;
+      }
+    }
+    const isQeegGuide = col.slug === 'qeeg-guide';
 
-  return [...corePages, ...treatmentPages, ...informationPages];
+    return {
+      url: `${SITE_URL}/columns/${col.slug}`,
+      lastModified: dateObj,
+      changeFrequency: isQeegGuide ? 'weekly' : 'monthly',
+      priority: isQeegGuide ? 0.9 : 0.8,
+    };
+  });
+
+  return [...staticRoutes, ...categoryRoutes, ...columnRoutes];
 }

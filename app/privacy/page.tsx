@@ -1,63 +1,39 @@
 import type { Metadata } from 'next';
-import ClinicFooter from '../components/ClinicFooter';
-import ClinicHeader from '../components/ClinicHeader';
+import Link from 'next/link';
+import SiteHeader from '../components/SiteHeader';
 
 export const metadata: Metadata = {
-  title: '개인정보 처리 안내',
-  description: '오브한의원 마곡점 홈페이지 개인정보 처리 안내입니다.',
-  alternates: {
-    canonical: '/privacy',
-  },
-  robots: {
-    index: false,
-    follow: true,
-  },
+  title: '개인정보처리방침',
+  description: '오브한의원 마곡점 홈페이지 개인정보 및 분석 도구 안내.',
+  alternates: { canonical: '/privacy', languages: { ko: '/privacy', en: '/en/privacy' } },
 };
 
 export default function PrivacyPage() {
   return (
-    <main className="interior-page policy-page">
-      <ClinicHeader />
-      <section className="policy-content">
-        <p className="eyebrow">개인정보 안내</p>
-        <h1>개인정보 처리 안내</h1>
-        <p className="policy-updated">시행일: 2026년 10월 5일</p>
-
+    <main className="site-shell policy-page">
+      <SiteHeader locale="ko" compact />
+      <article className="policy-content">
+        <p className="eyebrow">PRIVACY</p>
+        <h1>개인정보처리방침</h1>
+        <p className="policy-date">시행일 2026년 10월 2일</p>
         <section>
-          <h2>홈페이지 내 개인정보 수집</h2>
-          <p>
-            오브한의원 마곡점 홈페이지는 별도의 회원가입이나 개인정보 입력
-            양식을 운영하지 않습니다. 예약과 상담은 네이버 예약, 카카오톡 및
-            전화 등 외부 채널을 통해 진행되며 각 서비스의 개인정보 처리방침이
-            적용됩니다.
-          </p>
+          <h2>홈페이지에서 수집하는 정보</h2>
+          <p>이 홈페이지는 별도의 상담 폼이나 회원가입 기능을 운영하지 않습니다. 예약은 네이버 예약으로, 전화 문의는 이용자의 전화 앱으로 연결됩니다.</p>
         </section>
         <section>
-          <h2>방문 통계</h2>
-          <p>
-            홈페이지 이용 현황을 파악하고 서비스를 개선하기 위해 Google
-            Analytics를 사용합니다. 이 과정에서 쿠키, 접속 환경, 방문 페이지와
-            같은 이용 정보가 처리될 수 있으며 개인을 직접 식별하기 위한
-            목적으로 사용하지 않습니다.
-          </p>
+          <h2>접속 통계</h2>
+          <p>서비스 개선과 방문 현황 파악을 위해 Google Analytics 4를 사용합니다. 이 과정에서 접속 환경, 방문 페이지, 유입 경로와 같은 이용 정보가 Google의 정책에 따라 처리될 수 있습니다.</p>
         </section>
         <section>
           <h2>외부 서비스</h2>
-          <p>
-            홈페이지에는 네이버 예약·플레이스, 카카오톡, Google 지도 등 외부
-            서비스로 연결되는 링크가 포함되어 있습니다. 외부 서비스 이용 시
-            해당 사업자의 정책이 적용됩니다.
-          </p>
+          <p>네이버 예약과 네이버·카카오·구글 지도 링크를 선택하면 해당 서비스의 개인정보처리방침이 적용됩니다.</p>
         </section>
         <section>
           <h2>문의</h2>
-          <p>
-            홈페이지의 개인정보 처리에 관한 문의는 오브한의원 마곡점
-            02-6959-5982로 연락해 주세요.
-          </p>
+          <p>홈페이지 개인정보 관련 문의는 오브한의원 마곡점 대표전화 02-6959-5982로 연락해 주세요.</p>
         </section>
-      </section>
-      <ClinicFooter />
+        <Link className="back-link" href="/">← 홈페이지로 돌아가기</Link>
+      </article>
     </main>
   );
 }

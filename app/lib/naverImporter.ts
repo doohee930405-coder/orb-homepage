@@ -1,0 +1,1497 @@
+import fs from 'fs';
+import path from 'path';
+import {
+  CLINIC_CATEGORIES,
+  Column,
+  ColumnFaq,
+  ColumnInput,
+  getAllColumns,
+  getColumnsDir,
+  getProjectRoot,
+  saveColumn,
+  splitHeadingAndBody,
+} from './columns';
+
+export interface NaverDiscoveredPost {
+  logNo: string;
+  blogId: string;
+  title: string;
+  categoryName: string;
+  matchedCategory: string;
+  date: string;
+  url: string;
+  readCount?: number;
+  thumbnailUrl?: string;
+}
+
+export interface NaverImportResult {
+  logNo: string;
+  title: string;
+  slug: string;
+  category: string;
+  success: boolean;
+  skipped?: boolean;
+  reason?: string;
+  error?: string;
+  imageCount?: number;
+  url: string;
+}
+
+const DESKTOP_USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+
+const MOBILE_USER_AGENT =
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1';
+
+const USER_AGENT = DESKTOP_USER_AGENT;
+
+export const NAVER_PLACE_SEARCH_URL =
+  'https://map.naver.com/p/search/%EC%98%A4%EB%B8%8C%ED%95%9C%EC%9D%98%EC%9B%90%20%EB%A7%88%EA%B3%A1%EC%A0%90';
+
+/**
+ * Decodes HTML entities commonly found in web scrapers
+ */
+export function decodeHtmlEntities(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&middot;/g, '·')
+    .replace(/&ndash;/g, '–')
+    .replace(/&mdash;/g, '—')
+    .replace(/&hellip;/g, '…')
+    .replace(/&bull;/g, '•')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+}
+
+/**
+ * Strips HTML tags and collapses whitespace
+ */
+export function stripHtml(html: string): string {
+  if (!html) return '';
+  return decodeHtmlEntities(html.replace(/<[^>]*>/g, ''))
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Parses any form of Naver blog post URL to extract blogId and logNo
+ */
+export function normalizeNaverUrl(inputUrl: string): { blogId: string; logNo: string } | null {
+  if (!inputUrl) return null;
+  const clean = inputUrl.trim();
+
+  try {
+    // 1. Check query parameters: PostView.naver?blogId=...&logNo=...
+    if (clean.includes('logNo=')) {
+      const parsed = new URL(clean.startsWith('http') ? clean : `https://${clean}`);
+      const blogId = parsed.searchParams.get('blogId');
+      const logNo = parsed.searchParams.get('logNo');
+      if (blogId && logNo) {
+        return { blogId: blogId.trim(), logNo: logNo.trim() };
+      }
+    }
+
+    // 2. Check path pattern: blog.naver.com/{blogId}/{logNo} or m.blog.naver.com/{blogId}/{logNo}
+    const match = clean.match(/(?:blog\.naver\.com|m\.blog\.naver\.com)\/([a-zA-Z0-9_-]+)\/(\d+)/i);
+    if (match) {
+      return { blogId: match[1], logNo: match[2] };
+    }
+
+    // 3. Just digits passed as logNo
+    if (/^\d{8,14}$/.test(clean)) {
+      return { blogId: '', logNo: clean };
+    }
+  } catch {
+    // URL parsing failed
+  }
+  return null;
+}
+
+/**
+ * Intelligent Category Matcher:
+ * Maps Naver blog category names and content to the 8 official clinic categories.
+ * Note: '통증/추나' is strictly excluded from categories; any pain/structural keywords map to '자율신경실조증'.
+ */
+export function matchCategory(naverCategory: string = '', title: string = '', content: string = ''): string {
+  const normCat = naverCategory.toLowerCase().trim();
+  const text = `${title} ${content.slice(0, 1500)}`.toLowerCase();
+
+  // 1. Direct Rule Matching on Naver Category name
+  if (/뇌파|qeeg|정량뇌파|정량화뇌파|뇌파검사/.test(normCat)) {
+    return '정량화뇌파검사';
+  }
+  if (/초민감|hsp|예민|고감각|민감자/.test(normCat)) {
+    return '초민감자(HSP)';
+  }
+  if (/adhd|주의력|산만|집중력|도파민/.test(normCat)) {
+    return 'ADHD';
+  }
+  if (/갑상선|저하증|항진증|하시모토/.test(normCat)) {
+    return '갑상선';
+  }
+  if (/브레인포그|만성피로|피로|무기력|번아웃|brain\s*fog|부신/.test(normCat)) {
+    return '브레인포그';
+  }
+  if (/다이어트|대사|비만|체중|감량|식욕|부종|체질|감비|퀀텀핏/.test(normCat)) {
+    return '다이어트';
+  }
+  if (/위장|소화|역류|식도|과민|담적|내과|장질환|변비|설사|위염|복부/.test(normCat)) {
+    return '위장관';
+  }
+  if (/자율신경|실조증|어지럼|두근거림|공황|기립성|미주신경|심계|통증|추나|목|어깨|허리|체형/.test(normCat)) {
+    return '자율신경실조증';
+  }
+
+  // 2. Keyword scoring across Title (weight: 3) and Content (weight: 1)
+  const scores: Record<string, number> = {
+    '자율신경실조증': 0,
+    '브레인포그': 0,
+    '초민감자(HSP)': 0,
+    'ADHD': 0,
+    '다이어트': 0,
+    '위장관': 0,
+    '갑상선': 0,
+    '정량화뇌파검사': 0,
+  };
+
+  const scoreTerms = (cat: string, terms: string[]) => {
+    for (const term of terms) {
+      const lower = term.toLowerCase();
+      if (title.toLowerCase().includes(lower)) {
+        scores[cat] += 3;
+      }
+      if (text.includes(lower)) {
+        scores[cat] += 1;
+      }
+    }
+  };
+
+  scoreTerms('정량화뇌파검사', [
+    '정량화뇌파', '정량뇌파', 'qeeg', '뇌파검사', '뇌파기계', '뇌파장비',
+    '뇌기능검사', '알파파', '베타파', '세타파', '뇌파'
+  ]);
+
+  scoreTerms('초민감자(HSP)', [
+    'hsp', '초민감자', '초민감', '고감각', '예민한', '감각과민',
+    '감각처리민감성', '빛과민', '소리과민', '감각수용체'
+  ]);
+
+  scoreTerms('ADHD', [
+    'adhd', '주의력결핍', '집중력저하', '주의산만', '성인adhd',
+    '충동성', '과잉행동', '도파민회로'
+  ]);
+
+  scoreTerms('갑상선', [
+    '갑상선', '갑상선기능저하증', '갑상선기능항진증', '하시모토',
+    '갑상선염', '티록신', 'tsh', '목이물감'
+  ]);
+
+  scoreTerms('브레인포그', [
+    '브레인포그', 'brain fog', '만성피로', '피로감', '무기력',
+    '번아웃', '기억력', '머리가 멍', '부신피로', '원기회복', '머리안개'
+  ]);
+
+  scoreTerms('다이어트', [
+    '다이어트', '체중감량', '감비', '비만', '식욕', '요요', '대사증후군',
+    '체지방', '디톡스', '비만치료', '인슐린', '살빼기', '식단', '체질개선', '퀀텀핏'
+  ]);
+
+  scoreTerms('위장관', [
+    '위장', '역류성식도염', '소화불량', '담적', '담적병', '과민성대장증후군',
+    '복부팽만', '가스', '속쓰림', '체기', '위염', '변비', '설사', '장누수', '장-뇌'
+  ]);
+
+  scoreTerms('자율신경실조증', [
+    '자율신경', '자율신경실조증', '교감신경', '부교감신경', '미주신경',
+    '기립성', '어지럼', '어지럼증', '심계항진', '두근거림', '식은땀', '자율신경계', '가슴답답',
+    '통증', '추나', '경추', '요추', '체형', '골반'
+  ]);
+
+  let maxCategory = '자율신경실조증';
+  let maxScore = -1;
+  for (const [cat, sc] of Object.entries(scores)) {
+    if (sc > maxScore) {
+      maxScore = sc;
+      maxCategory = cat;
+    }
+  }
+
+  return maxCategory;
+}
+
+/**
+ * Discovers and lists all posts from a Naver Blog ID using Naver's async title list
+ * with mandatory multi-page pagination (currentPage=1, 2, 3...) and RSS fallback.
+ * Ensures all posts (e.g. 60+ posts dating back to early September) are retrieved.
+ */
+export async function fetchNaverBlogPosts(
+  blogId: string,
+  maxPosts: number = 500
+): Promise<NaverDiscoveredPost[]> {
+  const cleanId = blogId.trim();
+  if (!cleanId) return [];
+
+  const allPosts: NaverDiscoveredPost[] = [];
+  const seenLogNos = new Set<string>();
+
+  // 1. Mandatory Pagination Loop via PostTitleListAsync.naver
+  try {
+    let page = 1;
+    const countPerPage = 30; // 30 items per page as specified for Naver API
+    const maxPages = 25; // Supports up to 750 posts across pages
+
+    while (page <= maxPages && allPosts.length < maxPosts) {
+      const url = `https://blog.naver.com/PostTitleListAsync.naver?blogId=${encodeURIComponent(
+        cleanId
+      )}&viewdate=&currentPage=${page}&categoryNo=0&parentCategoryNo=&countPerPage=${countPerPage}`;
+
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': USER_AGENT,
+          Referer: `https://blog.naver.com/${cleanId}`,
+          Accept: '*/*',
+          'Accept-Language': 'ko-KR,ko;q=0.9',
+        },
+      });
+
+      if (!res.ok) {
+        break;
+      }
+
+      let rawText = await res.text();
+      rawText = rawText.trim();
+      if (rawText.charCodeAt(0) === 0xfeff) {
+        rawText = rawText.slice(1);
+      }
+
+      let data: any = null;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            data = JSON.parse(jsonMatch[0]);
+          } catch {
+            // ignore
+          }
+        }
+      }
+
+      if (!data || !Array.isArray(data.postList) || data.postList.length === 0) {
+        break;
+      }
+
+      let newPostsInPage = 0;
+      for (const item of data.postList) {
+        const logNo = String(item.logNo || '').trim();
+        if (!logNo) continue;
+
+        // Skip duplicates
+        if (seenLogNos.has(logNo)) {
+          continue;
+        }
+        seenLogNos.add(logNo);
+
+        let rawTitle = item.title || '';
+        try {
+          rawTitle = decodeURIComponent(rawTitle.replace(/\+/g, ' '));
+        } catch {
+          // keep as is
+        }
+        const title = decodeHtmlEntities(rawTitle.replace(/<[^>]*>/g, '')).trim();
+
+        let rawCat = item.categoryName || '';
+        try {
+          rawCat = decodeURIComponent(rawCat.replace(/\+/g, ' '));
+        } catch {
+          // keep as is
+        }
+        const categoryName = decodeHtmlEntities(rawCat).trim();
+
+        const date = (item.addDate || '').trim();
+        const postUrl = `https://blog.naver.com/${cleanId}/${logNo}`;
+        const matched = matchCategory(categoryName, title, '');
+
+        // Extract Naver representative thumbnail from list API
+        let rawThumb =
+          item.thumbUrl ||
+          item.thumbnailUrl ||
+          item.thumbnail ||
+          item.representImageUrl ||
+          item.titleImage ||
+          '';
+        let thumbnailUrl = '';
+        if (rawThumb) {
+          try {
+            thumbnailUrl = decodeURIComponent(rawThumb.replace(/\+/g, ' '));
+          } catch {
+            thumbnailUrl = rawThumb;
+          }
+          if (thumbnailUrl.startsWith('//')) {
+            thumbnailUrl = `https:${thumbnailUrl}`;
+          }
+          if (thumbnailUrl.includes('?type=')) {
+            thumbnailUrl = thumbnailUrl.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+          }
+        }
+
+        allPosts.push({
+          logNo,
+          blogId: cleanId,
+          title: title || `칼럼 ${logNo}`,
+          categoryName: categoryName || '미분류',
+          matchedCategory: matched,
+          date: date || new Date().toISOString().slice(0, 10),
+          url: postUrl,
+          readCount: item.readCount,
+          thumbnailUrl,
+        });
+
+        newPostsInPage++;
+      }
+
+      // If no new posts were added on this page (all were duplicates from prior pages), stop loop
+      if (newPostsInPage === 0) {
+        break;
+      }
+
+      // If this page returned fewer than countPerPage and we are at page 2 or higher, we reached the end
+      if (data.postList.length < countPerPage && page >= 2) {
+        break;
+      }
+
+      page++;
+    }
+  } catch (err) {
+    console.error('Error fetching via PostTitleListAsync:', err);
+  }
+
+  // 2. Supplement with RSS if PostTitleListAsync returned fewer than 50 posts
+  if (allPosts.length < 50) {
+    try {
+      const rssUrl = `https://rss.blog.naver.com/${cleanId}.xml`;
+      const res = await fetch(rssUrl, {
+        headers: {
+          'User-Agent': USER_AGENT,
+          Accept: 'application/xml,text/xml,*/*',
+        },
+      });
+
+      if (res.ok) {
+        const xml = await res.text();
+        const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+        let match: RegExpExecArray | null;
+
+        while ((match = itemRegex.exec(xml)) !== null) {
+          const itemXml = match[1];
+          const linkMatch = itemXml.match(/<link>([\s\S]*?)<\/link>/i);
+          const link = linkMatch ? linkMatch[1].trim() : '';
+          const norm = normalizeNaverUrl(link);
+          const logNo = norm?.logNo || `rss-${allPosts.length + 1}`;
+
+          if (seenLogNos.has(logNo)) continue;
+          seenLogNos.add(logNo);
+
+          const titleMatch = itemXml.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/i) ||
+            itemXml.match(/<title>([\s\S]*?)<\/title>/i);
+          const catMatch = itemXml.match(/<category><!\[CDATA\[([\s\S]*?)\]\]><\/category>/i) ||
+            itemXml.match(/<category>([\s\S]*?)<\/category>/i);
+          const dateMatch = itemXml.match(/<pubDate>([\s\S]*?)<\/pubDate>/i);
+
+          const title = decodeHtmlEntities(titleMatch ? titleMatch[1] : `칼럼 ${logNo}`).trim();
+          const categoryName = decodeHtmlEntities(catMatch ? catMatch[1] : '일반건강').trim();
+          let dateStr = new Date().toISOString().slice(0, 10);
+          if (dateMatch) {
+            const parsedD = new Date(dateMatch[1]);
+            if (!isNaN(parsedD.getTime())) {
+              dateStr = parsedD.toISOString().slice(0, 10);
+            }
+          }
+
+          allPosts.push({
+            logNo,
+            blogId: cleanId,
+            title,
+            categoryName,
+            matchedCategory: matchCategory(categoryName, title, ''),
+            date: dateStr,
+            url: link || `https://blog.naver.com/${cleanId}/${logNo}`,
+          });
+        }
+      }
+    } catch (rssErr) {
+      console.error('Error fetching RSS:', rssErr);
+    }
+  }
+
+  return allPosts;
+}
+
+/**
+ * Downloads a remote image from Naver CDN and saves locally to public/images/columns/
+ * to prevent 403 Forbidden / broken images (엑박 방지).
+ */
+export async function downloadAndSaveImage(
+  imageUrl: string,
+  slugPrefix: string,
+  index: number
+): Promise<string | null> {
+  try {
+    let cleanUrl = imageUrl.trim();
+    if (cleanUrl.startsWith('//')) {
+      cleanUrl = `https:${cleanUrl}`;
+    }
+
+    // Skip tiny stickers, emojis, profile graphics
+    if (
+      cleanUrl.includes('static.se2.naver.com') ||
+      cleanUrl.includes('gfmarket') ||
+      cleanUrl.includes('emoticon') ||
+      cleanUrl.includes('dthumb-phinf') ||
+      cleanUrl.includes('blogfiles.pstatic.net/data')
+    ) {
+      return null;
+    }
+
+    // Upgrade thumbnail resolution from w80_blur etc to high quality w966
+    if (cleanUrl.includes('?type=')) {
+      cleanUrl = cleanUrl.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+    }
+
+    const res = await fetch(cleanUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Referer': 'https://m.blog.naver.com/',
+        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) {
+      console.warn(`Failed to download image ${cleanUrl}: ${res.status}`);
+      return null;
+    }
+
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Skip tiny icons/spacers (< 3KB)
+    if (buffer.length < 3000) {
+      return null;
+    }
+
+    // Determine extension
+    const contentType = res.headers.get('content-type') || '';
+    let ext = '.jpg';
+    if (contentType.includes('webp')) ext = '.webp';
+    else if (contentType.includes('png')) ext = '.png';
+    else if (contentType.includes('gif')) ext = '.gif';
+    else {
+      const urlExtMatch = cleanUrl.match(/\.(jpe?g|png|webp|gif)/i);
+      if (urlExtMatch) ext = `.${urlExtMatch[1].toLowerCase()}`;
+    }
+
+    const safeSlug = slugPrefix
+      .replace(/[^a-zA-Z0-9가-힣_-]/g, '')
+      .slice(0, 20);
+    const fileName = `naver_${safeSlug}_${Date.now()}_${index + 1}${ext}`;
+
+    const candidateImageDirs = [
+      'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage-main/public/images/columns',
+      'C:/Users/doohe/Downloads/orb-homepage-main/public/images/columns',
+      path.join(getProjectRoot(), 'public', 'images', 'columns'),
+      path.join(process.cwd(), 'public', 'images', 'columns'),
+      '/tmp/public/images/columns',
+    ];
+
+    for (const uploadDir of candidateImageDirs) {
+      if (uploadDir.startsWith('/tmp')) continue;
+      try {
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        const destination = path.join(uploadDir, fileName);
+        fs.writeFileSync(destination, buffer);
+        return `/images/columns/${fileName}`;
+      } catch {
+        // try next candidate dir
+      }
+    }
+    return cleanUrl;
+  } catch (error) {
+    console.error(`Error saving image from ${imageUrl}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Downloads a remote representative thumbnail image from Naver CDN and saves to
+ * public/images/columns/thumbnails/ for the column list card view.
+ */
+/**
+ * Validates if an image URL is an invalid, generic, or Naver "N blog" default logo
+ */
+export function isInvalidThumbnailUrl(url: string | null | undefined): boolean {
+  if (!url || typeof url !== 'string') return true;
+  const clean = url.trim().toLowerCase();
+  if (clean === '#' || clean === '' || clean.startsWith('javascript:')) return true;
+
+  const invalidSignatures = [
+    'og_default',
+    'blog_og',
+    'naver_blog',
+    'static.naver',
+    'default_thumb',
+    'blogfiles.pstatic.net/data',
+    'static.se2',
+    'gfmarket',
+    'emoticon',
+    'profile',
+    'dthumb-phinf',
+    'blank.gif',
+  ];
+
+  for (const sig of invalidSignatures) {
+    if (clean.includes(sig)) return true;
+  }
+
+  return false;
+}
+
+/**
+ * Downloads a remote representative thumbnail image from Naver CDN and saves to
+ * public/images/columns/thumbnails/ as thumb_${logNo}.png for deterministic, collision-free loading.
+ */
+export async function downloadThumbnail(
+  imageUrl: string,
+  identifier: string
+): Promise<string | null> {
+  try {
+    let cleanUrl = (imageUrl || '').trim();
+    if (!cleanUrl) return null;
+    if (cleanUrl.startsWith('//')) {
+      cleanUrl = `https:${cleanUrl}`;
+    }
+
+    if (isInvalidThumbnailUrl(cleanUrl)) {
+      return null;
+    }
+
+    if (cleanUrl.includes('?type=')) {
+      cleanUrl = cleanUrl.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+    }
+
+    // Extract logNo or clean identifier to prevent filename collision
+    const logNoMatch = identifier.match(/(\d{6,14})/);
+    const safeId = logNoMatch
+      ? logNoMatch[1]
+      : identifier.replace(/[^a-zA-Z0-9가-힣_-]/g, '').slice(0, 30) || 'thumb';
+
+    const fileName = `thumb_${safeId}.png`;
+
+    const candidateThumbDirs = [
+      'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage-main/public/images/columns/thumbnails',
+      'C:/Users/doohe/Downloads/orb-homepage-main/public/images/columns/thumbnails',
+      path.join(getProjectRoot(), 'public', 'images', 'columns', 'thumbnails'),
+      path.join(process.cwd(), 'public', 'images', 'columns', 'thumbnails'),
+    ];
+
+    // If already downloaded and valid on disk, return existing local path
+    for (const thumbDir of candidateThumbDirs) {
+      if (thumbDir.startsWith('/tmp')) continue;
+      const destination = path.join(thumbDir, fileName);
+      try {
+        if (fs.existsSync(destination) && fs.statSync(destination).size > 3000) {
+          return `/images/columns/thumbnails/${fileName}`;
+        }
+      } catch {}
+    }
+
+    const res = await fetch(cleanUrl, {
+      headers: {
+        'User-Agent': DESKTOP_USER_AGENT,
+        Referer: 'https://m.blog.naver.com/',
+        Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) return null;
+
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Skip tiny icons/spacers (< 3KB)
+    if (buffer.length < 3000) return null;
+
+    for (const thumbDir of candidateThumbDirs) {
+      if (thumbDir.startsWith('/tmp')) continue;
+      try {
+        if (!fs.existsSync(thumbDir)) {
+          fs.mkdirSync(thumbDir, { recursive: true });
+        }
+        const destination = path.join(thumbDir, fileName);
+        fs.writeFileSync(destination, buffer);
+        if (fs.existsSync(destination) && fs.statSync(destination).size > 0) {
+          return `/images/columns/thumbnails/${fileName}`;
+        }
+      } catch {
+        // try next candidate dir
+      }
+    }
+    return cleanUrl;
+  } catch (error) {
+    console.error(`Error saving thumbnail from ${imageUrl}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Master Prompt HTML -> Markdown Converter
+ * Faithfully implements all specifications:
+ * 1. Top 3-line quote summary extraction
+ * 2. Standalone bold line & title component -> '## 소제목'
+ * 3. Line break & sentence spacing retention
+ * 4. Local image download & alt replacement (엑박 방지)
+ * 5. QEEG device introduction post link replacement to '/columns/qeeg-guide'
+ * 6. Bottom medical notice & citations styled (~60% text-xs)
+ * 7. Google Duplicate Content Prevention official web archive box insertion
+ * 8. FAQ extraction for AEO Schema.org
+ */
+export function truncateJsGarbage(text: string): string {
+  if (!text) return '';
+  const jsSignatures = [
+    'jindo.m.patch',
+    'var gUrlMap',
+    'NmobilePageViewSender',
+    'nhn.MobileBlog',
+    'var sAppVersion',
+    'var gLogNo',
+    'window.__viewerData',
+    'var oEffect',
+    'var sServiceType',
+    'var sDomain',
+    'var sDmain',
+    'var sUserId',
+    'new NmobilePageViewSender',
+    '<script',
+    'jindo.m',
+  ];
+
+  let earliestIdx = -1;
+  for (const sig of jsSignatures) {
+    const idx = text.indexOf(sig);
+    if (idx !== -1) {
+      if (earliestIdx === -1 || idx < earliestIdx) {
+        earliestIdx = idx;
+      }
+    }
+  }
+
+  if (earliestIdx !== -1) {
+    const before = text.slice(0, earliestIdx);
+    const lastNewline = before.lastIndexOf('\n');
+    if (lastNewline !== -1) {
+      return before.slice(0, lastNewline).trim();
+    }
+    return before.trim();
+  }
+  return text.trim();
+}
+
+export async function convertNaverHtmlToMasterMarkdown(
+  html: string,
+  postTitle: string,
+  slugPrefix: string,
+  initialThumbnailUrl?: string
+): Promise<{
+  content: string;
+  summary: string;
+  thumbnail: string;
+  faqs: ColumnFaq[];
+  tags: string[];
+}> {
+  let summary = '';
+  let thumbnail = '';
+  const faqs: ColumnFaq[] = [];
+  const tagsSet = new Set<string>();
+
+  // Step 0: 100% completely strip <script>...</script>, <style>...</style>, and <noscript>...</noscript> tags and their contents
+  let cleanHtml = html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<noscript\b[^<]*(?:(?!<\/noscript>)<[^<]*)*<\/noscript>/gi, '')
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, '');
+
+  // Step 1: Extract main article container strictly (.se-main-container / mobile / PC)
+  let bodyHtml = '';
+  const seStartMatch = cleanHtml.match(/<div[^>]*class="[^"]*se-main-container[^"]*"[^>]*>/i);
+  if (seStartMatch && seStartMatch.index !== undefined) {
+    const startIdx = seStartMatch.index + seStartMatch[0].length;
+    const postFooterMatch = cleanHtml
+      .slice(startIdx)
+      .search(
+        /<div[^>]*class="[^"]*(?:post_footer|btn_like|viewTypeSelector|common_post_btn|comment_wrap|se-module-footer)[^"]*"/i
+      );
+    if (postFooterMatch !== -1) {
+      bodyHtml = cleanHtml.slice(startIdx, startIdx + postFooterMatch);
+    } else {
+      bodyHtml = cleanHtml.slice(startIdx);
+    }
+  } else {
+    const postViewMatch =
+      cleanHtml.match(/<div id="postViewArea"[^>]*>([\s\S]*?)<\/div>/i) ||
+      cleanHtml.match(
+        /<div[^>]*class="[^"]*(?:se_component_wrap|post_ct|post-view)[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/i
+      );
+    if (postViewMatch) {
+      bodyHtml = postViewMatch[1];
+    } else {
+      const bodyMatch = cleanHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      bodyHtml = bodyMatch ? bodyMatch[1] : cleanHtml;
+    }
+  }
+
+  // Safety cutoff: Truncate at any internal Naver JavaScript signatures immediately
+  bodyHtml = truncateJsGarbage(bodyHtml);
+
+  // Fallback: If bodyHtml has almost no text, extract all paragraphs from cleanHtml
+  if (bodyHtml.replace(/<[^>]*>/g, '').trim().length < 50) {
+    const pMatches = cleanHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/gi);
+    if (pMatches && pMatches.length > 0) {
+      bodyHtml = pMatches.join('\n');
+      bodyHtml = truncateJsGarbage(bodyHtml);
+    }
+  }
+
+  // 1. Extract Top Blockquote / Summary (인용구 상단 3줄 요약)
+  const quoteRegex = /<blockquote[^>]*class="[^"]*(?:se_blockquote|se-quote-container|se-module-blockquote)[^"]*"[^>]*>([\s\S]*?)<\/blockquote>/i;
+  const quoteMatch = bodyHtml.match(quoteRegex);
+
+  if (quoteMatch) {
+    const rawQuote = stripHtml(quoteMatch[1]);
+    if (rawQuote.length >= 10) {
+      summary = rawQuote.slice(0, 320).trim();
+      bodyHtml = bodyHtml.replace(quoteRegex, '');
+    }
+  }
+
+  // 2. Extract FAQs if present (Q&A pattern: Q. ... / A. ...)
+  const qaPattern = /(?:<p[^>]*>|\n|^)\s*(?:<b>|<strong>)?\s*(?:Q\.|질문\s*\d*[:\.]?)\s*([^<\n]+)(?:<\/b>|<\/strong>)?[\s\S]*?(?:<p[^>]*>|\n)\s*(?:<b>|<strong>)?\s*(?:A\.|답변\s*\d*[:\.]?)\s*([^<\n]+)(?:<\/b>|<\/strong>)?/gi;
+  let qaMatch: RegExpExecArray | null;
+  while ((qaMatch = qaPattern.exec(bodyHtml)) !== null) {
+    const q = stripHtml(qaMatch[1]);
+    const a = stripHtml(qaMatch[2]);
+    if (q && a && q.length > 5 && a.length > 5) {
+      faqs.push({ question: q, answer: a });
+    }
+  }
+
+  // 3. Extract Tags (Naver post tags)
+  const tagRegex = /<a[^>]*class="[^"]*item_tag[^"]*"[^>]*>#?([^<]+)<\/a>/gi;
+  let tagMatch: RegExpExecArray | null;
+  while ((tagMatch = tagRegex.exec(cleanHtml)) !== null) {
+    const tag = stripHtml(tagMatch[1]).replace(/^#/, '').trim();
+    if (tag) tagsSet.add(tag);
+  }
+
+  // Pre-strip Naver UI noise (Check-in, other posts of this place, MY place)
+  bodyHtml = bodyHtml
+    .replace(/이\s*블로그의\s*체크인\s*이\s*장소의\s*다른\s*글/gi, '')
+    .replace(/이\s*블로그의\s*체크인/gi, '')
+    .replace(/이\s*장소의\s*다른\s*글/gi, '')
+    .replace(/MY\s*플레이스/gi, '')
+    .replace(/MY플레이스/gi, '');
+
+  // Strip <a> tags wrapping images (e.g. <a href="#" class="se-module-image-link"><img ...></a>)
+  // so images are never converted into [ ![alt](src) ](#)
+  bodyHtml = bodyHtml.replace(/<a\b[^>]*class="[^"]*se-module-image-link[^"]*"[^>]*>([\s\S]*?)<\/a>/gi, '$1');
+  bodyHtml = bodyHtml.replace(/<a\b[^>]*href=["'](?:#|javascript:[^"']*)["'][^>]*>(\s*<img\b[\s\S]*?<\/a>)/gi, (m) => {
+    return m.replace(/<\/?a\b[^>]*>/gi, '');
+  });
+  bodyHtml = bodyHtml.replace(/<a\b[^>]*>(\s*<img\b[^>]*>\s*)<\/a>/gi, '$1');
+
+  // 4. Extract Images prioritizing data-lazy-src over src (Naver SmartEditor Lazy Loading)
+  const imageRegex = /<img\b[^>]*>/gi;
+  let imgMatch: RegExpExecArray | null;
+  const imagesToDownload: { originalTag: string; src: string; alt: string; index: number }[] = [];
+  let imgIdx = 0;
+
+  while ((imgMatch = imageRegex.exec(bodyHtml)) !== null) {
+    const originalTag = imgMatch[0];
+
+    // Priority 1: data-lazy-src or data-src
+    let src = '';
+    const lazyMatch =
+      originalTag.match(/\bdata-lazy-src=["']([^"']+)["']/i) ||
+      originalTag.match(/\bdata-src=["']([^"']+)["']/i);
+
+    if (lazyMatch && lazyMatch[1]) {
+      src = lazyMatch[1].trim();
+    } else {
+      // Priority 2: regular src
+      const srcMatch = originalTag.match(/\bsrc=["']([^"']+)["']/i);
+      if (srcMatch && srcMatch[1]) {
+        src = srcMatch[1].trim();
+      }
+    }
+
+    if (!src || src.startsWith('data:image') || src.includes('blank.gif')) {
+      continue;
+    }
+
+    if (src.startsWith('//')) {
+      src = `https:${src}`;
+    }
+
+    // Skip tiny stickers, emojis, profile graphics
+    if (
+      src.includes('static.se2.naver.com') ||
+      src.includes('gfmarket') ||
+      src.includes('emoticon') ||
+      src.includes('blogfiles.pstatic.net/data')
+    ) {
+      continue;
+    }
+
+    // Upgrade low-res thumbnail query params like ?type=w80 to ?type=w966
+    if (src.includes('?type=')) {
+      src = src.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+    }
+
+    let alt = '';
+    const altMatch = originalTag.match(/\balt=["']([^"']*)["']/i);
+    if (altMatch && altMatch[1]) {
+      alt = stripHtml(altMatch[1]).trim();
+    }
+
+    imagesToDownload.push({ originalTag, src, alt, index: imgIdx++ });
+  }
+
+  // -------------------------------------------------------------
+  // Determine candidate representative thumbnail URL strictly according to priorities:
+  // -------------------------------------------------------------
+  let candidateThumbUrl = '';
+
+  // [1순위 - A] initialThumbnailUrl passed from list API (PostTitleListAsync.naver)
+  if (initialThumbnailUrl && !isInvalidThumbnailUrl(initialThumbnailUrl)) {
+    let t = initialThumbnailUrl.trim();
+    if (t.startsWith('//')) t = `https:${t}`;
+    if (t.includes('?type=')) {
+      t = t.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+    }
+    candidateThumbUrl = t;
+  }
+
+  // [1순위 - B] Mobile HTML script object: newRecommendationBlockView "thumbnailUrl"
+  if (!candidateThumbUrl) {
+    const scriptThumbMatch =
+      cleanHtml.match(/"newRecommendationBlockView"[\s\S]*?"thumbnailUrl"\s*:\s*"([^"]+)"/i) ||
+      cleanHtml.match(/"thumbnailUrl"\s*:\s*"(https?:\/\/[^"]+)"/i);
+    if (scriptThumbMatch && !isInvalidThumbnailUrl(scriptThumbMatch[1])) {
+      let t = scriptThumbMatch[1].trim().replace(/\\u002F/g, '/').replace(/\\\//g, '/');
+      if (t.startsWith('//')) t = `https:${t}`;
+      if (t.includes('?type=')) {
+        t = t.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+      }
+      candidateThumbUrl = t;
+    }
+  }
+
+  // [1순위 - C] <meta property="og:image" content="...">
+  if (!candidateThumbUrl) {
+    const ogMatch =
+      cleanHtml.match(/<meta\s+(?:property|name)=["']og:image["']\s+content=["']([^"']+)["']/i) ||
+      cleanHtml.match(/<meta\s+content=["']([^"']+)["']\s+(?:property|name)=["']og:image["']/i) ||
+      cleanHtml.match(/<meta\s+(?:property|name)=["']twitter:image["']\s+content=["']([^"']+)["']/i);
+    if (ogMatch && !isInvalidThumbnailUrl(ogMatch[1])) {
+      let t = ogMatch[1].trim();
+      if (t.startsWith('//')) t = `https:${t}`;
+      if (t.includes('?type=')) {
+        t = t.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+      }
+      candidateThumbUrl = t;
+    }
+  }
+
+  // [2순위 - A] In .se-main-container: .se-thumbnail or data-is-representative="true"
+  if (!candidateThumbUrl) {
+    const repImgMatch =
+      bodyHtml.match(/<img[^>]*(?:class="[^"]*se-thumbnail[^"]*"|data-is-representative=["']true["'])[^>]*>/i);
+    if (repImgMatch) {
+      const srcMatch =
+        repImgMatch[0].match(/\bdata-lazy-src=["']([^"']+)["']/i) ||
+        repImgMatch[0].match(/\bdata-src=["']([^"']+)["']/i) ||
+        repImgMatch[0].match(/\bsrc=["']([^"']+)["']/i);
+      if (srcMatch && !isInvalidThumbnailUrl(srcMatch[1])) {
+        let t = srcMatch[1].trim();
+        if (t.startsWith('//')) t = `https:${t}`;
+        if (t.includes('?type=')) {
+          t = t.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+        }
+        candidateThumbUrl = t;
+      }
+    }
+  }
+
+  // [2순위 - B] First real content image (data-lazy-src)
+  if (!candidateThumbUrl && imagesToDownload.length > 0) {
+    for (const item of imagesToDownload) {
+      if (!isInvalidThumbnailUrl(item.src)) {
+        candidateThumbUrl = item.src;
+        break;
+      }
+    }
+  }
+
+  // Download candidate thumbnail to local public/images/columns/thumbnails/
+  if (candidateThumbUrl) {
+    const localThumb = await downloadThumbnail(candidateThumbUrl, slugPrefix);
+    if (localThumb) {
+      thumbnail = localThumb;
+    } else {
+      thumbnail = candidateThumbUrl;
+    }
+  }
+
+  // Download images in sequence and replace in HTML
+  let firstLocalImage = '';
+  for (const item of imagesToDownload) {
+    const localUrl = await downloadAndSaveImage(item.src, slugPrefix, item.index);
+    if (!firstLocalImage && localUrl && localUrl.startsWith('/images/columns/')) {
+      firstLocalImage = localUrl;
+    }
+
+    const safeAlt = (item.alt || '')
+      .replace(/[\r\n]+/g, ' ')
+      .replace(/[\[\]\(\)\"#]/g, '')
+      .replace(/↗/g, '')
+      .replace(/\s*설명:\s*.*$/g, '')
+      .replace(/\s*-\s*오브한의원\s*$/g, '')
+      .trim();
+
+    const finalAlt = safeAlt && safeAlt.length <= 50 ? safeAlt : '오브한의원 임상 칼럼';
+
+    const effectiveImgUrl = localUrl || item.src;
+
+    if (!thumbnail && item.index === 0 && !isInvalidThumbnailUrl(effectiveImgUrl)) {
+      thumbnail = effectiveImgUrl;
+    }
+
+    // Pure standalone markdown image syntax with NO extra caption line
+    const replacementMd = `\n\n![${finalAlt}](${effectiveImgUrl})\n\n`;
+    bodyHtml = bodyHtml.replace(item.originalTag, replacementMd);
+  }
+
+  // Only fallback to firstLocalImage if thumbnail is still missing or invalid
+  if ((!thumbnail || isInvalidThumbnailUrl(thumbnail)) && firstLocalImage) {
+    thumbnail = firstLocalImage;
+  }
+
+  // Helper: Detect if a link refers to the Naver QEEG device introduction post
+  const isQeegPostReference = (url: string, text: string): boolean => {
+    const combined = `${url} ${text}`.toLowerCase();
+    const hasQeegTerm = /qeeg|정량뇌파|정량화뇌파|뇌파검사|뇌파기계|뇌파장비|뇌파\s*측정/.test(combined);
+    const isNaverOrLocal = /blog\.naver\.com|naver\.com|orbclinic|\/columns\//.test(combined);
+    return hasQeegTerm && (isNaverOrLocal || /기기|소개|안내|검사|과정|장비/.test(combined));
+  };
+
+  // Naver Map & Place Module conversion to authentic place URL
+  const mapModuleRegex = /<div[^>]*class="[^"]*(?:se-module-map|se-component-map|se-map)[^"]*"[^>]*>[\s\S]*?<\/div>\s*<\/div>/gi;
+  bodyHtml = bodyHtml.replace(mapModuleRegex, () => {
+    return `\n\n[📍 **오브한의원 마곡점 (서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층)**](${NAVER_PLACE_SEARCH_URL})\n\n`;
+  });
+
+  // 5. OpenGraph Card Links (네이버 지도 플레이스, 톡톡, 뇌파기기 소개글 등 보존 및 치환)
+  const ogLinkRegex = /<div[^>]*class="[^"]*se-module-oglink[^"]*"[^>]*>[\s\S]*?<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>[\s\S]*?<\/div>/gi;
+  bodyHtml = bodyHtml.replace(ogLinkRegex, (_, href, inner) => {
+    const titleMatch = inner.match(/<strong[^>]*class="[^"]*se-oglink-title[^"]*"[^>]*>([\s\S]*?)<\/strong>/i);
+    const linkTitle = titleMatch ? stripHtml(titleMatch[1]) : '관련 정보 바로가기';
+
+    if (isQeegPostReference(href, linkTitle)) {
+      return `\n\n[👉 오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기](/columns/습식-정량-뇌파-측정-과정에-대해-안내해드립니다-314941)\n\n`;
+    }
+    if (href.includes('booking.naver.com')) {
+      return `\n\n[🗓️ **오브한의원 마곡점 네이버 빠른 예약 바로가기**](${href})\n\n`;
+    }
+    if (href.includes('map.naver.com') || href.includes('naver.me') || href.includes('place.naver.com')) {
+      return `\n\n[📍 **오브한의원 마곡점 네이버 지도(플레이스) 바로가기**](${href})\n\n`;
+    }
+    if (href.includes('talk.naver.com')) {
+      return `\n\n[💬 **오브한의원 네이버 톡톡 1:1 상담 바로가기**](${href})\n\n`;
+    }
+    if (href.includes('pf.kakao.com')) {
+      return `\n\n[💬 **오브한의원 카카오톡 채널 문의 바로가기**](${href})\n\n`;
+    }
+    return `\n\n[🔗 **${linkTitle}**](${href})\n\n`;
+  });
+
+  // Regular anchor links
+  bodyHtml = bodyHtml.replace(/<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (_, href, text) => {
+    // If text contains an image markdown ![...](...), unwrap and ignore link (especially href="#")
+    if (text.includes('![') && text.includes('](')) {
+      return text;
+    }
+
+    const cleanText = stripHtml(text);
+    if (!cleanText) return '';
+
+    if (isQeegPostReference(href, cleanText)) {
+      return `[👉 오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기](/columns/습식-정량-뇌파-측정-과정에-대해-안내해드립니다-314941)`;
+    }
+    if (href.includes('booking.naver.com')) {
+      return `[🗓️ **${cleanText}**](${href})`;
+    }
+    if (href.includes('map.naver.com') || href.includes('naver.me') || href.includes('place.naver.com')) {
+      return `[📍 **${cleanText}**](${href})`;
+    }
+    if (href.includes('talk.naver.com')) {
+      return `[💬 **${cleanText}**](${href})`;
+    }
+    if (href.includes('pf.kakao.com')) {
+      return `[💬 **${cleanText}**](${href})`;
+    }
+
+    // Map & Address links with href="#" or location text -> Real Naver Place
+    const lower = cleanText.toLowerCase();
+    const isLocationRelated =
+      lower.includes('오브한의원') ||
+      lower.includes('마곡') ||
+      lower.includes('강서구') ||
+      lower.includes('마곡중앙로') ||
+      lower.includes('르웨스트') ||
+      lower.includes('지도') ||
+      lower.includes('위치') ||
+      lower.includes('플레이스');
+
+    if (href === '#' || href === '' || href.startsWith('javascript:') || isLocationRelated) {
+      if (isLocationRelated) {
+        return `[📍 **${cleanText.replace(/^📍\s*/, '')}**](${NAVER_PLACE_SEARCH_URL})`;
+      }
+      return cleanText;
+    }
+
+    return `[${cleanText}](${href})`;
+  });
+
+  // 6. Tables Conversion
+  bodyHtml = bodyHtml.replace(/<table[^>]*>([\s\S]*?)<\/table>/gi, (_, tableInner) => {
+    const rows = tableInner.match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || [];
+    if (rows.length === 0) return '';
+
+    const mdRows: string[] = [];
+    rows.forEach((row: string, rIdx: number) => {
+      const cells = row.match(/<(?:th|td)[^>]*>([\s\S]*?)<\/(?:th|td)>/gi) || [];
+      const cellTexts = cells.map((c: string) => stripHtml(c).replace(/\|/g, '\\|'));
+      if (cellTexts.length > 0) {
+        mdRows.push(`| ${cellTexts.join(' | ')} |`);
+        if (rIdx === 0) {
+          const sep = cellTexts.map(() => ':---').join(' | ');
+          mdRows.push(`| ${sep} |`);
+        }
+      }
+    });
+    return `\n\n${mdRows.join('\n')}\n\n`;
+  });
+
+  // 7. Subheadings Conversion (H2, H3, standalone bold paragraphs)
+  bodyHtml = bodyHtml.replace(
+    /<div[^>]*class="[^"]*(?:se-heading|se-section-documentTitle|se-title-text)[^"]*"[^>]*>([\s\S]*?)<\/div>/gi,
+    (_, inner) => `\n\n## ${stripHtml(inner)}\n\n`
+  );
+
+  bodyHtml = bodyHtml.replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, (_, inner) => `\n\n## ${stripHtml(inner)}\n\n`);
+  bodyHtml = bodyHtml.replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, (_, inner) => `\n\n### ${stripHtml(inner)}\n\n`);
+  bodyHtml = bodyHtml.replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, (_, inner) => `\n\n### ${stripHtml(inner)}\n\n`);
+
+  // Bold paragraphs that act as headings
+  bodyHtml = bodyHtml.replace(
+    /<p[^>]*class="[^"]*se-text-paragraph[^"]*"[^>]*>\s*<span[^>]*>\s*<(?:b|strong)[^>]*>([\s\S]*?)<\/(?:b|strong)>\s*<\/span>\s*<\/p>/gi,
+    (_, text) => {
+      const clean = stripHtml(text);
+      if (
+        clean.length >= 3 &&
+        clean.length <= 80 &&
+        !clean.endsWith('.') &&
+        !clean.endsWith(',') &&
+        !clean.startsWith('※')
+      ) {
+        return `\n\n## ${clean}\n\n`;
+      }
+      return `\n\n**${clean}**\n\n`;
+    }
+  );
+
+  // 8. Paragraphs & Line Breaks Retention
+  bodyHtml = bodyHtml.replace(/<p[^>]*class="[^"]*se-text-paragraph[^"]*"[^>]*>([\s\S]*?)<\/p>/gi, (_, inner) => {
+    const content = inner
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<(?:b|strong)[^>]*>([\s\S]*?)<\/(?:b|strong)>/gi, '**$1**')
+      .replace(/<(?:i|em)[^>]*>([\s\S]*?)<\/(?:i|em)>/gi, '*$1*');
+    const cleaned = decodeHtmlEntities(content.replace(/<[^>]*>/g, '')).trim();
+    if (!cleaned) return '\n\n';
+
+    // Check if starts with bold subtitle like **1.1. 소제목** or **1. 소제목**, split into heading + body
+    const boldTitleMatch = cleaned.match(/^(\*\*(?:\d+\.|\d+\.\d+|[①-⑩]|[^\*\n]{2,50})\*\*)\s*(.+)$/s);
+    if (boldTitleMatch) {
+      const headingText = boldTitleMatch[1].replace(/\*\*/g, '').trim();
+      const bodyText = boldTitleMatch[2].trim();
+      return `\n\n### ${headingText}\n\n${bodyText}\n\n`;
+    }
+
+    return `\n\n${cleaned}\n\n`;
+  });
+
+  // Standard <p> and <div>
+  bodyHtml = bodyHtml.replace(/<br\s*\/?>/gi, '\n');
+  bodyHtml = bodyHtml.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, inner) => `\n\n${stripHtml(inner)}\n\n`);
+  bodyHtml = bodyHtml.replace(/<div[^>]*>([\s\S]*?)<\/div>/gi, (_, inner) => `\n${stripHtml(inner)}\n`);
+
+  // Strip remaining HTML tags
+  let markdown = decodeHtmlEntities(bodyHtml.replace(/<[^>]*>/g, ''));
+
+  // Clean up excess whitespace
+  markdown = markdown
+    .replace(/\r\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
+  // Split headings and body paragraphs cleanly using splitHeadingAndBody across all blocks
+  const rawBlocks = markdown.split(/\n{2,}/);
+  const processedBlocks: string[] = [];
+  for (const block of rawBlocks) {
+    const trimmed = block.trim();
+    if (!trimmed) continue;
+    const split = splitHeadingAndBody(trimmed);
+    for (const sub of split.split(/\n{2,}/)) {
+      if (sub.trim()) processedBlocks.push(sub.trim());
+    }
+  }
+  markdown = processedBlocks.join('\n\n').trim();
+
+  // If no summary was found from blockquote, extract first substantive sentences
+  if (!summary) {
+    const paragraphs = markdown.split('\n\n').filter((p) => p.trim() && !p.startsWith('#') && !p.startsWith('!'));
+    if (paragraphs.length > 0) {
+      const firstP = paragraphs[0].trim();
+      summary = firstP.length > 250 ? firstP.slice(0, 240) + '...' : firstP;
+    } else {
+      summary = `${postTitle}에 대한 전두희 대표원장의 한의학적 진단과 치료 칼럼입니다.`;
+    }
+  }
+
+  // Prepend Master Prompt Top Summary Quote Box if not already at the top
+  const topQuoteBox = `> 💡 **전두희 원장의 핵심 진료 요약 (Medical Summary)**\n> ${summary}\n\n---\n\n`;
+  markdown = `${topQuoteBox}${markdown}`;
+
+  // 9. Format Academic References & Medical Legal Disclaimer at the bottom
+  const disclaimerIdx = markdown.search(/의료법|참고문헌|references?|\[1\]/i);
+  if (disclaimerIdx !== -1 && disclaimerIdx > markdown.length / 2) {
+    const mainBody = markdown.slice(0, disclaimerIdx).trim();
+    const tail = markdown.slice(disclaimerIdx).trim();
+    markdown = `${mainBody}\n\n---\n\n### 📚 의학 학술 레퍼런스 및 의료법 고지\n\n${tail}`;
+  }
+
+  // 10. Append Official Google Duplicate Content Prevention Archive Notice Box if not present
+  if (!markdown.includes('정식 웹 아카이브 안내')) {
+    markdown += `\n\n---\n\n📌 [정식 웹 아카이브 안내] 본 칼럼은 오브한의원 공식 네이버 블로그에 연재된 임상 칼럼을 기반으로, 의학적 근거와 최신 검사 기준을 보완하여 영구 보존·게재한 공식 웹 아카이브 문서입니다. 무단 복제 및 전재를 금합니다.\n`;
+  }
+
+  markdown = truncateJsGarbage(markdown);
+  summary = truncateJsGarbage(summary);
+
+  // Final cleanup for UI noise, captions, and broken wrappers
+  markdown = markdown
+    .replace(/이\s*블로그의\s*체크인\s*이\s*장소의\s*다른\s*글/gi, '')
+    .replace(/이\s*블로그의\s*체크인/gi, '')
+    .replace(/이\s*장소의\s*다른\s*글/gi, '')
+    .replace(/MY\s*플레이스/gi, '')
+    .replace(/MY플레이스/gi, '')
+    .replace(/(?:\r?\n)\s*[\*_]설명\s*:[^\r\n\*_]*[\*_]\s*(?:\r?\n|$)/gi, '\n\n')
+    .replace(/\[\s*!\[([^\]]*)\]\((https?:\/\/[^\s\)]+|\/images\/[^\s\)]+)\)\s*\]\([^)]*\)/gi, '\n\n![$1]($2)\n\n')
+    .replace(/!\[[^\]]*\]\(#\)/gi, '')
+    .replace(/!\[[^\]]*\]\(\s*\)/gi, '')
+    .replace(/![\"']([^\"'\n\r]+)[\"']/g, '**$1**')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
+  return {
+    content: markdown,
+    summary,
+    thumbnail,
+    faqs,
+    tags: Array.from(tagsSet).slice(0, 8),
+  };
+}
+
+export function getCategoryFallbackThumbnail(category: string): string {
+  switch (category) {
+    case '정량화뇌파검사':
+      return '/images/clinic/naver-qeeg-wide.webp';
+    case '자율신경실조증':
+      return '/images/clinic/hero-lobby-wide.webp';
+    case '브레인포그':
+      return '/images/clinic/care-room-wide.webp';
+    case '초민감자(HSP)':
+      return '/images/clinic/naver-consultation-wide.webp';
+    case 'ADHD':
+      return '/images/clinic/detail-flower-wide.webp';
+    case '다이어트':
+      return '/images/clinic/diet-quantum-fit.png';
+    case '위장관':
+      return '/images/clinic/naver-chuna-wide.webp';
+    case '갑상선':
+      return '/images/clinic/heat-metabolism-diti.png';
+    default:
+      return '/images/clinic/hero-lobby-wide.webp';
+  }
+}
+
+/**
+ * Fetches and imports a single Naver blog post by URL or metadata,
+ * converting it to the Master Prompt spec and writing it to content/columns/<slug>.json.
+ * Safely avoids duplicates (especially existing QEEG introduction article).
+ */
+export async function importSingleNaverPost(input: {
+  url: string;
+  blogId?: string;
+  logNo?: string;
+  title?: string;
+  categoryName?: string;
+  forceCategory?: string;
+  thumbnailUrl?: string;
+}): Promise<Column> {
+  const norm = normalizeNaverUrl(input.url);
+  const blogId = input.blogId || norm?.blogId || 'orbmed';
+  const logNo = input.logNo || norm?.logNo || '';
+
+  if (!logNo) {
+    throw new Error(`유효한 네이버 글 번호(logNo)를 찾을 수 없습니다: ${input.url}`);
+  }
+
+  // Fetch post HTML using mobile or direct PostView URL
+  const fetchConfigs: { url: string; headers: Record<string, string> }[] = [];
+
+  if (blogId && logNo) {
+    // 1. Mobile blog URL (Priority: MOBILE_USER_AGENT prevents 302 redirect to desktop frameset)
+    fetchConfigs.push({
+      url: `https://m.blog.naver.com/${encodeURIComponent(blogId)}/${encodeURIComponent(logNo)}`,
+      headers: {
+        'User-Agent': MOBILE_USER_AGENT,
+        Referer: 'https://m.blog.naver.com/',
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'ko-KR,ko;q=0.9',
+      },
+    });
+
+    // 2. Desktop PostView URL with full parameters & desktop UA
+    fetchConfigs.push({
+      url: `https://blog.naver.com/PostView.naver?blogId=${encodeURIComponent(
+        blogId
+      )}&logNo=${encodeURIComponent(logNo)}&redirect=Dlog&widgetTypeCall=true`,
+      headers: {
+        'User-Agent': DESKTOP_USER_AGENT,
+        Referer: `https://blog.naver.com/${encodeURIComponent(blogId)}`,
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'ko-KR,ko;q=0.9',
+      },
+    });
+  }
+
+  if (input.url && !fetchConfigs.some((c) => c.url === input.url)) {
+    fetchConfigs.push({
+      url: input.url,
+      headers: {
+        'User-Agent': MOBILE_USER_AGENT,
+        Referer: 'https://m.blog.naver.com/',
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'ko-KR,ko;q=0.9',
+      },
+    });
+  }
+
+  let html = '';
+  for (const config of fetchConfigs) {
+    try {
+      const res = await fetch(config.url, {
+        headers: config.headers,
+        signal: AbortSignal.timeout(10000),
+      });
+      if (res.ok) {
+        const text = await res.text();
+        const isFrameset = text.includes('<frameset') || text.includes('var postContent = "";');
+        const hasContent =
+          text.includes('se-main-container') ||
+          text.includes('se-viewer') ||
+          text.includes('se_component_wrap') ||
+          text.includes('post_ct') ||
+          text.includes('postViewArea');
+
+        if (text && text.length > 500 && !isFrameset && hasContent) {
+          html = text;
+          break;
+        }
+      }
+    } catch {
+      // try next URL
+    }
+  }
+
+  if (!html) {
+    throw new Error(`네이버 글 본문을 불러올 수 없습니다 (HTML 파싱 실패: logNo ${logNo})`);
+  }
+
+  // Extract Title
+  let title = '';
+  const titleMatch =
+    html.match(/<meta\s+(?:property|name)=["']og:title["']\s+content=["']([^"']*)["']/i) ||
+    html.match(/<div[^>]*class="[^"]*(?:se-title-text|se_title)[^"]*"[^>]*>([\s\S]*?)<\/div>/i) ||
+    html.match(/<h3[^>]*class="[^"]*se_textarea[^"]*"[^>]*>([\s\S]*?)<\/h3>/i) ||
+    html.match(/<title>([\s\S]*?)<\/title>/i);
+
+  if (titleMatch) {
+    title = stripHtml(titleMatch[1])
+      .replace(/\s*:\s*네이버\s*블로그\s*$/i, '')
+      .replace(/^\[오브한의원\]\s*/i, '')
+      .trim();
+  }
+  if (!title || title === '오브한의원' || title === '네이버 블로그') {
+    title = input.title || `네이버 칼럼 ${logNo}`;
+  }
+
+  // Check for Duplicate Prevention against content/columns/
+  const existingColumns = getAllColumns();
+
+  // Duplicate Check 1: Is this post introducing the QEEG equipment?
+  const isQeegIntro =
+    (/신경성입니다/i.test(title) && /정량뇌파|qeeg/i.test(title)) ||
+    (/정량뇌파|정량화뇌파|qeeg/i.test(title) && /장비|기기|도입|소개|시각화|신경 피로/i.test(title));
+
+  const existingQeeg = existingColumns.find(
+    (c) => c.slug === 'qeeg-guide' || c.title.includes('정량뇌파(qEEG)검사')
+  );
+
+  if (isQeegIntro && existingQeeg) {
+    return {
+      ...existingQeeg,
+      skipped: true,
+      skipReason: '기존 등록된 정량뇌파 소개 칼럼(qeeg-guide)과 중복되어 안전하게 건너뛰었습니다.',
+    };
+  }
+
+  // Duplicate Check 2: Check matching title or existing slug
+  const normTitle = title.replace(/\s+/g, '').toLowerCase();
+  const duplicate = existingColumns.find((c) => {
+    const cNorm = c.title.replace(/\s+/g, '').toLowerCase();
+    if (normTitle.length >= 6 && cNorm === normTitle) return true;
+    if (cNorm.length > 15 && normTitle.length > 15 && (cNorm.includes(normTitle) || normTitle.includes(cNorm))) {
+      return true;
+    }
+    return false;
+  });
+
+  if (duplicate) {
+    // If the existing post has a fallback clinic thumbnail or missing, update it with the real blog representative thumbnail
+    if (
+      duplicate.slug !== 'qeeg-guide' &&
+      (duplicate.thumbnail.startsWith('/images/clinic/') || duplicate.thumbnail.startsWith('/images/columns/') || !duplicate.thumbnail)
+    ) {
+      const { thumbnail: realThumb } = await convertNaverHtmlToMasterMarkdown(
+        html,
+        title,
+        duplicate.slug,
+        input.thumbnailUrl
+      );
+      if (realThumb && realThumb.startsWith('http')) {
+        duplicate.thumbnail = realThumb;
+        saveColumn(duplicate);
+        return {
+          ...duplicate,
+          skipped: false,
+        };
+      }
+    }
+
+    return {
+      ...duplicate,
+      skipped: true,
+      skipReason: `이미 등록된 칼럼('${duplicate.title}')과 중복되어 안전하게 건너뛰었습니다.`,
+    };
+  }
+
+  // Extract Category from page if not provided
+  let categoryName = input.categoryName || '';
+  if (!categoryName) {
+    const catMatch =
+      html.match(/<span[^>]*class="[^"]*category_title[^"]*"[^>]*>([\s\S]*?)<\/span>/i) ||
+      html.match(/<a[^>]*class="[^"]*blog2_series[^"]*"[^>]*>([\s\S]*?)<\/a>/i) ||
+      html.match(/<a[^>]*class="[^"]*link_category[^"]*"[^>]*>([\s\S]*?)<\/a>/i);
+    if (catMatch) {
+      categoryName = stripHtml(catMatch[1]);
+    }
+  }
+
+  // Extract Date
+  let date = new Date().toISOString().slice(0, 10);
+  const dateMatch =
+    html.match(/<span[^>]*class="[^"]*se_publishDate[^"]*"[^>]*>([\s\S]*?)<\/span>/i) ||
+    html.match(/<p[^>]*class="[^"]*blog_date[^"]*"[^>]*>([\s\S]*?)<\/p>/i);
+  if (dateMatch) {
+    const rawDate = stripHtml(dateMatch[1]);
+    const parsedDate = rawDate.match(/(\d{4})[.\-/년]\s*(\d{1,2})[.\-/월]\s*(\d{1,2})/);
+    if (parsedDate) {
+      date = `${parsedDate[1]}-${parsedDate[2].padStart(2, '0')}-${parsedDate[3].padStart(2, '0')}`;
+    }
+  }
+
+  // Generate safe slug
+  const baseSlug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9가-힣\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 35) || `naver-post-${logNo}`;
+  const slug = `${baseSlug}-${logNo.slice(-6)}`;
+
+  // Convert HTML to Master Markdown and download images & thumbnail
+  const { content, summary, thumbnail, faqs, tags } = await convertNaverHtmlToMasterMarkdown(
+    html,
+    title,
+    slug,
+    input.thumbnailUrl
+  );
+
+  // Determine Category (must be one of the 8 official clinic categories)
+  const finalCategory =
+    input.forceCategory || matchCategory(categoryName, title, content);
+
+  const fallbackThumbnail = getCategoryFallbackThumbnail(finalCategory);
+  const finalThumbnail = thumbnail ? thumbnail : fallbackThumbnail;
+
+  // Construct ColumnInput
+  const columnInput: ColumnInput = {
+    slug,
+    title,
+    summary,
+    content,
+    category: finalCategory,
+    author: '전두희 원장',
+    date,
+    tags: tags.length > 0 ? tags : [finalCategory, '마곡한의원', '오브한의원', '건강칼럼'],
+    thumbnail: finalThumbnail,
+    faqs,
+  };
+
+  // Save to content/columns/<slug>.json
+  return saveColumn(columnInput);
+}

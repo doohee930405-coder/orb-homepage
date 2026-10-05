@@ -36,9 +36,4 @@ next-env.d.ts
 /dist/
 /.wrangler/
 /outputs/
-/output/
-/deliverables/
-/tmp/
-/:memory:.ses
-/orb-homepage-source.zip
 /work/
