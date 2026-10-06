@@ -41,8 +41,8 @@ export function syncUploadedClinicImages(): void {
         }
       }
     }
-  } catch (err) {
-    console.warn('syncUploadedClinicImages warning:', err);
+  } catch {
+    // In edge/worker runtimes, filesystem operations are restricted; assets are already pre-synced.
   }
 }
 

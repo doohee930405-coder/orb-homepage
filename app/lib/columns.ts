@@ -43,20 +43,10 @@ export function decodeTextEntities(text: string): string {
     .replace(/&nbsp;/g, ' ');
 }
 
-export const CATEGORY_THUMBNAILS: Record<string, string> = {
-  '정량화뇌파검사': '/images/clinic/naver-qeeg-wide.webp',
-  '자율신경실조증': '/images/clinic/hero-lobby-wide.webp',
-  '브레인포그': '/images/clinic/care-room-wide.webp',
-  '초민감자(HSP)': '/images/clinic/naver-consultation-wide.webp',
-  'ADHD': '/images/clinic/detail-flower-wide.webp',
-  '다이어트': '/images/clinic/diet-quantum-fit.png',
-  '위장관': '/images/clinic/naver-chuna-wide.webp',
-  '갑상선': '/images/clinic/heat-metabolism-diti.png',
-};
+export const CATEGORY_THUMBNAILS: Record<string, string> = {};
 
 export function getCategoryFallbackThumbnail(category: string): string {
-  const norm = normalizeCategory(category);
-  return CATEGORY_THUMBNAILS[norm] || '/images/clinic/hero-lobby-wide.webp';
+  return '';
 }
 
 export const NAVER_PLACE_SEARCH_URL =
@@ -151,6 +141,40 @@ export function getQeegColumnSlug(): string {
   return '습식-정량-뇌파-측정-과정에-대해-안내해드립니다-314941';
 }
 
+export function cleanTableCell(text: string): string {
+  let cleaned = text.trim();
+  cleaned = cleaned.replace(/([\u200B\s]+[•\u2022]\s+)/g, '<br>• ');
+  cleaned = cleaned.replace(/\n+/g, '<br>');
+  cleaned = cleaned.replace(/(?:<br\s*\/?>\s*)+/gi, '<br>');
+  cleaned = cleaned.replace(/^<br\s*\/?>|<br\s*\/?>$/gi, '');
+  return cleaned || '-';
+}
+
+export function repairTableText(text: string): string {
+  if (!text.includes('| :---') && !text.includes('|:---') && !text.includes('| --- |')) return text;
+  const lines = text.split('\n');
+  const fixedLines: string[] = [];
+  for (const line of lines) {
+    if (
+      (line.includes('| :---') || line.includes('|:---') || line.includes('| --- |')) &&
+      (line.match(/\|\s*\|/g) || []).length > 1
+    ) {
+      const rawRows = line.split(/\|\s*\|\s*/).map((r) => r.trim()).filter(Boolean);
+      const rows = rawRows.map((r) => {
+        let row = r;
+        if (row.startsWith('|')) row = row.slice(1).trim();
+        if (row.endsWith('|')) row = row.slice(0, -1).trim();
+        const cells = row.split('|').map((c) => cleanTableCell(c));
+        return `| ${cells.join(' | ')} |`;
+      });
+      fixedLines.push(rows.join('\n'));
+    } else {
+      fixedLines.push(line);
+    }
+  }
+  return fixedLines.join('\n');
+}
+
 export function splitHeadingAndBody(block: string): string {
   if (!block) return '';
   const trimmed = block.trim();
@@ -163,6 +187,20 @@ export function splitHeadingAndBody(block: string): string {
 
   const hashes = match[1];
   const fullText = match[2].trim();
+
+  // 0. Reference header with bracket index: e.g. "참고 문헌 (References) [1]" -> "## 참고 문헌 (References)\n\n[1] ..."
+  const refIndexMatch = fullText.match(
+    /^((?:\[?참고\s*문헌[^\]\n]*\]?|References?|참고자료|학술\s*출처(?:\s*및\s*참고\s*문헌)?)(?:\s*(?:및\s*출처\s*링크))?(?:\s*\((?:References?|참고\s*문헌|학술\s*출처|출처|근거|문헌)\))?\]?)\s*(\[\d+\])([\s\S]*)$/i
+  );
+  if (refIndexMatch) {
+    const heading = refIndexMatch[1].trim();
+    const bracketNum = refIndexMatch[2].trim();
+    const rest = refIndexMatch[3].trim();
+    if (rest) {
+      return `${hashes} ${heading}\n\n${bracketNum} ${rest}`;
+    }
+    return `${hashes} ${heading}\n\n${bracketNum}`;
+  }
 
   // If already contains newlines, ensure the first line is the heading
   if (fullText.includes('\n')) {
@@ -179,7 +217,13 @@ export function splitHeadingAndBody(block: string): string {
     return block;
   }
 
-  // 1. Bolded title at start: **1.1. 제목** 본문...
+  // 1. Quoted heading: e.g. "인용구 제목" 본문... or "인용구 제목" "인용구 본문"...
+  const quoteMatch = fullText.match(/^([“"'][^”"'\n]{5,90}[”"'])\s+([\s\S]+)$/);
+  if (quoteMatch) {
+    return `${hashes} ${quoteMatch[1].trim()}\n\n${quoteMatch[2].trim()}`;
+  }
+
+  // 2. Bold title: **1.1. 제목** 본문...
   const boldMatch = fullText.match(/^\*\*([^*]+)\*\*\s*[:\-]?\s*(.+)$/s);
   if (boldMatch) {
     const heading = boldMatch[1].trim();
@@ -187,7 +231,7 @@ export function splitHeadingAndBody(block: string): string {
     return `${hashes} ${heading}\n\n${body}`;
   }
 
-  // 2. Question mark: e.g. "왜 내 몸은 계속 아플까요? 본문..."
+  // 3. Question mark: e.g. "왜 내 몸은 계속 아플까요? 본문..."
   const qIdx = fullText.indexOf('?');
   if (qIdx !== -1 && qIdx <= 80 && qIdx < fullText.length - 5) {
     const heading = fullText.slice(0, qIdx + 1).trim();
@@ -197,21 +241,65 @@ export function splitHeadingAndBody(block: string): string {
     }
   }
 
-  // 3. Period after subtitle: e.g. "1.1. 정량뇌파와 심박변이도 평가. 전전두엽 피질의..."
-  const periodMatch = fullText.match(/^((?:\d+\.\d*|[①-⑩]|\d+\))\s*[^.!?\n]{3,60}\.)\s+([가-힣A-Za-z0-9"'].+)$/s);
+  // 4. Period after subtitle: e.g. "1.1. 정량뇌파와 심박변이도 평가. 전전두엽 피질의..."
+  const periodMatch = fullText.match(
+    /^((?:\d+(?:\.\d+)*\.?|[①-⑩]|\d+\))\s*[^.!?\n]{3,80}\.)\s+([가-힣A-Za-z0-9"'].+)$/s
+  );
   if (periodMatch) {
     return `${hashes} ${periodMatch[1].trim()}\n\n${periodMatch[2].trim()}`;
   }
 
-  // 4. Known noun endings followed by sentence starter
+  // 5. Reference header: e.g. [참고문헌] [1] ... or 참고 문헌 (References) [1] ...
+  const refMatch = fullText.match(/^(\[?참고\s*문헌[^\]\n]*\]?(?:\s*\([^\)\n]+\))?)\s+([\s\S]+)$/);
+  if (refMatch) {
+    return `${hashes} ${refMatch[1].trim()}\n\n${refMatch[2].trim()}`;
+  }
+
+  // 6. Header with colon: e.g. "피부 저항(임피던스) 관리의 중요성: 전도성 매개체 없이..."
+  const colonMatch = fullText.match(/^([^:\n]{3,50}:)\s+([가-힣A-Za-z0-9"'].+)$/s);
+  if (colonMatch && colonMatch[2].length > 15) {
+    return `${hashes} ${colonMatch[1].trim()}\n\n${colonMatch[2].trim()}`;
+  }
+
+  // 7. Special specific known fixed headers like "문의사항은 네이버톡톡으로 부탁드립니다"
+  const naverTalkMatch = fullText.match(/^(문의사항은\s*네이버톡톡으로\s*부탁드립니다)\s+([가-힣A-Za-z0-9"'].+)$/s);
+  if (naverTalkMatch) {
+    return `${hashes} ${naverTalkMatch[1].trim()}\n\n${naverTalkMatch[2].trim()}`;
+  }
+
+  // 8. Numbered subtitle ending with known noun/concept
   const nounMatch = fullText.match(
-    /^((?:\d+\.\d*|[①-⑩]|\d+\))?[^.!?\n]{3,60}?(?:대응|기전|분석|치료|요법|시스템|원리|안내|평가|특징|원인|증상|기준|소개|방법|접근|비교|차이|역할|회복|개요|정의|프로토콜|검사|포인트|핵심|과정|이유))\s+([가-힣A-Za-z"'].+)$/s
+    /^((?:\d+(?:\.\d+)*\.?|[①-⑩]|\d+\))\s*[^.!?\n]{3,95}?(?:대응|기전|분석|치료|요법|시스템|원리|안내|평가|특징|원인|증상|기준|소개|방법|접근|비교|차이|역할|회복|개요|정의|프로토콜|검사|포인트|핵심|과정|이유|리셋|딜레마|가설|전략|비교|검증|보완|완화|한계|접점|메커니즘|중요성|확인))\s+([가-힣A-Za-z"'].+)$/s
   );
   if (nounMatch && nounMatch[2].length > 15) {
     return `${hashes} ${nounMatch[1].trim()}\n\n${nounMatch[2].trim()}`;
   }
 
-  // 5. Fallback for long block (> 75 chars): split at first sentence ending
+  // 9. Numbered subtitle with parenthesis: e.g. "1. 극도의 불안과 불면, 심계항진 (입력 필터 강화) 복령의..."
+  const numParenMatch = fullText.match(
+    /^(\d+\.\s*[^(\n]{2,35}\s*\([^)\n]{2,20}\))\s+([가-힣A-Za-z0-9"'].+)$/s
+  );
+  if (numParenMatch) {
+    return `${hashes} ${numParenMatch[1].trim()}\n\n${numParenMatch[2].trim()}`;
+  }
+
+  // 10. Numbered subtitle with colon: e.g. "1. 성상신경차단술(SGB): 강력하지만 일시적인 리셋 목 앞쪽에..."
+  const numSubMatch = fullText.match(
+    /^((?:\d+(?:\.\d+)*\.?|[①-⑩]|\d+\))\s*[^:\n]{2,30}:\s*[^ \n]{2,30}(?:\s+[^ \n]{2,30}){0,3})\s+([가-힣A-Za-z0-9"'].+)$/s
+  );
+  if (numSubMatch && numSubMatch[2].length > 15) {
+    return `${hashes} ${numSubMatch[1].trim()}\n\n${numSubMatch[2].trim()}`;
+  }
+
+  // 11. General noun endings without number prefix
+  const generalNounMatch = fullText.match(
+    /^([^.!?\n]{3,60}?(?:대응|기전|분석|치료|요법|시스템|원리|안내|평가|특징|원인|증상|기준|소개|방법|접근|비교|차이|역할|회복|개요|정의|프로토콜|검사|포인트|핵심|과정|이유|리셋|딜레마|접점|메커니즘|중요성|확인))\s+([가-힣A-Za-z"'].+)$/s
+  );
+  if (generalNounMatch && generalNounMatch[2].length > 15) {
+    return `${hashes} ${generalNounMatch[1].trim()}\n\n${generalNounMatch[2].trim()}`;
+  }
+
+  // 12. Fallback for long block (> 75 chars): split at first sentence ending
   if (fullText.length > 75) {
     const sentenceMatch = fullText.match(/^((?:\d+\.\d*|[①-⑩]|\d+\))?[^.!?\n]{5,70}?[.!?])\s+(.+)$/s);
     if (sentenceMatch && sentenceMatch[2].length > 15) {
@@ -222,12 +310,94 @@ export function splitHeadingAndBody(block: string): string {
   return block;
 }
 
+export function removeTopDuplicateImage(markdown: string): string {
+  if (!markdown) return '';
+  const imgRegex = /!\[([^\]]*)\]\((https?:\/\/[^\s\)]+|\/images\/[^\s\)]+)\)/g;
+  const matches = [...markdown.matchAll(imgRegex)];
+  if (matches.length < 2) return markdown;
+
+  const getHash = (url: string) => {
+    const m = url.match(/(MDAx[a-zA-Z0-9_-]+)/);
+    if (m) return m[1];
+    return url.split('?')[0].split('/').pop() || url;
+  };
+
+  const firstImg = matches[0];
+  if (firstImg.index !== undefined && firstImg.index < 1200) {
+    const firstHash = getHash(firstImg[2]);
+    const hasDuplicateLater = matches.slice(1).some((m) => {
+      const laterHash = getHash(m[2]);
+      return m[2] === firstImg[2] || (firstHash && laterHash && firstHash === laterHash);
+    });
+
+    if (hasDuplicateLater) {
+      const before = markdown.slice(0, firstImg.index);
+      const after = markdown.slice(firstImg.index + firstImg[0].length);
+      return (before + after).replace(/\n{3,}/g, '\n\n').trim();
+    }
+  }
+
+  return markdown;
+}
+
 export function cleanAndRepairMarkdown(text: string): string {
   if (!text) return '';
   let cleaned = text;
 
   // 1. Strip script, style, noscript tags and JS runtime signatures
   cleaned = cleanJsGarbageFromText(cleaned);
+
+  // 1-A. Strip leaked SmartEditor JSON metadata block
+  cleaned = cleaned.replace(/\{\s*"title"\s*:\s*"[\s\S]*?"logNo"\s*:\s*\d+[\s\S]*?\}/gi, '');
+  cleaned = cleaned.replace(/\{\s*"title"\s*:\s*"[^"]*"[\s\S]*?"blogDisplay"\s*:\s*true[\s\S]*?\}/gi, '');
+
+  // 1-AA. Strip empty bold markers and standalone asterisks
+  cleaned = cleaned.replace(/\*\*[\s\u200B\uFEFF]*\*\*/g, '');
+  cleaned = cleaned.replace(/^[ \t]*\*{2,}[ \t]*$/gm, '');
+  cleaned = cleaned.replace(/\n([ \t]*\*{2,}[ \t]*\n)+/g, '\n\n');
+
+  // 1-AC. Strip duplicate top image if the exact same image appears later in the body
+  cleaned = removeTopDuplicateImage(cleaned);
+
+  // 1-AB. Fix glued medical disclaimer where "본 게시물은 was severed before the divider
+  cleaned = cleaned.replace(
+    /([^\n\r]+?)\s*["'“]?\s*본\s*(?:게시물|글|포스팅)은\s*(?:\r?\n\s*)*---\s*(?:\r?\n\s*)*###\s*📚\s*의학 학술 레퍼런스 및 의료법 고지\s*(?:\r?\n\s*)*(?:["'“]?\s*본\s*(?:게시물|글|포스팅)은\s*)?/gi,
+    '$1\n\n---\n\n### 📚 의학 학술 레퍼런스 및 의료법 고지\n\n본 게시물은 '
+  );
+  cleaned = cleaned.replace(
+    /(문의사항은\s*네이버톡톡으로\s*부탁드립니다[^\n]*?)\s*(?:["'“]?\s*본\s*(?:게시물|글|포스팅)은\s*의료법)/gi,
+    '$1\n\n---\n\n### 📚 의학 학술 레퍼런스 및 의료법 고지\n\n본 게시물은 의료법'
+  );
+
+  // 1-B. Strip top duplicate summary blockquote and duplicate summary paragraphs
+  const quoteSummaryPattern = /^(?:>\s*(?:💡\s*)?\**\s*(?:(?:전두희\s*원장의\s*)?핵심\s*진료\s*요약|Medical\s*Summary)[^\n]*\n)(?:>[^\n]*\n*)+/i;
+  cleaned = cleaned.replace(quoteSummaryPattern, '').trim();
+
+  // If text starts with any summary blockquote
+  if (cleaned.startsWith('>')) {
+    const lines = cleaned.split('\n');
+    let quoteEnd = 0;
+    while (quoteEnd < lines.length && (lines[quoteEnd].trim().startsWith('>') || !lines[quoteEnd].trim())) {
+      quoteEnd++;
+    }
+    const topQuote = lines.slice(0, quoteEnd).join(' ');
+    if (topQuote.includes('핵심') || topQuote.includes('요약') || topQuote.includes('Summary')) {
+      cleaned = lines.slice(quoteEnd).join('\n').trim();
+    }
+  }
+
+  // Strip leading divider
+  cleaned = cleaned.replace(/^---+[\r\n]*/, '').trim();
+
+  // Strip duplicate bold summary paragraph directly following the quote box if present
+  const firstPMatch = cleaned.match(/^\*\*(원인\s*모를[^\*]+|\s*심장내과[^\*]+|\s*집중력[^\*]+|\s*감각처리[^\*]+)\*\*/);
+  if (firstPMatch && firstPMatch[1].length > 40) {
+    cleaned = cleaned.replace(/^\*\*[^\*]{40,}\*\*[\r\n]*/, '').trim();
+  }
+
+  // Strip invisible empty bold tags like **​** **​**
+  cleaned = cleaned.replace(/^(\*\*[\u200b\s]*\*\*[\s\r\n]*)+/g, '').trim();
+  cleaned = cleaned.replace(/^---+[\r\n]*/, '').trim();
 
   // 2. Remove Naver Check-in & Place residual UI text
   cleaned = cleaned
@@ -240,10 +410,22 @@ export function cleanAndRepairMarkdown(text: string): string {
   // 3. Remove standalone caption lines (*설명: ...* or _설명: ..._)
   cleaned = cleaned.replace(/(?:\r?\n)\s*[\*_]설명\s*:[^\r\n\*_]*[\*_]\s*(?:\r?\n|$)/gi, '\n\n');
 
+  // 3-B. Unwrap images inside bold tags: **... ![alt](src) ...**
+  cleaned = cleaned.replace(
+    /\*\*([^*]*?)!\[([^\]]*)\]\((https?:\/\/[^\s\)]+|\/images\/[^\s\)]+)\)([^*]*?)\*\*/g,
+    '**$1**\n\n![$2]($3)\n\n**$4**'
+  );
+
   // 4. Unwrap broken image link wrappers: [ ![alt](src) ](#) or [ ![alt](src) ](...)
   cleaned = cleaned.replace(
     /\[\s*!\[([^\]]*)\]\((https?:\/\/[^\s\)]+|\/images\/[^\s\)]+)\)\s*\]\([^)]*\)/gi,
     '\n\n![$1]($2)\n\n'
+  );
+
+  // 4-B. Convert bare Naver image URLs into markdown image tags
+  cleaned = cleaned.replace(
+    /(^|[\s\n])(https?:\/\/(?:[a-zA-Z0-9_-]+\.)*(?:phinf\.pstatic\.net|pstatic\.net)\/[^\s\)\"']+\.(?:png|jpe?g|webp|gif)(?:\?type=[^\s\)\"']*)?)([\s\n]|$)/gi,
+    '$1\n\n![오브한의원 임상 칼럼]($2)\n\n$3'
   );
 
   // 5. Remove dummy/broken markdown images that link to # or have broken formats
@@ -311,7 +493,39 @@ export function cleanAndRepairMarkdown(text: string): string {
     }
   );
 
-  // 10. [문제 1] Subheading and body text splitting across all blocks
+  // 10. Repair squashed tables
+  cleaned = repairTableText(cleaned);
+
+  // 10-B. Reference heading & bracket index separation
+  // Fix: "### 참고 문헌 (References) [1]\n\n논문제목..." -> "### 참고 문헌 (References)\n\n[1] 논문제목..."
+  cleaned = cleaned.replace(
+    /(^|\n)\s*(#{0,4}\s*\[?(?:참고\s*문헌|References?|참고자료|학술\s*출처(?:\s*및\s*참고\s*문헌)?)(?:\s*(?:및\s*출처\s*링크))?(?:\s*\((?:References?|참고\s*문헌|학술\s*출처|출처|근거|문헌)\))?\]?)\s*(\[\d+\])(?:(?:\r?\n+)|\s+)([^\n#\-📌\s])/gi,
+    (match, p1, heading, index, firstChar) => {
+      const cleanHeading = heading.trim();
+      const formattedHeading = cleanHeading.startsWith('#')
+        ? cleanHeading
+        : `### ${cleanHeading.replace(/^\[\s*|\s*\]$/g, '')}`;
+      return `\n\n${formattedHeading}\n\n${index} ${firstChar}`;
+    }
+  );
+
+  // Fix reference heading glued directly to text without bracket index
+  cleaned = cleaned.replace(
+    /(^|\n)\s*(#{0,4}\s*\[?(?:참고\s*문헌|References?|참고자료|학술\s*출처(?:\s*및\s*참고\s*문헌)?)(?:\s*(?:및\s*출처\s*링크))?(?:\s*\((?:References?|참고\s*문헌|학술\s*출처|출처|근거|문헌)\))?\]?)\s+([A-Za-z가-힣\*\"'])/gi,
+    (match, p1, heading, firstChar) => {
+      const cleanHeading = heading.trim();
+      const formattedHeading = cleanHeading.startsWith('#')
+        ? cleanHeading
+        : `### ${cleanHeading.replace(/^\[\s*|\s*\]$/g, '')}`;
+      return `\n\n${formattedHeading}\n\n${firstChar}`;
+    }
+  );
+
+  // 11. Ensure multiple headings or headings glued to previous lines have double newlines
+  cleaned = cleaned.replace(/([^\n])[\u200B\s]*(#{2,4}\s+[^\n]+)/g, '$1\n\n$2');
+  cleaned = cleaned.replace(/(#{2,4}\s+[^\n]+)\n([^\n#\s])/g, '$1\n\n$2');
+
+  // 12. Subheading and body text splitting across all blocks
   const rawBlocks = cleaned.split(/\n{2,}/);
   const processedBlocks: string[] = [];
   for (const block of rawBlocks) {
@@ -326,6 +540,102 @@ export function cleanAndRepairMarkdown(text: string): string {
 
   cleaned = processedBlocks.join('\n\n').trim();
 
+  // 13. Ensure list items, ordinals, bullets, and paragraph breaks have clean separate lines (outside table rows)
+  const lines = cleaned.split('\n');
+  cleaned = lines
+    .map((l) => {
+      if (l.trim().startsWith('|') || l.trim().startsWith('---')) return l;
+      let res = l;
+
+      // 13-1. Ordinals: 첫째, 둘째, 셋째, 넷째, 다섯째 (with or without **, comma, colon)
+      res = res.replace(
+        /([^\n#|])[\u200B\s]+(\**[첫둘셋넷다]째[,\s:]|\**[첫둘셋넷다]째\b\**)/g,
+        '$1\n\n$2'
+      );
+
+      // 13-2. Numbered lists: 1. 2. 3. (avoid dates like 2024. 10. 1.)
+      res = res.replace(
+        /([.!?다요죠음임함됨]|[:;]|["'”’)]|\*{2})[\u200B\s]+([1-9]\d{0,1}\.\s+[가-힣A-Za-z])/g,
+        (match, p1, p2, offset, str) => {
+          const ctx = str.slice(Math.max(0, offset - 10), offset + match.length + 10);
+          if (/(?:19|20)\d\d\.\s*\d+\./.test(ctx)) return match;
+          return `${p1}\n\n${p2}`;
+        }
+      );
+
+      // 13-3. Bullets: •, -, ▶
+      res = res.replace(
+        /([.!?다요죠음임함됨]|[:;]|["'”’)]|\*{2})[\u200B\s]+([•\u2022▶]\s*[가-힣A-Za-z])/g,
+        '$1\n\n• $2'
+      );
+      res = res.replace(
+        /([.!?다요죠음임함됨]|[:;]|["'”’)]|\*{2})[\u200B\s]+(-\s+[가-힣A-Za-z])/g,
+        '$1\n\n$2'
+      );
+      res = res.replace(
+        /([가-힣\w\.\?\!\"\'\)\]])[\u200B\s]+(-\s+[A-Za-z가-힣])/g,
+        '$1\n\n$2'
+      );
+
+      // 13-4. Other lists like [1] or (1) or ①-⑩
+      res = res.replace(
+        /([.!?다요죠음임함됨]|[:;]|["'”’)]|\*{2})[\u200B\s]+([①-⑩]\s*)/g,
+        '$1\n\n$2'
+      );
+      res = res.replace(
+        /([^\n#|*\-+])[\u200B \t]+(\[\d{1,2}\]\s*[A-Za-z가-힣\"'])/g,
+        '$1\n\n$2'
+      );
+
+      // 13-5. ZWS between sentences: in Naver SmartEditor, empty paragraph breaks were stored as \u200B
+      res = res.replace(
+        /([.!?다요죠음임함됨:;\"'”’\*\)\]])[\u200B\s]+[\u200B]+[\u200B\s]*([가-힣A-Za-z0-9"'(<📍👉📌])/g,
+        '$1\n\n$2'
+      );
+
+      // Strip trailing ZWS at line ends
+      res = res.replace(/[\u200B\uFEFF\s]+$/g, '');
+
+      return res;
+    })
+    .join('\n');
+
+  // 14. Deduplicate multiple footer notice headings if repeated
+  const noticeMatches = [...cleaned.matchAll(/###\s*📚?\s*의학\s*학술\s*레퍼런스\s*및\s*의료법\s*고지/gi)];
+  if (noticeMatches.length > 1) {
+    const firstIdx = noticeMatches[0].index;
+    const bodyBefore = cleaned.slice(0, firstIdx).trim();
+    const noticeSec = cleaned.slice(firstIdx);
+
+    let archiveNotice = '';
+    const arcMatch = noticeSec.match(/📌\s*\[정식\s*웹\s*아카이브\s*안내\][\s\S]*$/);
+    if (arcMatch) {
+      archiveNotice = arcMatch[0].trim();
+    }
+
+    const cleanedNoticeBody = noticeSec
+      .replace(/###\s*📚?\s*의학\s*학술\s*레퍼런스\s*및\s*의료법\s*고지/gi, '')
+      .replace(/📌\s*\[정식\s*웹\s*아카이브\s*안내\][\s\S]*$/, '')
+      .replace(/^---+/gm, '')
+      .replace(/^[ \t]*\*{1,2}[ \t]*$/gm, '')
+      .replace(/\*\*[\s\u200B\uFEFF]*\*\*/g, '')
+      .trim();
+
+    cleaned = `${bodyBefore}\n\n---\n\n### 📚 의학 학술 레퍼런스 및 의료법 고지\n\n${cleanedNoticeBody}`;
+    if (archiveNotice) {
+      cleaned += `\n\n---\n\n${archiveNotice}`;
+    }
+  }
+
+  // 15. Final pass to remove residual empty bold markers, stray zero-width spaces, and excess blank lines
+  cleaned = cleaned
+    .replace(/\*\*[\s\u200B\uFEFF]*\*\*/g, '')
+    .replace(/^[ \t]*\*{2,}[ \t]*$/gm, '')
+    .replace(/\n([ \t]*\*{2,}[ \t]*\n)+/g, '\n\n')
+    .replace(/[\u200B\uFEFF]/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
   return cleaned;
 }
 
@@ -335,19 +645,13 @@ export function normalizeColumn(parsed: any): Column {
   const cleanedSummary = cleanAndRepairMarkdown(decodeTextEntities(parsed.summary || ''));
 
   let thumbnail = (parsed.thumbnail || '').trim();
-  const firstLocal = extractFirstLocalImage(cleanedContent);
-
   if (
-    !thumbnail ||
     thumbnail === '#' ||
     thumbnail.includes('static.se2') ||
     thumbnail.startsWith('/images/clinic/')
   ) {
-    if (firstLocal) {
-      thumbnail = firstLocal;
-    } else if (!thumbnail || thumbnail === '#') {
-      thumbnail = getCategoryFallbackThumbnail(category);
-    }
+    const firstLocal = extractFirstLocalImage(cleanedContent);
+    thumbnail = firstLocal || '';
   }
 
   return {
@@ -367,22 +671,26 @@ export function normalizeColumn(parsed: any): Column {
 }
 
 export const CANDIDATE_COLUMN_DIRS = [
+  'C:/Users/doohe/Desktop/orb-homepage-main/content/columns',
+  path.join(process.cwd(), 'content', 'columns'),
   'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage-main/content/columns',
   'C:/Users/doohe/Downloads/orb-homepage-main/content/columns',
-  path.join(process.cwd(), 'content', 'columns'),
   '/tmp/content/columns',
 ];
 
 export function getProjectRoot(): string {
   const cwd = process.cwd();
   if (fs.existsSync(path.join(cwd, 'content', 'columns'))) return cwd;
+  if (fs.existsSync('C:/Users/doohe/Desktop/orb-homepage-main/content/columns')) {
+    return 'C:/Users/doohe/Desktop/orb-homepage-main';
+  }
   if (fs.existsSync(path.join(cwd, 'orb-homepage-main', 'content', 'columns'))) {
     return path.join(cwd, 'orb-homepage-main');
   }
   if (fs.existsSync('C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage-main')) {
     return 'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage-main';
   }
-  return cwd;
+  return cwd || process.cwd() || '.';
 }
 
 export function getColumnsDir(): string {
@@ -412,7 +720,7 @@ export function getAllColumns(): Column[] {
     );
     for (const [, mod] of Object.entries(globModules)) {
       const parsed = (mod.default || mod) as Column;
-      if (parsed && parsed.slug && parsed.title && !store.has(parsed.slug)) {
+      if (parsed && parsed.slug && parsed.title) {
         store.set(parsed.slug, normalizeColumn(parsed));
       }
     }
@@ -448,24 +756,16 @@ export function getAllColumns(): Column[] {
               }
               const firstLocal = extractFirstLocalImage(parsed.content || '');
               const curThumb = (parsed.thumbnail || '').trim();
-              if (
-                firstLocal &&
-                (!curThumb ||
-                  curThumb === '#' ||
-                  curThumb.includes('static.se2') ||
-                  curThumb.startsWith('/images/clinic/'))
-              ) {
-                if (parsed.thumbnail !== firstLocal) {
-                  parsed.thumbnail = firstLocal;
-                  fileDirty = true;
-                }
+              if (curThumb.startsWith('/images/clinic/')) {
+                parsed.thumbnail = firstLocal || '';
+                fileDirty = true;
               }
               if (fileDirty) {
                 try {
                   fs.writeFileSync(fullPath, JSON.stringify(parsed, null, 2), 'utf8');
                 } catch {}
               }
-              if (parsed && parsed.slug && parsed.title && !store.has(parsed.slug)) {
+              if (parsed && parsed.slug && parsed.title) {
                 store.set(parsed.slug, normalizeColumn(parsed));
               }
             } catch {
@@ -474,9 +774,30 @@ export function getAllColumns(): Column[] {
           } else if (file.endsWith('.md')) {
             try {
               const mdContent = fs.readFileSync(fullPath, 'utf8');
-              const cleanedMd = cleanAndRepairMarkdown(mdContent);
+              let cleanedMd = mdContent;
+              if (mdContent.startsWith('---')) {
+                const secondDash = mdContent.indexOf('---', 3);
+                if (secondDash !== -1) {
+                  const fm = mdContent.slice(3, secondDash);
+                  const body = mdContent.slice(secondDash + 3);
+                  const cleanedBody = cleanAndRepairMarkdown(body);
+                  cleanedMd = `---${fm}---\n\n${cleanedBody.trim()}\n`;
+                } else {
+                  cleanedMd = cleanAndRepairMarkdown(mdContent);
+                }
+              } else {
+                cleanedMd = cleanAndRepairMarkdown(mdContent);
+              }
               if (cleanedMd !== mdContent) {
                 fs.writeFileSync(fullPath, cleanedMd, 'utf8');
+              }
+              const slug = file.replace(/\.md$/, '');
+              const thumbMatch = mdContent.match(/^thumbnail:\s*["']([^"']+)["']/m);
+              if (thumbMatch && store.has(slug)) {
+                const col = store.get(slug)!;
+                if (thumbMatch[1] && thumbMatch[1].trim() !== col.thumbnail) {
+                  col.thumbnail = thumbMatch[1].trim();
+                }
               }
             } catch {}
           }
@@ -556,9 +877,87 @@ export function getColumnBySlug(rawSlug: string): Column | null {
   return null;
 }
 
-export function saveColumn(input: ColumnInput): Column {
-  const dir = getColumnsDir();
+export function formatColumnToMarkdown(column: Column): string {
+  const frontmatterLines = [
+    '---',
+    `title: ${JSON.stringify(column.title)}`,
+    `slug: ${JSON.stringify(column.slug)}`,
+    `category: ${JSON.stringify(column.category)}`,
+    `author: ${JSON.stringify(column.author || '전두희 원장')}`,
+    `date: ${JSON.stringify(column.date)}`,
+    `thumbnail: ${JSON.stringify(column.thumbnail || '')}`,
+    `summary: ${JSON.stringify(column.summary || '')}`,
+    'tags:',
+    ...(column.tags || []).map((t) => `  - ${JSON.stringify(t)}`),
+    `updatedAt: ${JSON.stringify(column.updatedAt || column.date)}`,
+    '---',
+    '',
+    column.content.trim(),
+    '',
+  ];
+  return frontmatterLines.join('\n');
+}
 
+export function findLocalThumbnailForSlug(slug: string, currentThumb: string = ''): string | null {
+  const thumbDirs = [
+    path.join(getProjectRoot(), 'public', 'images', 'columns', 'thumbnails'),
+    path.join(process.cwd(), 'public', 'images', 'columns', 'thumbnails'),
+  ];
+
+  // 1. If currentThumb is already a valid local thumb that exists on disk, keep it
+  if (currentThumb.startsWith('/images/columns/thumbnails/')) {
+    for (const tDir of thumbDirs) {
+      const fullPath = path.join(tDir, path.basename(currentThumb));
+      try {
+        if (fs.existsSync(fullPath) && fs.statSync(fullPath).size > 3000) {
+          return currentThumb;
+        }
+      } catch {}
+    }
+  }
+
+  // 2. Known slug mappings
+  const knownLogNos: Record<string, string> = {
+    'qeeg-guide': '224429314941',
+    'autonomic-dysregulation': '224428821373',
+    'brainfog-recovery': '224421852305',
+    '신경성-위경련과-뒷목-뻣뻣함-굳어버린-장기와-근육을-푸는-천연-958747': '224414958747',
+  };
+
+  const logMatch = slug.match(/(\d{6,14})/);
+  const logNo = logMatch ? logMatch[1] : (knownLogNos[slug] || '');
+
+  for (const tDir of thumbDirs) {
+    try {
+      if (!fs.existsSync(tDir)) continue;
+      const thumbFiles = fs.readdirSync(tDir);
+
+      if (logNo) {
+        // Priority 1: .png
+        const matchedPng = thumbFiles.find(
+          (f) =>
+            (f.includes(logNo) || (logNo.length >= 6 && f.includes(logNo.slice(-6)))) &&
+            f.endsWith('.png')
+        );
+        if (matchedPng) {
+          return `/images/columns/thumbnails/${matchedPng}`;
+        }
+        // Priority 2: .jpg, .webp
+        const matchedOther = thumbFiles.find(
+          (f) =>
+            (f.includes(logNo) || (logNo.length >= 6 && f.includes(logNo.slice(-6)))) &&
+            (f.endsWith('.jpg') || f.endsWith('.webp'))
+        );
+        if (matchedOther) {
+          return `/images/columns/thumbnails/${matchedOther}`;
+        }
+      }
+    } catch {}
+  }
+  return null;
+}
+
+export function saveColumn(input: ColumnInput): Column {
   const slug = (input.slug || '')
     .trim()
     .toLowerCase()
@@ -574,19 +973,24 @@ export function saveColumn(input: ColumnInput): Column {
   const cleanedSummary = cleanAndRepairMarkdown(input.summary?.trim() || '');
 
   let thumbnail = (input.thumbnail || '').trim();
-  const firstLocal = extractFirstLocalImage(cleanedContent);
+  const localMatched = findLocalThumbnailForSlug(slug, thumbnail);
 
-  if (firstLocal) {
-    if (
-      !thumbnail ||
-      thumbnail === '#' ||
-      thumbnail.startsWith('/images/clinic/') ||
-      thumbnail.includes('static.se2')
-    ) {
-      thumbnail = firstLocal;
+  if (localMatched) {
+    thumbnail = localMatched;
+  } else {
+    const firstLocal = extractFirstLocalImage(cleanedContent);
+    if (firstLocal) {
+      if (
+        !thumbnail ||
+        thumbnail === '#' ||
+        thumbnail.startsWith('/images/clinic/') ||
+        thumbnail.includes('static.se2')
+      ) {
+        thumbnail = firstLocal;
+      }
+    } else if (!thumbnail || thumbnail === '#' || thumbnail.startsWith('/images/clinic/')) {
+      thumbnail = '';
     }
-  } else if (!thumbnail || thumbnail === '#') {
-    thumbnail = getCategoryFallbackThumbnail(category);
   }
 
   const column: Column = {
@@ -614,15 +1018,21 @@ export function saveColumn(input: ColumnInput): Column {
   const store = getMemoryStore();
   store.set(slug, column);
 
-  // 2. Attempt disk persistence across all candidate directories
+  // 2. Attempt disk persistence across all candidate directories for BOTH .json and .md
+  const mdContent = formatColumnToMarkdown(column);
+
   let persistedOnDisk = false;
   for (const candidateDir of CANDIDATE_COLUMN_DIRS) {
     try {
       if (!fs.existsSync(candidateDir)) {
         fs.mkdirSync(candidateDir, { recursive: true });
       }
-      const filePath = path.join(candidateDir, `${slug}.json`);
-      fs.writeFileSync(filePath, JSON.stringify(column, null, 2), 'utf8');
+      const jsonFilePath = path.join(candidateDir, `${slug}.json`);
+      fs.writeFileSync(jsonFilePath, JSON.stringify(column, null, 2), 'utf8');
+
+      const mdFilePath = path.join(candidateDir, `${slug}.md`);
+      fs.writeFileSync(mdFilePath, mdContent, 'utf8');
+
       persistedOnDisk = true;
       break;
     } catch {
@@ -645,9 +1055,14 @@ export function deleteColumn(slug: string): boolean {
   let deleted = false;
   for (const candidateDir of CANDIDATE_COLUMN_DIRS) {
     try {
-      const filePath = path.join(candidateDir, `${slug}.json`);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+      const jsonFilePath = path.join(candidateDir, `${slug}.json`);
+      if (fs.existsSync(jsonFilePath)) {
+        fs.unlinkSync(jsonFilePath);
+        deleted = true;
+      }
+      const mdFilePath = path.join(candidateDir, `${slug}.md`);
+      if (fs.existsSync(mdFilePath)) {
+        fs.unlinkSync(mdFilePath);
         deleted = true;
       }
     } catch {
@@ -746,25 +1161,22 @@ export function sanitizeAllExistingColumnsOnDisk(): { cleanedCount: number; scan
               }
             }
 
-            const firstLocal = extractFirstLocalImage(parsed.content || '');
-            const curThumb = (parsed.thumbnail || '').trim();
-            if (
-              isInvalidThumbnailUrl(curThumb) ||
-              curThumb.startsWith('/images/clinic/')
+            const localMatched = findLocalThumbnailForSlug(parsed.slug, parsed.thumbnail || '');
+            if (localMatched && parsed.thumbnail !== localMatched) {
+              parsed.thumbnail = localMatched;
+              modified = true;
+            } else if (
+              isInvalidThumbnailUrl(parsed.thumbnail) ||
+              (parsed.thumbnail && parsed.thumbnail.startsWith('/images/clinic/'))
             ) {
-              if (firstLocal && parsed.thumbnail !== firstLocal) {
-                parsed.thumbnail = firstLocal;
-                modified = true;
-              }
+              const firstLocal = extractFirstLocalImage(parsed.content || '');
+              parsed.thumbnail = firstLocal || '';
+              modified = true;
             }
 
-            if (modified) {
-              fs.writeFileSync(fullPath, JSON.stringify(parsed, null, 2), 'utf8');
+            if (modified || true) {
+              saveColumn(parsed);
               cleanedCount++;
-            }
-
-            if (parsed.slug) {
-              store.set(parsed.slug, normalizeColumn(parsed));
             }
           } catch (e) {
             console.error(`Error sanitizing JSON file ${file}:`, e);
@@ -774,26 +1186,31 @@ export function sanitizeAllExistingColumnsOnDisk(): { cleanedCount: number; scan
           try {
             const raw = fs.readFileSync(fullPath, 'utf8');
             let cleaned = raw;
-            // Handle frontmatter if present
+            const slug = file.replace(/\.md$/, '');
+
             if (cleaned.startsWith('---')) {
               const secondDash = cleaned.indexOf('---', 3);
               if (secondDash !== -1) {
                 const fm = cleaned.slice(3, secondDash);
                 const body = cleaned.slice(secondDash + 3);
                 const cleanedBody = cleanAndRepairMarkdown(body);
-                // Also clean thumbnail in frontmatter if invalid
                 let cleanedFm = fm;
+
                 const thumbMatch = fm.match(/thumbnail:\s*(["']?)(.*?)\1\s*(?:\r?\n|$)/i);
-                if (thumbMatch) {
-                  const thumbVal = thumbMatch[2].trim();
-                  if (isInvalidThumbnailUrl(thumbVal) || thumbVal.startsWith('/images/clinic/')) {
-                    const firstLocal = extractFirstLocalImage(cleanedBody);
-                    if (firstLocal) {
-                      cleanedFm = fm.replace(thumbMatch[0], `thumbnail: ${firstLocal}\n`);
-                    }
+                const curThumb = thumbMatch ? thumbMatch[2].trim() : '';
+                const localMatched = findLocalThumbnailForSlug(slug, curThumb);
+
+                if (localMatched && curThumb !== localMatched) {
+                  if (thumbMatch) {
+                    cleanedFm = fm.replace(thumbMatch[0], `thumbnail: ${JSON.stringify(localMatched)}\n`);
+                  }
+                } else if (isInvalidThumbnailUrl(curThumb) || curThumb.startsWith('/images/clinic/')) {
+                  const firstLocal = extractFirstLocalImage(cleanedBody);
+                  if (firstLocal && thumbMatch) {
+                    cleanedFm = fm.replace(thumbMatch[0], `thumbnail: ${JSON.stringify(firstLocal)}\n`);
                   }
                 }
-                cleaned = `---${cleanedFm}---${cleanedBody}`;
+                cleaned = `---${cleanedFm}---\n\n${cleanedBody.trim()}\n`;
               } else {
                 cleaned = cleanAndRepairMarkdown(cleaned);
               }
@@ -828,18 +1245,20 @@ export function sanitizeAllExistingColumnsOnDisk(): { cleanedCount: number; scan
       col.summary = cleanSummary;
       changed = true;
     }
-    const firstLocal = extractFirstLocalImage(col.content);
-    if (
+    const localMatched = findLocalThumbnailForSlug(slug, col.thumbnail || '');
+    if (localMatched && col.thumbnail !== localMatched) {
+      col.thumbnail = localMatched;
+      changed = true;
+    } else if (
       isInvalidThumbnailUrl(col.thumbnail) ||
-      col.thumbnail.startsWith('/images/clinic/')
+      (col.thumbnail && col.thumbnail.startsWith('/images/clinic/'))
     ) {
-      if (firstLocal && col.thumbnail !== firstLocal) {
-        col.thumbnail = firstLocal;
-        changed = true;
-      }
+      const firstLocal = extractFirstLocalImage(col.content);
+      col.thumbnail = firstLocal || '';
+      changed = true;
     }
     if (changed) {
-      store.set(slug, col);
+      saveColumn(col);
     }
   }
 

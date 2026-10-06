@@ -1969,7 +1969,8 @@ p {
   color: var(--cocoa-soft);
   font-size: 1.02rem;
   line-height: 1.85;
-  word-break: keep-all;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .article-figure {
@@ -2015,14 +2016,27 @@ p {
 }
 
 /* Article Prose Typography */
+.article-container {
+  margin: 0 auto;
+  max-width: 860px;
+  padding: 60px 24px 100px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .article-content-wrapper {
   margin-top: 20px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .article-prose {
   color: #332d28;
   font-size: 1.06rem;
   line-height: 1.95;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 .article-h2 {
@@ -2034,6 +2048,7 @@ p {
   line-height: 1.4;
   margin: 54px 0 22px;
   padding-bottom: 12px;
+  overflow-wrap: anywhere;
   word-break: keep-all;
 }
 
@@ -2044,6 +2059,7 @@ p {
   font-weight: 700;
   line-height: 1.45;
   margin: 38px 0 16px;
+  overflow-wrap: anywhere;
   word-break: keep-all;
 }
 
@@ -2052,11 +2068,15 @@ p {
   font-size: 1.1rem;
   font-weight: 650;
   margin: 28px 0 12px;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
 
 .article-p {
   margin-bottom: 24px;
-  word-break: keep-all;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.9;
 }
 
 .article-blockquote {
@@ -2067,7 +2087,8 @@ p {
   line-height: 1.85;
   margin: 36px 0;
   padding: 20px 24px;
-  word-break: keep-all;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .article-ul,
@@ -2102,6 +2123,8 @@ p {
   color: #a9784a;
   text-decoration: underline;
   text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 .article-link:hover {

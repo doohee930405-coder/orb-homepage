@@ -709,11 +709,10 @@ export default function ClinicHome({
                 <Link href={`/columns/${col.slug}`} className="home-column-card-link">
                   <div className="home-column-thumb-wrap">
                     <SafeImage
-                      src={col.thumbnail || '/images/clinic/naver-qeeg-wide.webp'}
+                      src={col.thumbnail || ''}
                       alt={col.title}
                       className="home-column-thumb"
                       loading="lazy"
-                      fallbackSrc="/images/clinic/naver-qeeg-wide.webp"
                     />
                     <span className="home-column-cat-pill">{col.category}</span>
                   </div>

@@ -68,6 +68,7 @@ export async function POST(req: Request) {
             forceCategory: item.forceCategory,
             title: item.title,
             thumbnailUrl: item.thumbnailUrl,
+            overwrite: body.overwrite !== false,
           });
 
           if (col.skipped) {
@@ -145,6 +146,7 @@ export async function POST(req: Request) {
           const col = await importSingleNaverPost({
             url,
             forceCategory: body.forceCategory || undefined,
+            overwrite: body.overwrite !== false,
           });
 
           if (col.skipped) {

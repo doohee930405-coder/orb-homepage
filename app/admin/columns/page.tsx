@@ -89,7 +89,7 @@ export default function AdminColumnsPage() {
     author: '전두희 원장',
     date: new Date().toISOString().slice(0, 10),
     tagsString: '',
-    thumbnail: '/images/clinic/hero-lobby-wide.webp',
+    thumbnail: '',
     faqs: [],
   });
 
@@ -199,7 +199,7 @@ export default function AdminColumnsPage() {
       author: '전두희 원장',
       date: today,
       tagsString: '자율신경, 뇌파검사, 마곡한의원, 건강칼럼',
-      thumbnail: '/images/clinic/hero-lobby-wide.webp',
+      thumbnail: '',
       faqs: [
         {
           question: '치료 기간은 보통 얼마나 걸리나요?',
@@ -1255,18 +1255,19 @@ export default function AdminColumnsPage() {
                     {columns.map((col) => (
                       <tr key={col.slug}>
                         <td>
-                          <img
-                            src={col.thumbnail || '/images/clinic/hero-lobby-wide.webp'}
-                            alt=""
-                            className="admin-table-thumb"
-                            referrerPolicy="no-referrer"
-                            onError={(e) => {
-                              const target = e.currentTarget;
-                              if (target.src !== '/images/clinic/hero-lobby-wide.webp') {
-                                target.src = '/images/clinic/hero-lobby-wide.webp';
-                              }
-                            }}
-                          />
+                          {col.thumbnail ? (
+                            <img
+                              src={col.thumbnail}
+                              alt=""
+                              className="admin-table-thumb"
+                              referrerPolicy="no-referrer"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="admin-table-thumb" style={{ background: '#eee' }} />
+                          )}
                         </td>
                         <td>
                           <strong className="admin-col-title">{col.title}</strong>

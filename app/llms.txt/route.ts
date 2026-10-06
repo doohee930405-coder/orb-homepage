@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { SITE_URL, clinic } from '../../lib/clinic';
-import { getAllColumns } from '../../lib/columns';
-import { CLINIC_CATEGORIES } from '../../lib/columnTypes';
+import { SITE_URL, clinic } from '../lib/clinic';
+import { getAllColumns } from '../lib/columns';
+import { CLINIC_CATEGORIES } from '../lib/columnTypes';
 
 export const dynamic = 'force-dynamic';
 

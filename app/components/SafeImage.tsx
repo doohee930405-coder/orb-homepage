@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 interface SafeImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackSrc?: string;
@@ -9,28 +9,23 @@ interface SafeImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
 export default function SafeImage({
   src,
   alt,
-  fallbackSrc = '/images/clinic/hero-lobby-wide.webp',
+  fallbackSrc,
   className,
   loading = 'lazy',
   ...props
 }: SafeImageProps) {
-  const [imgSrc, setImgSrc] = useState<string>(src || fallbackSrc);
-
-  useEffect(() => {
-    setImgSrc(src || fallbackSrc);
-  }, [src, fallbackSrc]);
+  if (!src) return null;
 
   return (
     <img
-      src={imgSrc}
+      src={src}
       alt={alt || ''}
       loading={loading}
       referrerPolicy="no-referrer"
       className={className}
-      onError={() => {
-        if (imgSrc !== fallbackSrc) {
-          setImgSrc(fallbackSrc);
-        }
+      onError={(e) => {
+        // 절대 더미 한의원 내부 인테리어 사진 등으로 대체하지 않고 순수 렌더링 유지 (에러 시 숨김)
+        e.currentTarget.style.display = 'none';
       }}
       {...props}
     />

@@ -76,16 +76,7 @@ const CATEGORY_DEFINITIONS: Record<string, CategoryDefinition> = {
   },
 };
 
-const CATEGORY_THUMBNAILS: Record<string, string> = {
-  '정량화뇌파검사': '/images/clinic/naver-qeeg-wide.webp',
-  '자율신경실조증': '/images/clinic/hero-lobby-wide.webp',
-  '브레인포그': '/images/clinic/care-room-wide.webp',
-  '초민감자(HSP)': '/images/clinic/naver-consultation-wide.webp',
-  'ADHD': '/images/clinic/detail-flower-wide.webp',
-  '다이어트': '/images/clinic/diet-quantum-fit.png',
-  '위장관': '/images/clinic/naver-chuna-wide.webp',
-  '갑상선': '/images/clinic/heat-metabolism-diti.png',
-};
+
 
 function cleanDisplayText(text: string): string {
   if (!text) return '';
@@ -253,10 +244,9 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
               <Link href={`/columns/${col.slug}`} className="column-card-link">
                 <div className="column-card-thumb">
                   <SafeImage
-                    src={col.thumbnail || CATEGORY_THUMBNAILS[col.category] || '/images/clinic/hero-lobby-wide.webp'}
+                    src={col.thumbnail || ''}
                     alt={col.title}
                     loading="lazy"
-                    fallbackSrc={CATEGORY_THUMBNAILS[col.category] || '/images/clinic/hero-lobby-wide.webp'}
                   />
                   <span className="column-badge">{col.category}</span>
                 </div>

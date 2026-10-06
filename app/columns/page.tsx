@@ -6,8 +6,6 @@ import TrackedLink from '../components/TrackedLink';
 import { clinic, SITE_URL } from '../lib/clinic';
 import { getAllCategories, getAllColumns } from '../lib/columns';
 
-export const dynamic = 'force-dynamic';
-
 export const metadata: Metadata = {
   title: '원장 칼럼 | 오브한의원 마곡점 - 전문 한의학 건강 정보',
   description:
