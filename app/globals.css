@@ -615,6 +615,27 @@ p {
   padding: 0 32px;
 }
 
+.space-title-large {
+  color: var(--charcoal);
+  font-family: var(--font-sans);
+  font-size: clamp(3.2rem, 5.5vw, 4.6rem);
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1.05;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.space-split-heading {
+  align-items: center;
+}
+
+.space-body-text {
+  color: var(--cocoa-soft);
+  font-size: 1.05rem;
+  line-height: 1.85;
+}
+
 .gallery-shell {
   margin-top: 60px;
   position: relative;
@@ -4187,6 +4208,44 @@ p {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
+}
+
+.doctor-credentials-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  padding: 24px 22px;
+  text-align: left;
+  width: 100%;
+}
+
+.doctor-credentials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.doctor-credentials-list li {
+  align-items: center;
+  color: #ede4db;
+  display: flex;
+  font-size: 0.94rem;
+  font-weight: 550;
+  gap: 10px;
+  letter-spacing: -0.01em;
+  line-height: 1.5;
+}
+
+.doctor-credentials-list li::before {
+  color: #d8aa79;
+  content: '•';
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
 .doctor-name {
@@ -4489,9 +4548,9 @@ p {
     padding: 36px 30px;
   }
 
-  .doctor-avatar-wrap {
-    max-height: 300px;
-    max-width: 260px;
+  .doctor-credentials-card {
+    max-width: 480px;
+    margin: 0 auto;
   }
 
   .doctor-pillars-grid {

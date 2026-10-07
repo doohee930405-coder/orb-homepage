@@ -12,7 +12,7 @@ export default function SiteHeader({ locale, compact = false }: { locale: Locale
         <span>ORB</span>
       </a>
       <nav className="desktop-nav" aria-label={isEnglish ? 'Main navigation' : '주요 메뉴'}>
-        <a href={`${home}#diagnostic`}>{isEnglish ? 'Diagnostics' : '진단 기술'}</a>
+        <a href={`${home}#diagnostic`}>{isEnglish ? 'Treatment Method' : '치료 방식'}</a>
         <a href={`${home}#treatments`}>{isEnglish ? 'Treatments' : '진료 분야'}</a>
         <a href={`${home}#space`}>{isEnglish ? 'Space' : '공간'}</a>
         <a href={`${home}#directions`}>{isEnglish ? 'Directions' : '오시는 길'}</a>

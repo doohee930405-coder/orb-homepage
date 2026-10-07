@@ -1,0 +1,13 @@
+# Cloudflare Pages Redirects & Rewrites for Static Next.js Export
+
+# Clean URL rewrites for routes that have subdirectories
+/columns          /columns/index.html     200
+/columns/         /columns/index.html     200
+/en               /en/index.html          200
+/en/              /en/index.html          200
+/admin/columns    /admin/columns/index.html 200
+/admin/columns/   /admin/columns/index.html 200
+/privacy          /privacy.html           200
+/privacy/         /privacy.html           200
+/en/privacy       /en/privacy.html        200
+/en/privacy/      /en/privacy.html        200

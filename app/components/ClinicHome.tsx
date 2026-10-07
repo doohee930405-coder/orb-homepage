@@ -80,20 +80,20 @@ const copy = {
     treatmentBody: '단편적인 증상 완화에 그치지 않고 발생 시점, 생활 흐름, 뇌신경계와 자율신경, 척추 체형의 유기적 상관관계를 함께 살핍니다.',
     detail: '자세히 보기',
     philosophyEyebrow: 'OUR APPROACH',
-    philosophyTitle: '원인을 살피고,\n회복의 방향을 맞춥니다.',
-    philosophyBody: '오브한의원은 설명할 수 있는 진료를 지향합니다. 필요한 검사를 선택하고 결과를 함께 확인하며, 현재 상태에 맞는 다음 단계를 안내합니다.',
+    philosophyTitle: '정확하게 진단하고\n바르게 치료하겠습니다',
+    philosophyBody: '',
     principles: [
       ['Origin', '불편이 시작된 배경과 반복되는 패턴을 확인합니다.'],
       ['Reset', '긴장된 신경계와 움직임의 균형을 다시 살핍니다.'],
       ['Balance', '회복이 일상으로 이어질 수 있도록 관리 방향을 조정합니다.'],
     ],
-    spaceEyebrow: 'SPACE',
-    spaceTitle: '차분하게 머물 수 있는 공간',
+    spaceEyebrow: '',
+    spaceTitle: 'SPACE',
     spaceBody: '상담부터 치료까지 편안하게 이어질 수 있도록 독립된 진료 공간을 마련했습니다.',
     galleryLabel: '오브한의원 내부 공간 사진',
     previous: '이전 공간 사진',
     next: '다음 공간 사진',
-    doctorEyebrow: 'DIRECTOR & PHILOSOPHY · E-E-A-T',
+    doctorEyebrow: '',
     doctorTitle: '보이지 않는 고통을 객관적인 데이터로 규명합니다',
     doctorSubtitle: '주관적 호소에만 의존하지 않고, 신경인지과학과 한의학적 근원 치료를 결합하여 환자의 자율 회복력을 되살립니다.',
     doctorName: '전두희 원장',
@@ -210,20 +210,20 @@ const copy = {
     treatmentBody: 'We address not merely isolated symptoms, but the onset, lifestyle rhythms, and interrelated neuro-autonomic and structural factors.',
     detail: 'Learn more',
     philosophyEyebrow: 'OUR APPROACH',
-    philosophyTitle: 'Understand the origin.\nFind the direction of recovery.',
-    philosophyBody: 'ORB aims for care that can be clearly explained. We select relevant assessments, review findings with you, and discuss the next step for your current condition.',
+    philosophyTitle: 'Accurate Diagnosis,\nProper Treatment',
+    philosophyBody: '',
     principles: [
       ['Origin', 'We review the background and recurring pattern of your concerns.'],
       ['Reset', 'We reassess nervous-system tension and movement balance.'],
       ['Balance', 'We adjust care so recovery can continue in daily life.'],
     ],
-    spaceEyebrow: 'SPACE',
-    spaceTitle: 'A calm setting for your visit',
+    spaceEyebrow: '',
+    spaceTitle: 'SPACE',
     spaceBody: 'Private consultation and treatment rooms support a comfortable flow throughout your appointment.',
     galleryLabel: 'Interior photos of ORB Korean Medicine Clinic',
     previous: 'Previous clinic photo',
     next: 'Next clinic photo',
-    doctorEyebrow: 'DIRECTOR & PHILOSOPHY · E-E-A-T',
+    doctorEyebrow: '',
     doctorTitle: 'Elucidating invisible suffering through objective data',
     doctorSubtitle: 'Moving beyond subjective complaints, we combine neurocognitive science and root-cause Korean medicine to restore innate autonomic resilience.',
     doctorName: 'Doo-hee Jeon, KMD',
@@ -518,7 +518,7 @@ export default function ClinicHome({
               <span key={line}>{line}</span>
             ))}
           </h2>
-          <p>{text.philosophyBody}</p>
+          {text.philosophyBody ? <p>{text.philosophyBody}</p> : null}
         </div>
         <ResponsivePicture
           className="philosophy-image"
@@ -541,12 +541,11 @@ export default function ClinicHome({
 
       {/* 5. SPACE SECTION */}
       <section className="space-section reveal" id="space">
-        <div className="section-heading split-heading">
+        <div className="section-heading split-heading space-split-heading">
           <div>
-            <p className="eyebrow">{text.spaceEyebrow}</p>
-            <h2>{text.spaceTitle}</h2>
+            <h2 className="space-title-large">{text.spaceTitle}</h2>
           </div>
-          <p>{text.spaceBody}</p>
+          <p className="space-body-text">{text.spaceBody}</p>
         </div>
         <AutoGallery
           images={localizedGallery}
@@ -556,27 +555,32 @@ export default function ClinicHome({
         />
       </section>
 
-      {/* 6. [E-E-A-T SECTION BEFORE VISIT] REPRESENTATIVE DIRECTOR JEON DOO-HEE PHILOSOPHY */}
+      {/* 6. REPRESENTATIVE DIRECTOR JEON DOO-HEE PHILOSOPHY */}
       <section className="doctor-section reveal" id="doctor">
         <div className="doctor-container">
           <div className="doctor-header-group">
-            <p className="eyebrow">{text.doctorEyebrow}</p>
+            {text.doctorEyebrow ? <p className="eyebrow">{text.doctorEyebrow}</p> : null}
             <h2 className="doctor-headline">“{text.doctorTitle}”</h2>
             <p className="doctor-subhead">{text.doctorSubtitle}</p>
           </div>
 
           <div className="doctor-main-card">
             <div className="doctor-profile-sidebar">
-              <div className="doctor-avatar-wrap">
-                <img
-                  src="/images/clinic/consulting-room-wide.webp"
-                  alt={text.doctorName}
-                  className="doctor-avatar-img"
-                />
-              </div>
               <div className="doctor-identity">
                 <strong className="doctor-name">{text.doctorName}</strong>
                 <span className="doctor-title-badge">{text.doctorClinic}</span>
+              </div>
+
+              <div className="doctor-credentials-card">
+                <ul className="doctor-credentials-list">
+                  <li>대한한의사협회 정회원</li>
+                  <li>척추신경추나의학회 정회원</li>
+                  <li>대한뇌파한의학회 정회원</li>
+                  <li>대한통합암학회 정회원</li>
+                  <li>대한한방비만학회 정회원</li>
+                  <li>대한한의학회 정회원</li>
+                  <li>한의정보협동조합 조합원</li>
+                </ul>
               </div>
             </div>
 
