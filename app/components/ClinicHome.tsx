@@ -3,6 +3,7 @@ import AutoGallery from './AutoGallery';
 import ResponsivePicture from './ResponsivePicture';
 import SafeImage from './SafeImage';
 import SiteHeader from './SiteHeader';
+import SiteFooter from './SiteFooter';
 import SiteMotion from './SiteMotion';
 import TrackedLink from './TrackedLink';
 import { Column } from '../lib/columns';
@@ -18,7 +19,7 @@ import {
 const copy = {
   ko: {
     kicker: 'ORBMED CLINIC',
-    title: '오브한의원 마곡점',
+    title: '오브한의원',
     heroBody: '자율신경 · 뇌신경 · 통증 중점 의료기관, 오브한의원입니다',
     booking: '네이버 예약',
     call: '전화 문의',
@@ -29,8 +30,8 @@ const copy = {
       ['주차 안내', '건물 지하주차장', '2시간 무료 주차'],
     ],
     diagnosticEyebrow: 'DIAGNOSTIC TECHNOLOGY · QEEG SYSTEM',
-    diagnosticTitle: "각종 검사상 '이상 없음'에도 지속되는 고통,\n뇌와 자율신경의 기능적 불균형에서 답을 찾습니다.",
-    diagnosticSubtitle: '오브한의원은 습식 정량화 뇌파(QEEG)와 정밀 자율신경 검사를 통해 뇌신경계 피로와 체형 불균형을 객관적 데이터로 진단합니다.',
+    diagnosticTitle: "각종 검사상 '이상 없음'에도 지속되는 고통,\n뇌와 자율신경의 불균형에서 답을 찾습니다.",
+    diagnosticSubtitle: "오브한의원은 습식 정량화 뇌파(QEEG)와 자율신경 검사를 통해\n뇌신경계 피로와 체형 불균형을 객관적 데이터로 진단합니다.",
     diagnosticWhyWet: '왜 정량화 뇌파 분석인가?',
     diagnosticPoints: [
       {
@@ -39,11 +40,11 @@ const copy = {
       },
       {
         title: '초정밀 임피던스 제어 시스템',
-        desc: '전도성 겔(Gel)을 도포해 두피 저항을 낮추고 외부 노이즈를 완벽 차단하여 순수 뇌파 포착',
+        desc: '전도성 겔(Gel)을 소량 사용하여 두피 저항을 낮추고 외부 노이즈를 완벽 차단하여 순수 뇌파 포착',
       },
       {
         title: 'Normative DB Z-score 대조',
-        desc: '수만 건의 빅데이터 정규분포 대조로 신경 과각성(과열) 및 기능 저하(서파 정체) 정밀 규명',
+        desc: '수만 건의 빅데이터 정규분포 대조로 신경 과열 및 기능 저하 정밀 규명',
       },
     ],
     protocolSteps: [
@@ -71,7 +72,7 @@ const copy = {
         title: '맞춤 한약·추나 통합 처방',
         subtitle: '뇌신경-자율신경-체형 3축 연계 근원 치료',
         desc: '분석된 뇌신경 피로도와 자율신경 불균형 데이터를 바탕으로, 중추 과열을 식히는 맞춤 탕약, 상부 경추와 두개골의 긴장을 해소하는 뇌신경 추나요법, 척추 자율신경절을 안정시키는 약침 치료를 1:1 복합 처방합니다.',
-        image: '/images/clinic/naver-chuna-wide.webp',
+        image: '/images/clinic/naver-decoction-wide.webp',
         tags: ['#뇌신경피로_맞춤탕약', '#상부경추_두개추나', '#자율신경_항상성재건'],
       },
     ],
@@ -84,12 +85,12 @@ const copy = {
     philosophyBody: '',
     principles: [
       ['Origin', '불편이 시작된 배경과 반복되는 패턴을 확인합니다.'],
-      ['Reset', '긴장된 신경계와 움직임의 균형을 다시 살핍니다.'],
-      ['Balance', '회복이 일상으로 이어질 수 있도록 관리 방향을 조정합니다.'],
+      ['Reset', '과긴장된 신경계와 굳어진 몸의 흐름을 본래대로 되돌립니다.'],
+      ['Balance', '뇌와 신체의 무너진 균형을 바로잡아 온전한 일상을 지킵니다.'],
     ],
     spaceEyebrow: '',
     spaceTitle: 'SPACE',
-    spaceBody: '상담부터 치료까지 편안하게 이어질 수 있도록 독립된 진료 공간을 마련했습니다.',
+    spaceBody: '상담부터 치료까지',
     galleryLabel: '오브한의원 내부 공간 사진',
     previous: '이전 공간 사진',
     next: '다음 공간 사진',
@@ -98,8 +99,8 @@ const copy = {
     doctorSubtitle: '주관적 호소에만 의존하지 않고, 신경인지과학과 한의학적 근원 치료를 결합하여 환자의 자율 회복력을 되살립니다.',
     doctorName: '전두희 원장',
     doctorClinic: '오브한의원 마곡점 대표원장',
-    doctorQuoteLead: '“각종 정밀 검사에서 \'이상 없음\'이라는 소견을 듣고도 일상이 무너져 계신 분들을 매일 진료실에서 마주합니다.”',
-    doctorQuoteBody: '보이지 않는 만성 피로, 이유 없는 가슴 두근거림, 머릿속 안개(브레인포그)는 결코 환자분의 나약함이나 기분 탓이 아닙니다. 뇌 신경망의 기능적 과부하와 자율신경계의 조절 붕괴는 측정 가능한 생체 신호의 객관적 불균형입니다.\n\n오브한의원은 첨단 습식 정량화 뇌파(qEEG)와 자율신경 검사로 보이지 않는 신경 피로를 수치화하고, 뇌와 척추를 잇는 신경계 통합 치료로 신체 본연의 자율 회복력을 반드시 되찾아 드립니다.',
+    doctorQuoteLead: '“각종 정밀 검사에서 \'이상 없음\' 소견을 받았지만, 여전히 무너진 일상으로 고통받는 분들을 매일 진료실에서 마주합니다”',
+    doctorQuoteBody: '만성 피로, 이유 없는 가슴 두근거림, 브레인포그는 결코 환자분의 나약함이나 기분 탓이 아닙니다. 뇌 신경망의 기능적 과부하와 자율신경계의 조절 이상은 측정 가능한 생체 신호의 객관적 불균형입니다.\n\n오브한의원은 첨단 습식 정량화 뇌파(qEEG)와 자율신경 검사로 보이지 않는 신경 피로를 수치화하고, 뇌와 척추를 잇는 신경계 통합 치료로 신체 본연의 자율 회복력을 반드시 되찾아 드립니다.',
     doctorPillars: [
       {
         num: '01',
@@ -142,7 +143,7 @@ const copy = {
     googleMap: '구글 지도',
     contactEyebrow: 'RESERVATION',
     contactTitle: '진료 예약과 문의',
-    contactBody: '네이버 예약에서 가능한 시간을 확인하거나 전화로 문의해 주세요.',
+    contactBody: '네이버톡톡/ 카카오톡 으로 언제든 문의주세요',
     privacy: '개인정보처리방침',
     rights: '© ORB Korean Medicine Clinic.',
   },
@@ -160,7 +161,7 @@ const copy = {
     ],
     diagnosticEyebrow: 'DIAGNOSTIC TECHNOLOGY · QEEG SYSTEM',
     diagnosticTitle: 'Persistent suffering despite "normal" lab results —\nFinding answers in brain and autonomic imbalances.',
-    diagnosticSubtitle: 'ORB Korean Medicine Clinic utilizes quantitative EEG (QEEG) and precise autonomic testing to diagnose nervous system fatigue and postural imbalance through objective data.',
+    diagnosticSubtitle: 'ORB Korean Medicine Clinic utilizes quantitative EEG (QEEG) and autonomic testing\nto diagnose nervous system fatigue and postural imbalance through objective data.',
     diagnosticWhyWet: 'Why Quantitative EEG Analysis?',
     diagnosticPoints: [
       {
@@ -201,7 +202,7 @@ const copy = {
         title: 'Integrative Herbal & Chuna Care',
         subtitle: 'Trimodal Neuro-Autonomic-Structural Treatment',
         desc: 'Deploying individualized herbal formulas to cool down cortical overdrive, upper-cervical Chuna manual therapy to unblock CSF flow, and acupoint pharmacopuncture to stabilize autonomic ganglia.',
-        image: '/images/clinic/naver-chuna-wide.webp',
+        image: '/images/clinic/naver-decoction-wide.webp',
         tags: ['#Neuro_Fatigue_Herbs', '#UpperCervical_Chuna', '#Autonomic_Homeostasis'],
       },
     ],
@@ -272,7 +273,7 @@ const copy = {
     googleMap: 'Google Maps',
     contactEyebrow: 'RESERVATION',
     contactTitle: 'Appointments and inquiries',
-    contactBody: 'Check available appointments on Naver or call the clinic.',
+    contactBody: 'Feel free to inquire anytime via Naver TalkTalk or KakaoTalk.',
     privacy: 'Privacy',
     rights: '© ORB Korean Medicine Clinic.',
   },
@@ -347,26 +348,6 @@ export default function ClinicHome({
           <p className="eyebrow">{text.kicker}</p>
           <h1>{text.title}</h1>
           <p className="hero-lede">{text.heroBody}</p>
-          <div className="primary-actions">
-            <TrackedLink
-              className="button button-solid"
-              href={clinic.naverBookingUrl}
-              target="_blank"
-              rel="noreferrer"
-              eventName="booking_click"
-              eventLabel={text.booking}
-            >
-              {text.booking}<span aria-hidden="true">↗</span>
-            </TrackedLink>
-            <TrackedLink
-              className="button button-ghost"
-              href={clinic.phoneHref}
-              eventName="phone_click"
-              eventLabel={text.call}
-            >
-              {text.call}
-            </TrackedLink>
-          </div>
         </div>
         <div className="hero-visual hero-visual-brand" aria-label="ORB ARCHIVE">
           <div className="hero-brand-card">
@@ -416,7 +397,11 @@ export default function ClinicHome({
               <span key={idx}>{line}</span>
             ))}
           </h2>
-          <p className="diagnostic-sub-lede">{text.diagnosticSubtitle}</p>
+          <p className="diagnostic-sub-lede">
+            {text.diagnosticSubtitle.split('\n').map((line, idx) => (
+              <span key={idx}>{line}</span>
+            ))}
+          </p>
 
           <div className="qeeg-spec-strip">
             <div className="qeeg-spec-badge">
@@ -757,46 +742,10 @@ export default function ClinicHome({
         <a className="contact-phone" href={clinic.phoneHref}>
           {clinic.phoneDisplay}
         </a>
-        <div className="primary-actions primary-actions-centered">
-          <TrackedLink
-            className="button button-light"
-            href={clinic.naverBookingUrl}
-            target="_blank"
-            rel="noreferrer"
-            eventName="booking_click"
-            eventLabel={text.booking}
-          >
-            {text.booking}
-            <span>↗</span>
-          </TrackedLink>
-          <TrackedLink
-            className="button button-outline-light"
-            href={clinic.phoneHref}
-            eventName="phone_click"
-            eventLabel={text.call}
-          >
-            {text.call}
-          </TrackedLink>
-        </div>
       </section>
 
       {/* 10. FOOTER */}
-      <footer className="site-footer">
-        <div>
-          <strong>ORB</strong>
-          <span>{isEnglish ? clinic.nameEn : clinic.nameKo}</span>
-        </div>
-        <address>
-          {isEnglish ? clinic.addressEn : clinic.addressKo}
-          <br />
-          {clinic.phoneDisplay} · {text.weekday} · {text.saturday} ({text.sunday})
-        </address>
-        <div className="footer-meta">
-          <Link href="/columns">{isEnglish ? 'Columns' : '원장 칼럼'}</Link>
-          <Link href={isEnglish ? '/en/privacy' : '/privacy'}>{text.privacy}</Link>
-          <span>{text.rights}</span>
-        </div>
-      </footer>
+      <SiteFooter isEnglish={isEnglish} />
 
       <aside className="mobile-cta" aria-label={isEnglish ? 'Appointment actions' : '예약 바로가기'}>
         <TrackedLink

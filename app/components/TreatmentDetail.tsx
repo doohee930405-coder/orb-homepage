@@ -1,5 +1,6 @@
 import ResponsivePicture from './ResponsivePicture';
 import SiteHeader from './SiteHeader';
+import SiteFooter from './SiteFooter';
 import TrackedLink from './TrackedLink';
 import { clinic, treatmentPath, treatments, type Locale, type Treatment } from '../lib/clinic';
 
@@ -303,11 +304,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
         <a className="back-link" href={`${home}#treatments`}>← {text.back}</a>
       </section>
 
-      <footer className="site-footer">
-        <div><strong>ORB</strong><span>{isEnglish ? clinic.nameEn : clinic.nameKo}</span></div>
-        <address>{isEnglish ? clinic.addressEn : clinic.addressKo}<br />{clinic.phoneDisplay}</address>
-        <div className="footer-meta"><a href={isEnglish ? '/en/privacy' : '/privacy'}>{text.privacy}</a><span>© ORB Korean Medicine Clinic.</span></div>
-      </footer>
+      <SiteFooter isEnglish={isEnglish} />
 
       <aside className="mobile-cta" aria-label={isEnglish ? 'Appointment actions' : '예약 바로가기'}>
         <TrackedLink href={clinic.naverBookingUrl} target="_blank" rel="noreferrer" eventName="booking_click" eventLabel={text.booking}>{text.booking}</TrackedLink>

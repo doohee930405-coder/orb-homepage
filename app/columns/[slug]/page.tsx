@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import MarkdownView from '../../components/MarkdownView';
 import SafeImage from '../../components/SafeImage';
 import SiteHeader from '../../components/SiteHeader';
+import SiteFooter from '../../components/SiteFooter';
 import TrackedLink from '../../components/TrackedLink';
 import { clinic, SITE_URL } from '../../lib/clinic';
 import { getAllColumns, getColumnBySlug } from '../../lib/columns';
@@ -595,22 +596,7 @@ export default async function ColumnDetailPage({
       )}
 
       {/* Footer */}
-      <footer className="site-footer">
-        <div>
-          <strong>ORB</strong>
-          <span>오브한의원 마곡점</span>
-        </div>
-        <address>
-          {clinic.addressKo}
-          <br />
-          {clinic.phoneDisplay}
-        </address>
-        <div className="footer-meta">
-          <Link href="/columns">원장 칼럼</Link>
-          <Link href="/privacy">개인정보처리방침</Link>
-          <span>© ORB Korean Medicine Clinic.</span>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

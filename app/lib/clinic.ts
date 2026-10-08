@@ -206,9 +206,8 @@ export const gallery = [
   { image: 'media-wall', label: { ko: '대기 공간', en: 'Waiting area' }, alt: { ko: '오브한의원 대기 공간과 안내 화면', en: 'Waiting area and information display at ORB Korean Medicine Clinic' } },
   { image: 'logo-reception', label: { ko: '브랜드 월', en: 'Brand wall' }, alt: { ko: '오브한의원 로고가 있는 접수 공간', en: 'ORB logo wall and reception area' } },
   { image: 'corridor', label: { ko: '진료실 복도', en: 'Care corridor' }, alt: { ko: '오브한의원 독립 진료실로 이어지는 복도', en: 'Corridor leading to private care rooms' } },
-  { image: 'consult-room', label: { ko: '상담실', en: 'Consultation room' }, alt: { ko: '오브한의원 상담 및 검사실', en: 'Consultation and examination room' } },
+  { image: 'consult-room', label: { ko: '진료실', en: 'Consultation room' }, alt: { ko: '오브한의원 진료 및 검사실', en: 'Consultation and examination room' } },
   { image: 'treatment-room', label: { ko: '치료 공간', en: 'Treatment rooms' }, alt: { ko: '오브한의원 독립 치료 공간', en: 'Private treatment rooms at ORB' } },
-  { image: 'care-room', label: { ko: '1인 치료실', en: 'Private care room' }, alt: { ko: '오브한의원 1인 치료실 내부', en: 'Private care room at ORB' } },
 ] as const;
 
 export function getTreatment(slug: string) {
