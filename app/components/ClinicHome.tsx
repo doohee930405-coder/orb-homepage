@@ -82,7 +82,7 @@ const copy = {
     detail: '자세히 보기',
     philosophyEyebrow: 'OUR APPROACH',
     philosophyTitle: '정확하게 진단하고\n바르게 치료하겠습니다',
-    philosophyBody: '',
+    philosophyBody: 'ORB한의원의 접근',
     principles: [
       ['Origin', '불편이 시작된 배경과 반복되는 패턴을 확인합니다.'],
       ['Reset', '과긴장된 신경계와 굳어진 몸의 흐름을 본래대로 되돌립니다.'],
@@ -95,11 +95,11 @@ const copy = {
     previous: '이전 공간 사진',
     next: '다음 공간 사진',
     doctorEyebrow: '',
-    doctorTitle: '보이지 않는 고통을 객관적인 데이터로 규명합니다',
+    doctorTitle: '보이지 않는 고통을\n객관적인 데이터로 규명합니다',
     doctorSubtitle: '주관적 호소에만 의존하지 않고, 신경인지과학과 한의학적 근원 치료를 결합하여 환자의 자율 회복력을 되살립니다.',
-    doctorName: '전두희 원장',
+    doctorName: '한의사 전두희',
     doctorClinic: '오브한의원 마곡점 대표원장',
-    doctorQuoteLead: '“각종 정밀 검사에서 \'이상 없음\' 소견을 받았지만, 여전히 무너진 일상으로 고통받는 분들을 매일 진료실에서 마주합니다”',
+    doctorQuoteLead: '“각종 정밀 검사에서 \'이상 없음\' 소견을 받았지만,\n여전히 고통받는 분들을 매일 진료실에서 마주합니다”',
     doctorQuoteBody: '만성 피로, 이유 없는 가슴 두근거림, 브레인포그는 결코 환자분의 나약함이나 기분 탓이 아닙니다. 뇌 신경망의 기능적 과부하와 자율신경계의 조절 이상은 측정 가능한 생체 신호의 객관적 불균형입니다.\n\n오브한의원은 첨단 습식 정량화 뇌파(qEEG)와 자율신경 검사로 보이지 않는 신경 피로를 수치화하고, 뇌와 척추를 잇는 신경계 통합 치료로 신체 본연의 자율 회복력을 반드시 되찾아 드립니다.',
     doctorPillars: [
       {
@@ -141,6 +141,7 @@ const copy = {
     naverMap: '네이버 지도',
     kakaoMap: '카카오맵',
     googleMap: '구글 지도',
+    contactSlogan: '“다시 건강의 궤도(ORBit) 위로”',
     contactEyebrow: 'RESERVATION',
     contactTitle: '진료 예약과 문의',
     contactBody: '네이버톡톡/ 카카오톡 으로 언제든 문의주세요',
@@ -212,7 +213,7 @@ const copy = {
     detail: 'Learn more',
     philosophyEyebrow: 'OUR APPROACH',
     philosophyTitle: 'Accurate Diagnosis,\nProper Treatment',
-    philosophyBody: '',
+    philosophyBody: 'ORB Clinic’s Approach',
     principles: [
       ['Origin', 'We review the background and recurring pattern of your concerns.'],
       ['Reset', 'We reassess nervous-system tension and movement balance.'],
@@ -271,6 +272,7 @@ const copy = {
     naverMap: 'Naver Map',
     kakaoMap: 'Kakao Map',
     googleMap: 'Google Maps',
+    contactSlogan: '“Back onto the orbit of health (ORBit)”',
     contactEyebrow: 'RESERVATION',
     contactTitle: 'Appointments and inquiries',
     contactBody: 'Feel free to inquire anytime via Naver TalkTalk or KakaoTalk.',
@@ -503,7 +505,7 @@ export default function ClinicHome({
               <span key={line}>{line}</span>
             ))}
           </h2>
-          {text.philosophyBody ? <p>{text.philosophyBody}</p> : null}
+          {text.philosophyBody ? <p className="philosophy-body">{text.philosophyBody}</p> : null}
         </div>
         <ResponsivePicture
           className="philosophy-image"
@@ -516,7 +518,10 @@ export default function ClinicHome({
             <li key={title}>
               <span>{String(index + 1).padStart(2, '0')}</span>
               <div>
-                <strong>{title}</strong>
+                <strong>
+                  <span className="principle-highlight-letter">{title.charAt(0)}</span>
+                  {title.slice(1)}
+                </strong>
                 <p>{body}</p>
               </div>
             </li>
@@ -545,7 +550,16 @@ export default function ClinicHome({
         <div className="doctor-container">
           <div className="doctor-header-group">
             {text.doctorEyebrow ? <p className="eyebrow">{text.doctorEyebrow}</p> : null}
-            <h2 className="doctor-headline">“{text.doctorTitle}”</h2>
+            <h2 className="doctor-headline">
+              {text.doctorTitle.includes('\n') ? (
+                <>
+                  <span className="block">“{text.doctorTitle.split('\n')[0]}</span>
+                  <span className="block">{text.doctorTitle.split('\n')[1]}”</span>
+                </>
+              ) : (
+                `“${text.doctorTitle}”`
+              )}
+            </h2>
             <p className="doctor-subhead">{text.doctorSubtitle}</p>
           </div>
 
@@ -558,12 +572,12 @@ export default function ClinicHome({
 
               <div className="doctor-credentials-card">
                 <ul className="doctor-credentials-list">
-                  <li>대한한의사협회 정회원</li>
-                  <li>척추신경추나의학회 정회원</li>
-                  <li>대한뇌파한의학회 정회원</li>
-                  <li>대한통합암학회 정회원</li>
-                  <li>대한한방비만학회 정회원</li>
-                  <li>대한한의학회 정회원</li>
+                  <li>대한한의사협회 회원</li>
+                  <li>척추신경추나의학회 회원</li>
+                  <li>대한뇌파한의학회 회원</li>
+                  <li>대한통합암학회 회원</li>
+                  <li>대한한방비만학회 회원</li>
+                  <li>대한한의학회 회원</li>
                   <li>한의정보협동조합 조합원</li>
                 </ul>
               </div>
@@ -571,7 +585,13 @@ export default function ClinicHome({
 
             <div className="doctor-content-pane">
               <blockquote className="doctor-quote">
-                <p className="doctor-quote-lead">{text.doctorQuoteLead}</p>
+                <p className="doctor-quote-lead">
+                  {text.doctorQuoteLead.split('\n').map((line, idx) => (
+                    <span key={idx} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </p>
                 {text.doctorQuoteBody.split('\n\n').map((paragraph, idx) => (
                   <p key={idx} className="doctor-quote-p">
                     {paragraph}
@@ -736,6 +756,7 @@ export default function ClinicHome({
 
       {/* 9. CONTACT SECTION */}
       <section className="contact-section reveal" id="contact">
+        <p className="contact-slogan">{text.contactSlogan}</p>
         <p className="eyebrow">{text.contactEyebrow}</p>
         <h2>{text.contactTitle}</h2>
         <p>{text.contactBody}</p>

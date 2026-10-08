@@ -408,43 +408,17 @@ export default async function ColumnDetailPage({
           </div>
 
           <h1 className="article-title">{column.title}</h1>
-
-          {/* E-E-A-T Medical Review Authority Box (Top) */}
-          <section className="article-authority-box" aria-label="의학적 검증 및 감수 정보">
-            <div className="authority-badge-row">
-              <span className="authority-verified-badge">
-                <span className="badge-icon" aria-hidden="true">✓</span> 의학적 검수 완료 (Medical Review)
-              </span>
-              <span className="authority-review-date">
-                최종 검수일: <time dateTime={column.updatedAt || column.date}>{column.updatedAt || column.date}</time>
-              </span>
-            </div>
-            <div className="authority-details">
-              <div className="authority-avatar-wrap">
-                <div className="authority-avatar-circle" aria-hidden="true">
-                  <span>전</span>
-                </div>
-              </div>
-              <div className="authority-text-block">
-                <p className="authority-writer">
-                  <strong>의학적 집필 및 감수:</strong> 오브한의원 대표원장 <strong>전두희</strong> (한의사)
-                </p>
-                <p className="authority-standard">
-                  <strong>진단 기준:</strong> 습식 정량화 뇌파(QEEG) 및 자율신경 기능 의학
-                </p>
-              </div>
-            </div>
-          </section>
         </header>
 
         {/* AI & GEO / AEO Summary Box (Answer Engine Optimized) */}
-        <section className="geo-summary-box" aria-label="칼럼 핵심 진료 요약">
-          <div className="geo-summary-title">
-            <span aria-hidden="true">💡</span>
-            <strong>전두희 원장의 핵심 진료 요약 (Medical Summary)</strong>
-          </div>
-          <p>{column.summary}</p>
-        </section>
+        {column.summary && (
+          <section className="geo-summary-box" aria-label="Summary">
+            <div className="geo-summary-title">
+              <strong>Summary</strong>
+            </div>
+            <p>{column.summary}</p>
+          </section>
+        )}
 
         {/* Article Cover Image: Only displayed if the markdown body does not already contain inline images */}
         {column.thumbnail && !column.content.includes('![') && (
@@ -532,34 +506,14 @@ export default async function ColumnDetailPage({
       </article>
 
       {/* Reservation CTA Section */}
-      <section className="column-cta-section">
-        <div className="column-cta-inner">
-          <p className="eyebrow">RESERVATION & CONSULTATION</p>
-          <h2>현재 겪고 계신 불편을 이야기해 주세요</h2>
-          <p>
-            오브한의원은 차분한 독립 진료실에서 환자 한 분 한 분을 위한 충분한 상담과 정밀 검사를 진행합니다.
-          </p>
-          <div className="primary-actions primary-actions-centered">
-            <TrackedLink
-              className="button button-solid"
-              href={clinic.naverBookingUrl}
-              target="_blank"
-              rel="noreferrer"
-              eventName="booking_click"
-              eventLabel={`칼럼상세_예약_${column.slug}`}
-            >
-              네이버 예약 바로가기<span>↗</span>
-            </TrackedLink>
-            <TrackedLink
-              className="button button-ghost"
-              href={clinic.phoneHref}
-              eventName="phone_click"
-              eventLabel={`칼럼상세_전화_${column.slug}`}
-            >
-              전화 문의 ({clinic.phoneDisplay})
-            </TrackedLink>
-          </div>
-        </div>
+      <section className="contact-section" id="contact">
+        <p className="contact-slogan">“다시 건강의 궤도(ORBit) 위로”</p>
+        <p className="eyebrow">RESERVATION</p>
+        <h2>진료 예약과 문의</h2>
+        <p>네이버톡톡/ 카카오톡 으로 언제든 문의주세요</p>
+        <a className="contact-phone" href={clinic.phoneHref}>
+          {clinic.phoneDisplay}
+        </a>
       </section>
 
       {/* Topic Cluster: Related Category Columns */}

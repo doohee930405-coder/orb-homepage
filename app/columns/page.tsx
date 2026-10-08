@@ -131,34 +131,14 @@ export default function ColumnsPage() {
       </section>
 
       {/* Reservation CTA Section */}
-      <section className="column-cta-section">
-        <div className="column-cta-inner">
-          <p className="eyebrow">CONSULTATION & RESERVATION</p>
-          <h2>현재 겪고 계신 불편을 이야기해 주세요</h2>
-          <p>
-            증상의 원인을 면밀히 진찰하고, 자율신경·뇌파 검사 및 신경계 기능 평가를 통해 개인별 맞춤 치료 계획을 수립합니다.
-          </p>
-          <div className="primary-actions primary-actions-centered">
-            <TrackedLink
-              className="button button-solid"
-              href={clinic.naverBookingUrl}
-              target="_blank"
-              rel="noreferrer"
-              eventName="booking_click"
-              eventLabel="칼럼목록_네이버예약"
-            >
-              네이버 예약<span>↗</span>
-            </TrackedLink>
-            <TrackedLink
-              className="button button-ghost"
-              href={clinic.phoneHref}
-              eventName="phone_click"
-              eventLabel="칼럼목록_전화문의"
-            >
-              전화 문의 ({clinic.phoneDisplay})
-            </TrackedLink>
-          </div>
-        </div>
+      <section className="contact-section" id="contact">
+        <p className="contact-slogan">“다시 건강의 궤도(ORBit) 위로”</p>
+        <p className="eyebrow">RESERVATION</p>
+        <h2>진료 예약과 문의</h2>
+        <p>네이버톡톡/ 카카오톡 으로 언제든 문의주세요</p>
+        <a className="contact-phone" href={clinic.phoneHref}>
+          {clinic.phoneDisplay}
+        </a>
       </section>
 
       {/* Footer */}

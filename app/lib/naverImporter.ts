@@ -810,9 +810,12 @@ export async function convertNaverHtmlToMasterMarkdown(
   const quoteMatch = bodyHtml.match(quoteRegex);
 
   if (quoteMatch) {
-    const rawQuote = stripHtml(quoteMatch[1]);
+    let rawQuote = stripHtml(quoteMatch[1]).trim();
+    rawQuote = rawQuote
+      .replace(/^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i, '')
+      .trim();
     if (rawQuote.length >= 10) {
-      summary = rawQuote.trim();
+      summary = rawQuote;
       bodyHtml = bodyHtml.replace(quoteRegex, '');
     }
   }
@@ -1400,6 +1403,10 @@ export async function convertNaverHtmlToMasterMarkdown(
     }
   }
 
+  summary = summary
+    .replace(/^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i, '')
+    .trim();
+
   // The summary is stored separately in the 'summary' field and rendered by the page component.
   // We do NOT prepend it into the markdown body to avoid duplicate summary boxes.
 
@@ -1435,6 +1442,12 @@ export async function convertNaverHtmlToMasterMarkdown(
   if (!markdown.includes('정식 웹 아카이브 안내')) {
     markdown += `\n\n---\n\n📌 [정식 웹 아카이브 안내] 본 칼럼은 오브한의원 공식 네이버 블로그에 연재된 임상 칼럼을 기반으로, 의학적 근거와 최신 검사 기준을 보완하여 영구 보존·게재한 공식 웹 아카이브 문서입니다. 무단 복제 및 전재를 금합니다.\n`;
   }
+
+  // Convert closing contact notice to "네이버톡톡 혹은 카카오톡으로 부탁드립니다"
+  markdown = markdown.replace(
+    /네이버\s*톡톡으로\s*부탁드립니다/g,
+    '네이버톡톡 혹은 카카오톡으로 부탁드립니다'
+  );
 
   markdown = truncateJsGarbage(markdown);
   summary = truncateJsGarbage(summary);

@@ -15,8 +15,8 @@ export function stripTopDuplicateSummary(rawContent: string, summary?: string): 
   if (!rawContent) return '';
   let text = rawContent.trim();
 
-  // 1. Strip top blockquote containing "핵심 진료 요약" or "Medical Summary"
-  const quoteSummaryPattern = /^(?:>\s*(?:💡\s*)?\**\s*(?:(?:전두희\s*원장의\s*)?핵심\s*진료\s*요약|Medical\s*Summary)[^\n]*\n)(?:>[^\n]*\n*)+/i;
+  // 1. Strip top blockquote containing "핵심 진료 요약", "Medical Summary", or "Summary"
+  const quoteSummaryPattern = /^(?:>\s*(?:💡\s*)?\**\s*(?:(?:전두희\s*원장의\s*)?핵심\s*(?:진료\s*)?요약|Medical\s*Summary|Summary)[^\n]*\n)(?:>[^\n]*\n*)+/i;
   text = text.replace(quoteSummaryPattern, '').trim();
 
   // If text still starts with a blockquote (> ...)
@@ -183,8 +183,8 @@ export function splitHeadingAndBody(block: string): string {
     return `${hashes} ${colonMatch[1].trim()}\n\n${colonMatch[2].trim()}`;
   }
 
-  // 7. Special specific known fixed headers like "문의사항은 네이버톡톡으로 부탁드립니다"
-  const naverTalkMatch = fullText.match(/^(문의사항은\s*네이버톡톡으로\s*부탁드립니다)\s+([가-힣A-Za-z0-9"'][\s\S]+)$/);
+  // 7. Special specific known fixed headers like "문의사항은 네이버톡톡 혹은 카카오톡으로 부탁드립니다"
+  const naverTalkMatch = fullText.match(/^(문의사항은\s*네이버\s*톡톡(?:으로|\s*혹은\s*카카오톡으로)\s*부탁드립니다\.?)\s+([가-힣A-Za-z0-9"'][\s\S]+)$/);
   if (naverTalkMatch) {
     return `${hashes} ${naverTalkMatch[1].trim()}\n\n${naverTalkMatch[2].trim()}`;
   }
@@ -276,13 +276,18 @@ export default function MarkdownView({ content, className = '', summary }: Markd
     .replace(/\*\*[\s\u200B\uFEFF]*\*\*/g, '')
     .replace(/^[ \t]*\*{2,}[ \t]*$/gm, '')
     .replace(/\n([ \t]*\*{2,}[ \t]*\n)+/g, '\n\n')
+    // Normalize closing contact notice to "네이버톡톡 혹은 카카오톡으로 부탁드립니다"
+    .replace(
+      /네이버\s*톡톡으로\s*부탁드립니다/g,
+      '네이버톡톡 혹은 카카오톡으로 부탁드립니다'
+    )
     // Fix glued disclaimer prefix where "본 게시물은 was severed before the divider
     .replace(
       /([^\n\r]+?)\s*["'“]?\s*본\s*(?:게시물|글|포스팅)은\s*(?:\r?\n\s*)*---\s*(?:\r?\n\s*)*###\s*📚\s*의학 학술 레퍼런스 및 의료법 고지\s*(?:\r?\n\s*)*(?:["'“]?\s*본\s*(?:게시물|글|포스팅)은\s*)?/gi,
       '$1\n\n---\n\n### 📚 의학 학술 레퍼런스 및 의료법 고지\n\n본 게시물은 '
     )
     .replace(
-      /(문의사항은\s*네이버톡톡으로\s*부탁드립니다[^\n]*?)\s*(?:["'“]?\s*본\s*(?:게시물|글|포스팅)은\s*의료법)/gi,
+      /(문의사항은\s*네이버\s*톡톡(?:으로|\s*혹은\s*카카오톡으로)\s*부탁드립니다[^\n]*?)\s*(?:["'“]?\s*본\s*(?:게시물|글|포스팅)은\s*의료법)/gi,
       '$1\n\n---\n\n### 📚 의학 학술 레퍼런스 및 의료법 고지\n\n본 게시물은 의료법'
     )
     .replace(/이\s*블로그의\s*체크인\s*이\s*장소의\s*다른\s*글/gi, '')

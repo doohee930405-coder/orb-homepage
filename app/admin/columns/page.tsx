@@ -881,7 +881,9 @@ export default function AdminColumnsPage() {
                 </div>
                 {formData.summary && (
                   <div className="geo-summary-box">
-                    <strong>원장의 핵심 진료 요약</strong>
+                    <div className="geo-summary-title">
+                      <strong>Summary</strong>
+                    </div>
                     <p>{formData.summary}</p>
                   </div>
                 )}

@@ -13,8 +13,9 @@ const detailCopy = {
     noteTitle: '진료 전 참고해 주세요',
     note: '검사와 치료의 필요 여부는 문진과 진찰 후 결정됩니다. 같은 증상이라도 개인의 상태에 따라 진료 내용은 달라질 수 있습니다.',
     related: '다른 진료 분야',
-    bookingTitle: '현재의 불편을 이야기해 주세요.',
-    bookingBody: '네이버 예약에서 가능한 시간을 확인하거나 전화로 문의하실 수 있습니다.',
+    bookingSlogan: '“다시 건강의 궤도(ORBit) 위로”',
+    bookingTitle: '진료 예약과 문의',
+    bookingBody: '네이버톡톡/ 카카오톡 으로 언제든 문의주세요',
     booking: '네이버 예약',
     call: '전화 문의',
     back: '전체 진료 분야 보기',
@@ -28,8 +29,9 @@ const detailCopy = {
     noteTitle: 'Before your visit',
     note: 'The need for tests and treatment is determined after consultation and examination. Care may differ between patients even when symptoms appear similar.',
     related: 'Other treatment areas',
-    bookingTitle: 'Tell us what has been troubling you.',
-    bookingBody: 'Check available appointments on Naver or call the clinic for assistance.',
+    bookingSlogan: '“Back onto the orbit of health (ORBit)”',
+    bookingTitle: 'Appointments and inquiries',
+    bookingBody: 'Feel free to inquire anytime via Naver TalkTalk or KakaoTalk.',
     booking: 'Book on Naver',
     call: 'Call the clinic',
     back: 'View all treatments',
@@ -294,13 +296,13 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
       </section>
 
       <section className="contact-section detail-contact">
+        <p className="contact-slogan">{text.bookingSlogan}</p>
         <p className="eyebrow">RESERVATION</p>
         <h2>{text.bookingTitle}</h2>
         <p>{text.bookingBody}</p>
-        <div className="primary-actions primary-actions-centered">
-          <TrackedLink className="button button-light" href={clinic.naverBookingUrl} target="_blank" rel="noreferrer" eventName="booking_click" eventLabel={text.booking}>{text.booking}<span>↗</span></TrackedLink>
-          <TrackedLink className="button button-outline-light" href={clinic.phoneHref} eventName="phone_click" eventLabel={text.call}>{text.call}</TrackedLink>
-        </div>
+        <a className="contact-phone" href={clinic.phoneHref}>
+          {clinic.phoneDisplay}
+        </a>
         <a className="back-link" href={`${home}#treatments`}>← {text.back}</a>
       </section>
 
