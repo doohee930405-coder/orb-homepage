@@ -19,7 +19,10 @@ export default function SiteMotion() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          entry.target.toggleAttribute('data-inview', entry.isIntersecting);
+          if (entry.isIntersecting) {
+            entry.target.setAttribute('data-inview', '');
+            observer.unobserve(entry.target);
+          }
         });
       },
       {
@@ -32,9 +35,9 @@ export default function SiteMotion() {
 
       if (rect.top < window.innerHeight && rect.bottom > 0) {
         section.setAttribute('data-inview', '');
+      } else {
+        observer.observe(section);
       }
-
-      observer.observe(section);
     });
 
     return () => {

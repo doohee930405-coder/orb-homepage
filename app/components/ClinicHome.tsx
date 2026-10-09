@@ -20,6 +20,7 @@ const copy = {
   ko: {
     kicker: 'ORBMED CLINIC',
     title: '오브한의원',
+    branch: '마곡점',
     heroBody: '자율신경 · 뇌신경 · 통증 중점 의료기관, 오브한의원입니다',
     booking: '네이버 예약',
     call: '전화 문의',
@@ -55,6 +56,7 @@ const copy = {
         subtitle: '다채널 습식 뇌파(qEEG) & 자율신경계(HRV) 동시 측정',
         desc: '두피 핵심 전극 부위에 전도성 겔을 주입하고 정밀 센서를 부착하여, 뇌 피질에서 방출되는 마이크로볼트(μV) 단위의 미세 전기 신호와 심박변이도 생체 신호를 왜곡 없이 정밀 수집합니다.',
         image: '/images/clinic/naver-qeeg-wide.webp',
+        imagePosition: 'center 25%',
         tags: ['#국제10_20시스템', '#정밀센서_노이즈차단', '#HRV자율신경평가'],
       },
       {
@@ -151,6 +153,7 @@ const copy = {
   en: {
     kicker: 'ORBMED CLINIC',
     title: 'ORB Korean Medicine Clinic',
+    branch: 'Magok',
     heroBody: 'Specialized clinic for autonomic, neurocognitive, and pain disorders.',
     booking: 'Book on Naver',
     call: 'Call the clinic',
@@ -186,6 +189,7 @@ const copy = {
         subtitle: 'Multichannel QEEG & Autonomic Testing',
         desc: 'Applying conductive gel across standardized cortical landmarks to accurately acquire microvolt (μV) electrical potentials and heart rate variability (HRV) with minimal impedance.',
         image: '/images/clinic/naver-qeeg-wide.webp',
+        imagePosition: 'center 25%',
         tags: ['#Standard10_20System', '#PrecisionSensor_NoiseFree', '#HRV_Assessment'],
       },
       {
@@ -346,9 +350,12 @@ export default function ClinicHome({
 
       {/* 1. HERO SECTION */}
       <section className="hero-section" id="top">
-        <div className="hero-content reveal" data-inview>
+        <div className="hero-content" data-inview>
           <p className="eyebrow">{text.kicker}</p>
-          <h1>{text.title}</h1>
+          <h1>
+            <span>{text.title}</span>
+            {text.branch ? <span className="hero-branch">{text.branch}</span> : null}
+          </h1>
           <p className="hero-lede">{text.heroBody}</p>
         </div>
         <div className="hero-visual hero-visual-brand" aria-label="ORB ARCHIVE">
@@ -435,6 +442,7 @@ export default function ClinicHome({
                   src={step.image}
                   alt={step.title}
                   className="protocol-image"
+                  style={'imagePosition' in step && step.imagePosition ? { objectPosition: step.imagePosition } : undefined}
                   loading="lazy"
                 />
                 <div className="protocol-image-overlay" />
@@ -499,13 +507,20 @@ export default function ClinicHome({
       {/* 4. PHILOSOPHY SECTION */}
       <section className="philosophy-section reveal">
         <div className="philosophy-lead">
-          <p className="eyebrow">{text.philosophyEyebrow}</p>
-          <h2>
-            {text.philosophyTitle.split('\n').map((line) => (
-              <span key={line}>{line}</span>
-            ))}
-          </h2>
-          {text.philosophyBody ? <p className="philosophy-body">{text.philosophyBody}</p> : null}
+          <div className="philosophy-lead-top">
+            <p className="eyebrow">{text.philosophyEyebrow}</p>
+            <h2>
+              {text.philosophyTitle.split('\n').map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </h2>
+          </div>
+          {text.philosophyBody ? (
+            <p className="philosophy-body">
+              <span className="philosophy-highlight-orb">ORB</span>
+              <span className="philosophy-sub-text">{text.philosophyBody.replace(/^ORB/, '')}</span>
+            </p>
+          ) : null}
         </div>
         <ResponsivePicture
           className="philosophy-image"

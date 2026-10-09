@@ -62,12 +62,12 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
             <div className="diet-hero-duo-item diet-duo-quantum">
               <img
                 src="/images/clinic/diet-quantum-fit.png"
-                alt={isEnglish ? 'Quantum Fit Microwave Lifting (Same Technology as ONDA Lifting)' : '오브한의원 퀀텀핏 극초단파 리프팅 (K-온다 리프팅 동일 기술)'}
+                alt={isEnglish ? 'Quantum Fit Microwave Lifting (Same Technology as ONDA Lifting)' : '오브한의원 퀀텀핏 리프팅 (온다 리프팅 동일 기술)'}
                 className="diet-duo-img"
               />
               <div className="diet-duo-overlay">
-                <span className="diet-duo-tag">{isEnglish ? 'K-ONDA LIFTING TECH' : 'K-온다 동일 극초단파'}</span>
-                <strong>{isEnglish ? 'Quantum Fit Microwave' : '퀀텀핏 극초단파 리프팅'}</strong>
+                <span className="diet-duo-tag">{isEnglish ? 'ONDA LIFTING TECH' : '온다 동일 극초단파'}</span>
+                <strong>{isEnglish ? 'Quantum Fit Microwave' : '퀀텀핏 리프팅'}</strong>
               </div>
             </div>
             <div className="diet-hero-duo-item diet-duo-line">
@@ -107,12 +107,12 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
             <h2>
               {isEnglish
                 ? 'Quantum Fit (Same Technology as ONDA Lifting) & Acurex Line Dual Solution'
-                : 'K-온다(ONDA) 리프팅과 동일한 기술력의 퀀텀핏과\n고농축 아큐렉스 라인약침의 듀얼 솔루션'}
+                : '온다(ONDA) 리프팅과 동일한 기술력의 퀀텀핏과\n고농축 아큐렉스 라인약침의 듀얼 솔루션'}
             </h2>
             <p>
               {isEnglish
                 ? 'Reshape facial and body contours without pain or downtime through next-generation microwave lifting and targeted herbal pharmacopuncture.'
-                : '오브한의원 다이어트 클리닉은 무리한 절식이나 피부 처짐 없이, 통증 없는 차세대 극초단파 리프팅과 순수 생약 성분의 라인약침을 결합하여 무너진 페이스 라인과 바디 윤곽을 정밀하게 재설계합니다.'}
+                : '오브한의원 끝내는 다이어트 클리닉은 무리한 절식이나 피부 처짐 없이, 통증 없는 차세대 극초단파 리프팅과 순수 생약 성분의 라인약침을 결합하여 무너진 페이스 라인과 바디 윤곽을 정밀하게 재설계합니다.'}
             </p>
           </div>
 
@@ -126,13 +126,13 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
                   className="diet-tech-poster"
                 />
                 <span className="tech-badge-gold">
-                  {isEnglish ? 'K-ONDA LIFTING DUAL MICROWAVE' : 'K-온다 리프팅 동일 기술'}
+                  {isEnglish ? 'ONDA LIFTING DUAL MICROWAVE' : '온다 리프팅 동일 기술'}
                 </span>
               </div>
               <div className="diet-tech-body">
                 <div className="diet-tech-meta">
                   <span className="tech-num">TECH 01</span>
-                  <h3>{isEnglish ? 'Quantum Fit Microwave Lifting' : '퀀텀핏 극초단파 리프팅'}</h3>
+                  <h3>{isEnglish ? 'Quantum Fit Microwave Lifting' : '퀀텀핏 리프팅'}</h3>
                   <strong className="tech-sub-strong">
                     {isEnglish
                       ? 'Painless Microwave Technology Identical to ONDA Lifting'
@@ -244,12 +244,12 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
             <h4>
               {isEnglish
                 ? 'Why Combine Quantum Fit (ONDA Tech) with Acurex Line?'
-                : '왜 퀀텀핏(K-온다 동일 기술)과 아큐렉스 라인약침을 병행해야 할까요?'}
+                : '왜 퀀텀핏(온다 동일 기술)과 아큐렉스 라인약침을 병행해야 할까요?'}
             </h4>
             <p>
               {isEnglish
                 ? 'Acurex Line pre-softens rigid subcutaneous fat clusters and activates lymphatic drainage pathways. Immediately following, Quantum Fit delivers focused 2.45GHz microwave energy deep into the relaxed tissue, selectively destroying fat cells and contracting collagen. This synergistic protocol delivers over twice the reduction speed and contour-sculpting precision of either treatment alone.'
-                : '아큐렉스 라인약침으로 단단하게 뭉친 지방과 섬유성 셀룰라이트를 부드럽게 이완시키고 림프 배출로를 활짝 열어준 뒤, K-온다 리프팅과 동일한 기술력의 퀀텀핏 극초단파 에너지를 조사하여 심부 지방세포를 집중 사멸시키고 늘어진 피부를 강력하게 조여줍니다. 두 시술의 유기적 결합으로 단독 시술 대비 압도적인 감량 속도와 지속력을 경험하실 수 있습니다.'}
+                : '아큐렉스 라인약침으로 단단하게 뭉친 지방과 섬유성 셀룰라이트를 부드럽게 이완시키고 림프 배출로를 활짝 열어준 뒤, 온다 리프팅과 동일한 기술력의 퀀텀핏 극초단파 에너지를 조사하여 심부 지방세포를 집중 사멸시키고 늘어진 피부를 강력하게 조여줍니다. 두 시술의 유기적 결합으로 단독 시술 대비 압도적인 감량 속도와 지속력을 경험하실 수 있습니다.'}
             </p>
           </div>
         </section>

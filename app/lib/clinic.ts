@@ -85,7 +85,7 @@ export const treatments: Treatment[] = [
     title: { ko: '자율신경 · 뇌파검사', en: 'Autonomic System · QEEG' },
     shortTitle: { ko: '자율신경과 뇌파', en: 'Autonomic system & QEEG' },
     summary: {
-      ko: '문진과 진찰에 자율신경 검사와 정량뇌파 정보를 더해 현재의 피로와 긴장 상태를 살핍니다.',
+      ko: '문진과 진찰에 자율신경 검사와 정량뇌파 정보를 더해 현재의 피로와 긴장 상태를 진단합니다.',
       en: 'Consultation and examination are considered alongside autonomic and quantitative EEG data.',
     },
     intro: {
@@ -157,18 +157,18 @@ export const treatments: Treatment[] = [
     number: '04',
     image: 'diet-acurex-line.png',
     imagePosition: 'center center',
-    title: { ko: '다이어트', en: 'Diet' },
-    shortTitle: { ko: '다이어트', en: 'Diet' },
+    title: { ko: '끝내는 다이어트', en: 'Diet' },
+    shortTitle: { ko: '끝내는 다이어트', en: 'Diet' },
     summary: {
-      ko: '단순한 체중 감량을 넘어 자율신경과 대사 균형을 바로잡고, 체질 맞춤 한약과 K-온다 리프팅 동일 기술 퀀텀핏, 아큐렉스 라인약침으로 지속 가능한 윤곽 변화를 돕습니다.',
+      ko: '단순한 체중 감량을 넘어 자율신경과 대사 균형을 바로잡고, 체질 맞춤 한약과 온다 리프팅 동일 기술 퀀텀핏, 아큐렉스 라인약침으로 지속 가능한 윤곽 변화를 돕습니다.',
       en: 'Beyond mere weight loss, we restore autonomic and metabolic balance through customized herbal formulas, Quantum Fit microwave lifting (same technology as ONDA), and Acurex Line pharmacopuncture.',
     },
     intro: {
-      ko: '무리한 절식과 굶는 다이어트는 자율신경계를 무너뜨리고 요요를 유발합니다. 개인별 대사 효율과 신체 균형을 분석하여 식욕 안정 맞춤 한약, K-온다 리프팅과 동일한 기술력의 퀀텀핏 극초단파 리프팅, 고민 부위 지방 분해를 돕는 아큐렉스 라인 약침 치료를 결합해 건강하고 탄력 있는 체형 변화를 완성합니다.',
+      ko: '무리한 절식과 굶는 다이어트는 자율신경계를 무너뜨리고 요요를 유발합니다. 개인별 대사 효율과 신체 균형을 분석하여 식욕 안정 맞춤 한약, 온다 리프팅과 동일한 기술력의 퀀텀핏 리프팅, 고민 부위 지방 분해를 돕는 아큐렉스 라인 약침 치료를 결합해 건강하고 탄력 있는 체형 변화를 완성합니다.',
       en: 'Extreme calorie restriction disrupts autonomic homeostasis and triggers rebound weight gain. We integrate personalized metabolic herbs, Quantum Fit microwave lifting (sharing the same technology as ONDA lifting), and targeted Acurex Line pharmacopuncture to achieve sustainable, sculpted body contours.',
     },
     imageAlt: {
-      ko: '오브한의원 퀀텀핏(K-온다 리프팅 동일 기술) 및 아큐렉스 라인약침 다이어트 솔루션',
+      ko: '오브한의원 퀀텀핏(온다 리프팅 동일 기술) 및 아큐렉스 라인약침 끝내는 다이어트 솔루션',
       en: 'Quantum Fit microwave lifting and Acurex Line pharmacopuncture at ORB Korean Medicine Clinic',
     },
     concerns: {
@@ -188,8 +188,8 @@ export const treatments: Treatment[] = [
     care: {
       ko: [
         '체성분 및 자율신경 대사 상태 정밀 분석',
-        '개인별 체질 맞춤 다이어트 한약 처방',
-        '고민 부위 아큐렉스 라인약침 및 퀀텀핏(K-온다 동일 기술) 듀얼 윤곽 시술',
+        '개인별 체질 맞춤 끝내는 다이어트 한약 처방',
+        '고민 부위 아큐렉스 라인약침 및 퀀텀핏(온다 동일 기술) 듀얼 윤곽 시술',
       ],
       en: [
         'Body composition and autonomic metabolic assessment',
