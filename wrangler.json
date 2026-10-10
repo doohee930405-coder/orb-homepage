@@ -1,9 +1,12 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "orb-homepage",
-  "pages_build_output_dir": "dist/client",
-  "compatibility_date": "2026-03-01",
+  "main": "dist/server/index.js",
+  "compatibility_date": "2026-05-15",
   "compatibility_flags": [
     "nodejs_compat"
-  ]
+  ],
+  "assets": {
+    "directory": "dist/client"
+  }
 }
