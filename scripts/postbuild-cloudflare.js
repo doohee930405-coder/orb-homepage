@@ -38,6 +38,13 @@ safeCopy(path.join(clientDir, 'en.rsc'), path.join(clientDir, 'en', 'index.rsc')
 safeCopy(path.join(clientDir, 'admin', 'columns.html'), path.join(clientDir, 'admin', 'columns', 'index.html'));
 safeCopy(path.join(clientDir, 'admin', 'columns.rsc'), path.join(clientDir, 'admin', 'columns', 'index.rsc'));
 
+// Cloudflare Pages redirects *.html to its clean URL. Without directory
+// indexes, the privacy rewrites loop back to themselves.
+safeCopy(path.join(clientDir, 'privacy.html'), path.join(clientDir, 'privacy', 'index.html'));
+safeCopy(path.join(clientDir, 'privacy.rsc'), path.join(clientDir, 'privacy', 'index.rsc'));
+safeCopy(path.join(clientDir, 'en', 'privacy.html'), path.join(clientDir, 'en', 'privacy', 'index.html'));
+safeCopy(path.join(clientDir, 'en', 'privacy.rsc'), path.join(clientDir, 'en', 'privacy', 'index.rsc'));
+
 // 4. Create dual routes (both slug.html and slug/index.html) for all column subpages
 const columnsDir = path.join(clientDir, 'columns');
 if (fs.existsSync(columnsDir)) {
