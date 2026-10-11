@@ -44,7 +44,7 @@ export default function RootLayout({
       <head>
         <meta
           name="naver-site-verification"
-          content="26b999aab138fd17209f1024cf45bdf683c32961"
+          content="445e0814ef5ce039b0bbc3f0565a99337c294118"
         />
         {hasGoogleAnalyticsId && googleAnalyticsId ? (
           <>
