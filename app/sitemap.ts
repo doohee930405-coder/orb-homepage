@@ -1,7 +1,6 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL } from './lib/clinic';
+import { SITE_URL, treatments } from './lib/clinic';
 import { getAllColumns } from './lib/columns';
-import { CLINIC_CATEGORIES } from './lib/columnTypes';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const columns = getAllColumns();
@@ -22,58 +21,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.95,
     },
     {
-      url: `${SITE_URL}/treatments/autonomic-qeeg`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/treatments/pain-chuna`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/treatments/stress-neurosis`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/treatments/weight-metabolism`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
       url: `${SITE_URL}/en`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/en/treatments/autonomic-qeeg`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${SITE_URL}/en/treatments/pain-chuna`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${SITE_URL}/en/treatments/stress-neurosis`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${SITE_URL}/en/treatments/weight-metabolism`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.7,
     },
     {
       url: `${SITE_URL}/privacy`,
@@ -89,13 +40,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // 8 Category Topic Cluster Hubs
-  const categoryRoutes: MetadataRoute.Sitemap = CLINIC_CATEGORIES.map((cat) => ({
-    url: `${SITE_URL}/columns?category=${encodeURIComponent(cat)}`,
-    lastModified: now,
-    changeFrequency: 'weekly',
-    priority: 0.85,
-  }));
+  // Only canonical treatment URLs belong in the sitemap. Legacy aliases and
+  // category query URLs declare different canonical URLs on their pages.
+  const treatmentRoutes: MetadataRoute.Sitemap = treatments.flatMap(({ slug }) => [
+    {
+      url: `${SITE_URL}/treatments/${slug}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/en/treatments/${slug}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    },
+  ]);
 
   // Dynamic Column Detail Routes
   const columnRoutes: MetadataRoute.Sitemap = columns.map((col) => {
@@ -116,5 +76,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
-  return [...staticRoutes, ...categoryRoutes, ...columnRoutes];
+  return [...staticRoutes, ...treatmentRoutes, ...columnRoutes];
 }
