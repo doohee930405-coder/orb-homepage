@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://orbclinic.pages.dev';
+export const SITE_URL = 'https://www.orbmed.co.kr';
 
 export const clinic = {
   nameKo: '오브한의원 마곡점',

@@ -9,7 +9,7 @@ const hasGoogleAnalyticsId = Boolean(
 );
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://orbclinic.pages.dev'),
+  metadataBase: new URL('https://www.orbmed.co.kr'),
   title: {
     default: '오브한의원 마곡점 | 마곡 오브한의원',
     template: '%s | 오브한의원 마곡점',

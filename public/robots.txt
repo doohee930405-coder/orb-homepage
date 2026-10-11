@@ -24,4 +24,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/admin
 
-Sitemap: https://orbclinic.pages.dev/sitemap.xml
+Sitemap: https://www.orbmed.co.kr/sitemap.xml
