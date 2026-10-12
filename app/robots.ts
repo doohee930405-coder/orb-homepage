@@ -1,24 +1,25 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL } from './lib/clinic';
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
-        userAgent: [
-          'Googlebot',
-          'Yeti',
-          'GPTBot',
-          'OAI-SearchBot',
-          'PerplexityBot',
-          'ClaudeBot',
-          'Google-Extended',
-          '*',
-        ],
+        userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api/admin'],
+      },
+      {
+        userAgent: 'Google-Extended',
+        allow: '/',
+      },
+      {
+        userAgent: 'GPTBot',
+        allow: '/',
+      },
+      {
+        userAgent: 'Yeti',
+        allow: '/',
       },
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: 'https://www.orbmed.co.kr/sitemap.xml',
   };
 }
