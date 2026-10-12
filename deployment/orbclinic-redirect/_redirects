@@ -1,0 +1,17 @@
+# Legacy orbclinic.pages.dev -> www.orbmed.co.kr site move.
+# Keep specific mappings before the fallback.
+/robots.txt https://www.orbmed.co.kr/robots.txt 301
+/sitemap.xml https://www.orbmed.co.kr/sitemap.xml 301
+/en/first-visit https://www.orbmed.co.kr/en#contact 301
+/first-visit https://www.orbmed.co.kr/#contact 301
+/about https://www.orbmed.co.kr/#doctor 301
+/column/wet-qeeg-guide https://www.orbmed.co.kr/columns/qeeg-guide 301
+/column/qeeg-process https://www.orbmed.co.kr/columns/qeeg-guide 301
+/column/autonomic-top-down-bottom-up https://www.orbmed.co.kr/columns/autonomic-dysregulation 301
+/column https://www.orbmed.co.kr/columns 301
+/treatments/stress-neurosis https://www.orbmed.co.kr/treatments/autonomic-qeeg 301
+/treatments/weight-metabolism https://www.orbmed.co.kr/treatments/diet 301
+/treatments/pain-chuna https://www.orbmed.co.kr/treatments/pain-chuna 301
+/treatments/autonomic-qeeg https://www.orbmed.co.kr/treatments/autonomic-qeeg 301
+/en https://www.orbmed.co.kr/en 301
+/* https://www.orbmed.co.kr/ 301
