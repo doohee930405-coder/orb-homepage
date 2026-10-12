@@ -7,3 +7,14 @@
 /en/              /en/index.html          200
 /admin/columns    /admin/columns/index.html 200
 /admin/columns/   /admin/columns/index.html 200
+
+# Core semantic and alias routes
+/location         /location/index.html    200
+/location/        /location/index.html    200
+/diet             /diet/index.html        200
+/diet/            /diet/index.html        200
+/qeeg             /qeeg/index.html        200
+/qeeg/            /qeeg/index.html        200
+/pain             /pain/index.html        200
+/pain/            /pain/index.html        200
+

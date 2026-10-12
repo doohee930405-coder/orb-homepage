@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import TreatmentDetail from '../../components/TreatmentDetail';
-import { getTreatment, treatments } from '../../lib/clinic';
+import { SITE_URL, getTreatment, treatments } from '../../lib/clinic';
 
 export function generateStaticParams() {
   return [
@@ -16,18 +16,37 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const treatment = getTreatment(slug);
   if (!treatment) return {};
 
+  const pageUrl = `${SITE_URL}/treatments/${treatment.slug}`;
+  const imageUrl = `${SITE_URL}/images/clinic/${treatment.image.includes('.') ? treatment.image : `${treatment.image}.webp`}`;
+
   return {
     title: treatment.title.ko,
     description: treatment.summary.ko,
     alternates: {
-      canonical: `/treatments/${treatment.slug}`,
-      languages: { ko: `/treatments/${treatment.slug}`, en: `/en/treatments/${treatment.slug}` },
+      canonical: pageUrl,
+      languages: { ko: pageUrl, en: `${SITE_URL}/en/treatments/${treatment.slug}` },
     },
     openGraph: {
       title: `${treatment.title.ko} | 오브한의원 마곡점`,
       description: treatment.summary.ko,
-      url: `/treatments/${treatment.slug}`,
+      url: pageUrl,
+      siteName: '오브한의원 마곡점',
       locale: 'ko_KR',
+      type: 'website',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: treatment.title.ko,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${treatment.title.ko} | 오브한의원 마곡점`,
+      description: treatment.summary.ko,
+      images: [imageUrl],
     },
   };
 }

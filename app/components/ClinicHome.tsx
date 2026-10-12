@@ -6,6 +6,7 @@ import SiteHeader from './SiteHeader';
 import SiteFooter from './SiteFooter';
 import SiteMotion from './SiteMotion';
 import TrackedLink from './TrackedLink';
+import MedicalJsonLd from './MedicalJsonLd';
 import { Column } from '../lib/columns';
 import {
   SITE_URL,
@@ -285,45 +286,6 @@ const copy = {
   },
 } as const;
 
-function clinicJsonLd(locale: Locale) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'MedicalClinic',
-    name: locale === 'ko' ? clinic.nameKo : clinic.nameEn,
-    alternateName: locale === 'ko' ? clinic.nameEn : clinic.nameKo,
-    url: `${SITE_URL}${locale === 'en' ? '/en' : ''}`,
-    telephone: clinic.phoneDisplay,
-    image: `${SITE_URL}/images/clinic/hero-lobby-wide.webp`,
-    address: {
-      '@type': 'PostalAddress',
-      addressCountry: 'KR',
-      addressRegion: locale === 'ko' ? '서울' : 'Seoul',
-      addressLocality: locale === 'ko' ? '강서구' : 'Gangseo-gu',
-      streetAddress:
-        locale === 'ko'
-          ? '마곡중앙로 111 104동 2층 238호, 239호'
-          : '111 Magokjungang-ro, Building 104, 2F, Units 238-239',
-    },
-    hasMap: clinic.googleMapUrl,
-    openingHoursSpecification: [
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        opens: '10:30',
-        closes: '20:20',
-      },
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Saturday'],
-        opens: '13:00',
-        closes: '18:00',
-      },
-    ],
-    sameAs: [clinic.naverPlaceUrl, 'https://blog.naver.com/orbmed'],
-    availableService: treatments.map((treatment) => treatment.title[locale]),
-  };
-}
-
 export default function ClinicHome({
   locale,
   latestColumns = [],
@@ -342,9 +304,11 @@ export default function ClinicHome({
   return (
     <main className={`site-shell locale-${locale}`} lang={locale}>
       <SiteMotion />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(clinicJsonLd(locale)) }}
+      <MedicalJsonLd
+        locale={locale}
+        pageUrl={`${SITE_URL}${isEnglish ? '/en' : ''}`}
+        pageTitle={`${text.title} ${text.branch} | ${isEnglish ? 'Specialized Neuro-Autonomic Clinic' : '자율신경·뇌신경·통증 중점 한의원'}`}
+        pageDescription={text.heroBody}
       />
       <SiteHeader locale={locale} />
 
@@ -365,7 +329,7 @@ export default function ClinicHome({
               alt="ORB Logo"
               className="hero-brand-logo"
             />
-            <h2 className="hero-brand-title">ORB ARCHIVE</h2>
+            <strong className="hero-brand-title">ORB ARCHIVE</strong>
             <p className="hero-brand-desc">
               {isEnglish ? (
                 <>
@@ -616,11 +580,11 @@ export default function ClinicHome({
 
               <div className="doctor-pillars-grid">
                 {text.doctorPillars.map((pillar) => (
-                  <div key={pillar.num} className="doctor-pillar-card">
+                  <article key={pillar.num} className="doctor-pillar-card">
                     <span className="pillar-num">{pillar.num}</span>
-                    <strong className="pillar-title">{pillar.title}</strong>
+                    <h3 className="pillar-title">{pillar.title}</h3>
                     <p className="pillar-desc">{pillar.desc}</p>
-                  </div>
+                  </article>
                 ))}
               </div>
             </div>

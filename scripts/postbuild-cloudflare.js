@@ -45,6 +45,12 @@ safeCopy(path.join(clientDir, 'privacy.rsc'), path.join(clientDir, 'privacy', 'i
 safeCopy(path.join(clientDir, 'en', 'privacy.html'), path.join(clientDir, 'en', 'privacy', 'index.html'));
 safeCopy(path.join(clientDir, 'en', 'privacy.rsc'), path.join(clientDir, 'en', 'privacy', 'index.rsc'));
 
+// 3.5 Ensure clean URL directory indexes for key routes (location, diet, qeeg, pain)
+['location', 'diet', 'qeeg', 'pain'].forEach(page => {
+  safeCopy(path.join(clientDir, `${page}.html`), path.join(clientDir, page, 'index.html'));
+  safeCopy(path.join(clientDir, `${page}.rsc`), path.join(clientDir, page, 'index.rsc'));
+});
+
 // 4. Create dual routes (both slug.html and slug/index.html) for all column subpages
 const columnsDir = path.join(clientDir, 'columns');
 if (fs.existsSync(columnsDir)) {
@@ -114,6 +120,7 @@ function collectCanonicalUrls(dir) {
     const pathname = url.pathname;
     if (!(
       pathname === '/' || pathname === '/columns' || pathname === '/en' ||
+      pathname === '/location' ||
       pathname === '/privacy' || pathname === '/en/privacy' ||
       /^\/columns\/[^/]+$/.test(pathname) ||
       /^\/(?:en\/)?treatments\/[^/]+$/.test(pathname)

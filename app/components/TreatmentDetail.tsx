@@ -2,7 +2,8 @@ import ResponsivePicture from './ResponsivePicture';
 import SiteHeader from './SiteHeader';
 import SiteFooter from './SiteFooter';
 import TrackedLink from './TrackedLink';
-import { clinic, treatmentPath, treatments, type Locale, type Treatment } from '../lib/clinic';
+import MedicalJsonLd from './MedicalJsonLd';
+import { SITE_URL, clinic, treatmentPath, treatments, type Locale, type Treatment } from '../lib/clinic';
 
 const detailCopy = {
   ko: {
@@ -44,9 +45,25 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
   const isEnglish = locale === 'en';
   const home = isEnglish ? '/en' : '/';
   const related = treatments.filter((item) => item.slug !== treatment.slug);
+  const canonicalUrl = `${SITE_URL}${treatmentPath(locale, treatment.slug)}`;
+
+  const breadcrumbs = [
+    { name: text.home, url: `${SITE_URL}${home}` },
+    { name: text.treatments, url: `${SITE_URL}${home}#treatments` },
+    { name: treatment.title[locale], url: canonicalUrl },
+  ];
 
   return (
     <main className={`site-shell detail-page locale-${locale}`} lang={locale}>
+      <MedicalJsonLd
+        pageUrl={canonicalUrl}
+        pageTitle={`${treatment.title[locale]} | ${isEnglish ? clinic.nameEn : clinic.nameKo}`}
+        pageDescription={treatment.summary[locale]}
+        condition={treatment.medical?.condition[locale]}
+        therapy={treatment.medical?.therapy[locale]}
+        breadcrumbs={breadcrumbs}
+        locale={locale}
+      />
       <SiteHeader locale={locale} compact />
       <section className="detail-hero">
         <div className="detail-hero-copy">

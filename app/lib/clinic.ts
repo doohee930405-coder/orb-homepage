@@ -33,6 +33,41 @@ type LocalizedText = {
   en: string;
 };
 
+export type TreatmentMedicalInfo = {
+  condition: {
+    ko: {
+      name: string;
+      alternateName?: string;
+      description: string;
+      possibleTreatment: string[];
+      associatedAnatomy: string[];
+    };
+    en: {
+      name: string;
+      alternateName?: string;
+      description: string;
+      possibleTreatment: string[];
+      associatedAnatomy: string[];
+    };
+  };
+  therapy: {
+    ko: {
+      name: string;
+      alternateName?: string;
+      description: string;
+      procedureType: string;
+      bodyLocation: string[];
+    };
+    en: {
+      name: string;
+      alternateName?: string;
+      description: string;
+      procedureType: string;
+      bodyLocation: string[];
+    };
+  };
+};
+
 export type Treatment = {
   slug: TreatmentSlug;
   number: string;
@@ -46,6 +81,7 @@ export type Treatment = {
   imageAlt: LocalizedText;
   concerns: { ko: string[]; en: string[] };
   care: { ko: string[]; en: string[] };
+  medical?: TreatmentMedicalInfo;
 };
 
 export const treatments: Treatment[] = [
@@ -76,6 +112,40 @@ export const treatments: Treatment[] = [
       ko: ['문진과 움직임 평가', '현재 상태에 맞춘 치료 계획', '회복 단계에 따른 운동·생활 안내'],
       en: ['Consultation and movement assessment', 'A care plan matched to the current condition', 'Exercise and daily guidance for the recovery stage'],
     },
+    medical: {
+      condition: {
+        ko: {
+          name: '근골격계 척추·관절 통증 및 신경 포착 증후군',
+          alternateName: '척추관 협착증, 목·허리 디스크, 만성 관절통',
+          description: '목·어깨·허리 통증, 척추 디스크(추간판 탈출증), 척추관 협착증, 거북목, 관절 가동 범위 제한 및 교통사고 후유증',
+          possibleTreatment: ['척추신경 추나요법', '소염진통 약침치료', '침구치료', '관절 가동성 회복 운동요법'],
+          associatedAnatomy: ['Spine', 'Cervical vertebrae', 'Lumbar vertebrae', 'Joints'],
+        },
+        en: {
+          name: 'Musculoskeletal Spinal Pain & Joint Dysfunction',
+          alternateName: 'Spinal disc herniation, stenosis, chronic back and neck pain',
+          description: 'Neck, shoulder, lower back pain, disc herniation, spinal stenosis, joint restriction, and post-accident trauma.',
+          possibleTreatment: ['Chuna Manual Therapy', 'Pharmacopuncture', 'Acupuncture', 'Corrective exercise'],
+          associatedAnatomy: ['Spine', 'Cervical vertebrae', 'Lumbar vertebrae', 'Joints'],
+        },
+      },
+      therapy: {
+        ko: {
+          name: '척추신경 추나요법 및 심부 관절 가동 교정',
+          alternateName: 'Chuna Manual Therapy',
+          description: '한의사가 직접 손과 신체 부위, 추나 테이블을 활용하여 틀어진 척추와 관절의 정렬을 바로잡고 신경 압박과 근막 긴장을 정상화하는 한의 수기 치료',
+          procedureType: 'NoninvasiveProcedure',
+          bodyLocation: ['Spine', 'Neck', 'Lower Back', 'Pelvis'],
+        },
+        en: {
+          name: 'Chuna Manual Therapy for Spine & Joint Mobilization',
+          alternateName: 'Chuna Manual Therapy',
+          description: 'Non-invasive manual manipulation by a licensed Korean medicine doctor to realign spinal structures and relieve neural tension.',
+          procedureType: 'NoninvasiveProcedure',
+          bodyLocation: ['Spine', 'Neck', 'Lower Back', 'Pelvis'],
+        },
+      },
+    },
   },
   {
     slug: 'autonomic-qeeg',
@@ -103,6 +173,40 @@ export const treatments: Treatment[] = [
     care: {
       ko: ['증상과 생활 리듬 문진', '필요 시 자율신경·QEEG 검사', '결과 설명과 개인별 진료 계획'],
       en: ['Review of symptoms and daily rhythm', 'Autonomic or QEEG assessment when appropriate', 'Results review and an individualized care plan'],
+    },
+    medical: {
+      condition: {
+        ko: {
+          name: '자율신경실조증, 브레인포그 및 만성 신경계 과열',
+          alternateName: '만성피로증후군, 신경쇠약, 공황성 두근거림',
+          description: '각종 검사상 이상 없음에도 지속되는 만성 피로, 가슴 두근거림, 어지럼증, 수면장애, 머리가 멍하고 기억력이 떨어지는 브레인포그 증상',
+          possibleTreatment: ['습식 정량화 뇌파검사(QEEG)', '심박변이도(HRV) 자율신경 평가', '중추 과열 진정 1:1 맞춤 한약', '상부경추 및 두개골 뇌신경 추나요법'],
+          associatedAnatomy: ['Brain', 'Autonomic nervous system', 'Cervical spine'],
+        },
+        en: {
+          name: 'Autonomic Dysregulation, Brain Fog & Chronic Neuro-Fatigue',
+          alternateName: 'Dysautonomia, Chronic fatigue, Cognitive fog',
+          description: 'Persistent chronic fatigue, sudden palpitations, dizziness, insomnia, and cognitive fuzziness despite normal standard labs.',
+          possibleTreatment: ['Quantitative EEG (QEEG)', 'HRV autonomic testing', 'Customized neuro-fatigue herbal decoctions', 'Upper-cervical Chuna manual therapy'],
+          associatedAnatomy: ['Brain', 'Autonomic nervous system', 'Cervical spine'],
+        },
+      },
+      therapy: {
+        ko: {
+          name: '습식 정량화 뇌파검사(QEEG) 기반 뇌신경-자율신경 통합 치료',
+          alternateName: 'Quantitative EEG Brain Mapping Therapy',
+          description: '국제 10-20 시스템 19채널 습식 전극으로 두피 저항을 낮추고 뇌 피질 전위 및 심박변이도를 정밀 측정하여, 3차원 뇌기능 지형도(3D Brain Map)와 Z-score 편차를 분석한 후 맞춤 한약과 두개추나를 처방하는 치료법',
+          procedureType: 'NoninvasiveProcedure',
+          bodyLocation: ['Head', 'Brain', 'Cervical Spine', 'Autonomic Nervous System'],
+        },
+        en: {
+          name: 'Quantitative EEG (QEEG) Multichannel Assessment & Integrative Care',
+          alternateName: 'Quantitative EEG Brain Mapping Therapy',
+          description: 'Multichannel wet-sensor QEEG mapping under international 10-20 system to pinpoint cortical hyperexcitability and guide herbal/Chuna restoration.',
+          procedureType: 'NoninvasiveProcedure',
+          bodyLocation: ['Head', 'Brain', 'Cervical Spine', 'Autonomic Nervous System'],
+        },
+      },
     },
   },
   {
@@ -151,6 +255,40 @@ export const treatments: Treatment[] = [
         'Customized circulatory herbal formulas and neural pharmacopuncture',
       ],
     },
+    medical: {
+      condition: {
+        ko: {
+          name: '열대사장애 및 상열하한증, 자율신경성 체열 불균형',
+          alternateName: '갱년기 상열감, 수족냉증, 안면홍조',
+          description: '얼굴과 머리로는 열이 치솟고 손발과 하체는 차가운 체열 불균형, 가슴 두근거림, 다한증, 신경 분절별 감각 저하 및 만성 말초 순환 장애',
+          possibleTreatment: ['적외선체열검사(DITI)', '수승화강 순환 맞춤 한약', '신경 분절 순환 약침'],
+          associatedAnatomy: ['Microcirculation', 'Peripheral nervous system', 'Sympathetic nervous system'],
+        },
+        en: {
+          name: 'Heat Metabolism Dysregulation & Localized Thermal Imbalance',
+          alternateName: 'Thermal dysregulation, Cold extremities syndrome',
+          description: 'Upper-body flushing with cold extremities, palpitations, localized numbness, and autonomic peripheral circulatory disturbance.',
+          possibleTreatment: ['DITI thermography', 'Circulatory herbal medicine', 'Segmental neural pharmacopuncture'],
+          associatedAnatomy: ['Microcirculation', 'Peripheral nervous system', 'Sympathetic nervous system'],
+        },
+      },
+      therapy: {
+        ko: {
+          name: '적외선체열검사(DITI) 진단 및 수승화강 체열 순환 치료',
+          alternateName: 'DITI Infrared Thermography & Circulation Therapy',
+          description: '인체 표면의 적외선 방출량을 감지하여 신경 분절별 체열 편차를 시각화하고 상체의 열을 내리고 하체를 따뜻하게 순환시키는 한약 및 약침 복합 치료',
+          procedureType: 'NoninvasiveProcedure',
+          bodyLocation: ['Whole body thermal distribution', 'Peripheral nerves'],
+        },
+        en: {
+          name: 'Digital Infrared Thermal Imaging (DITI) & Thermal Regulation Care',
+          alternateName: 'DITI Infrared Thermography & Circulation Therapy',
+          description: 'Full-body infrared thermography visualization coupled with herbal and pharmacopuncture circulation therapy.',
+          procedureType: 'NoninvasiveProcedure',
+          bodyLocation: ['Whole body thermal distribution', 'Peripheral nerves'],
+        },
+      },
+    },
   },
   {
     slug: 'diet',
@@ -196,6 +334,40 @@ export const treatments: Treatment[] = [
         'Personalized herbal prescription for metabolic balance',
         'Dual contouring: Acurex Line pharmacopuncture & Quantum Fit (same technology as ONDA lifting)',
       ],
+    },
+    medical: {
+      condition: {
+        ko: {
+          name: '대사저하형 비만 및 국소 체형 불균형 (이중턱, 복부, 팔뚝)',
+          alternateName: '요요 증후군, 대사 저하, 국소 지방 축적',
+          description: '무리한 절식 후 반복되는 요요현상, 스트레스성 식욕 항진, 부종 동반 체중 증가, 운동으로 빠지지 않는 국소 부위 군살 및 피부 처짐',
+          possibleTreatment: ['체질 맞춤 끝내는 다이어트 한약', '퀀텀핏(온다 동일 기술) 극초단파 리프팅', '아큐렉스 라인약침'],
+          associatedAnatomy: ['Subcutaneous adipose tissue', 'Facial contours', 'Lymphatic vessels'],
+        },
+        en: {
+          name: 'Metabolic Obesity, Stubborn Localized Adiposity & Sagging Contours',
+          alternateName: 'Yo-yo syndrome, Slow metabolic rate, Localized fat deposits',
+          description: 'Yo-yo cycles from crash dieting, appetite dysregulation, sluggish metabolism, stubborn double chin, and body laxity.',
+          possibleTreatment: ['Customized metabolic herbal medicine', 'Quantum Fit microwave lifting (same tech as ONDA)', 'Acurex Line pharmacopuncture'],
+          associatedAnatomy: ['Subcutaneous adipose tissue', 'Facial contours', 'Lymphatic vessels'],
+        },
+      },
+      therapy: {
+        ko: {
+          name: '퀀텀핏 마이크로웨이브 리프팅 & 아큐렉스 라인약침 듀얼 윤곽 시술',
+          alternateName: 'Quantum Fit & Acurex Line Dual Contouring',
+          description: '온다(ONDA) 리프팅과 동일한 2.45GHz 극초단파 에너지로 심부 지방세포 사멸과 콜라겐 수축을 유도하는 퀀텀핏과, 스테로이드·PPC 없는 순수 생약 성분으로 지방 림프 배출을 돕는 아큐렉스 라인약침의 듀얼 컨투어링 솔루션',
+          procedureType: 'NoninvasiveProcedure',
+          bodyLocation: ['Face', 'Double chin', 'Abdomen', 'Arms', 'Thighs'],
+        },
+        en: {
+          name: 'Quantum Fit Microwave Lifting & Acurex Line Dual Contouring',
+          alternateName: 'Quantum Fit & Acurex Line Dual Contouring',
+          description: 'Painless 2.45GHz microwave lipolysis (ONDA technology) paired with natural herbal pharmacopuncture for non-invasive sculpting.',
+          procedureType: 'NoninvasiveProcedure',
+          bodyLocation: ['Face', 'Double chin', 'Abdomen', 'Arms', 'Thighs'],
+        },
+      },
     },
   },
 ];
