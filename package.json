@@ -9,6 +9,7 @@
     "dev": "vinext dev",
     "build": "vinext build --prerender-concurrency 1 && node scripts/postbuild-cloudflare.js",
     "start": "vinext start",
+    "preview": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "postinstall": "node scripts/patch-vinext.js"
   },
