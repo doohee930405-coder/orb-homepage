@@ -4,6 +4,17 @@ import { ensureQeegBrainmapImage } from './lib/syncImages';
 
 export default function Home() {
   ensureQeegBrainmapImage();
-  const latestColumns = getAllColumns().slice(0, 3);
-  return <ClinicHome locale="ko" latestColumns={latestColumns} />;
+  const allColumns = getAllColumns().map((col) => ({
+    id: col.id,
+    slug: col.slug,
+    title: col.title,
+    summary: col.summary,
+    content: '',
+    category: col.category,
+    author: col.author,
+    date: col.date,
+    tags: col.tags || [],
+    thumbnail: col.thumbnail,
+  }));
+  return <ClinicHome locale="ko" latestColumns={allColumns} />;
 }

@@ -7,6 +7,7 @@ import SiteFooter from './SiteFooter';
 import SiteMotion from './SiteMotion';
 import TrackedLink from './TrackedLink';
 import MedicalJsonLd from './MedicalJsonLd';
+import HomeColumnsArchive from './HomeColumnsArchive';
 import { Column } from '../lib/columns';
 import {
   SITE_URL,
@@ -680,57 +681,14 @@ export default function ClinicHome({
 
       {/* 8. [BOTTOM COLUMNS ARCHIVE SECTION] */}
       {latestColumns && latestColumns.length > 0 && (
-        <section className="home-columns-section reveal" id="columns">
-          <div className="home-columns-header">
-            <div className="section-heading split-heading">
-              <div>
-                <p className="eyebrow">{text.columnsEyebrow}</p>
-                <h2>{text.columnsTitle}</h2>
-              </div>
-              <p>{text.columnsSubtitle}</p>
-            </div>
-          </div>
-
-          <div className="home-columns-grid">
-            {latestColumns.map((col) => (
-              <article key={col.id} className="home-column-card">
-                <Link href={`/columns/${col.slug}`} className="home-column-card-link">
-                  <div className="home-column-thumb-wrap">
-                    <SafeImage
-                      src={col.thumbnail || ''}
-                      alt={col.title}
-                      className="home-column-thumb"
-                      loading="lazy"
-                    />
-                    <span className="home-column-cat-pill">{col.category}</span>
-                  </div>
-                  <div className="home-column-content">
-                    <div className="home-column-meta">
-                      <time dateTime={col.date}>{col.date}</time>
-                      <span className="meta-divider">·</span>
-                      <span className="meta-author">{col.author || '전두희 원장'}</span>
-                    </div>
-                    <h3 className="home-column-title">{col.title}</h3>
-                    <p className="home-column-summary">{col.summary}</p>
-                    <div className="home-column-footer">
-                      <span className="read-more-text">
-                        {text.columnsReadMore}
-                        <i aria-hidden="true">→</i>
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              </article>
-            ))}
-          </div>
-
-          <div className="home-columns-action">
-            <Link href="/columns" className="button button-outline-dark">
-              {text.columnsViewAll}
-              <span aria-hidden="true">↗</span>
-            </Link>
-          </div>
-        </section>
+        <HomeColumnsArchive
+          columns={latestColumns}
+          eyebrow={text.columnsEyebrow}
+          title={text.columnsTitle}
+          subtitle={text.columnsSubtitle}
+          readMoreText={text.columnsReadMore}
+          viewAllText={text.columnsViewAll}
+        />
       )}
 
       {/* 9. CONTACT SECTION */}

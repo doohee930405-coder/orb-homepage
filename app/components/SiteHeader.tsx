@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { clinic, type Locale } from '../lib/clinic';
 import TrackedLink from './TrackedLink';
@@ -11,8 +13,20 @@ export default function SiteHeader({ locale, compact = false }: { locale: Locale
     { href: `${home}#treatments`, label: isEnglish ? 'Treatments' : '진료 분야' },
     { href: `${home}#space`, label: isEnglish ? 'Space' : '공간' },
     { href: `${home}#directions`, label: isEnglish ? 'Directions' : '오시는 길' },
-    { href: '/columns', label: isEnglish ? 'Columns' : '칼럼', isRoute: true },
+    { href: `${home}#columns`, label: isEnglish ? 'Columns' : '칼럼' },
   ];
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.includes('#')) {
+      const hash = href.split('#')[1];
+      const target = document.getElementById(hash);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        window.history.pushState(null, '', `#${hash}`);
+      }
+    }
+  };
 
   return (
     <header className={`site-header${compact ? ' site-header-compact' : ''}`}>
@@ -21,17 +35,15 @@ export default function SiteHeader({ locale, compact = false }: { locale: Locale
           <span>ORB</span>
         </a>
         <nav className="desktop-nav" aria-label={isEnglish ? 'Main navigation' : '주요 메뉴'}>
-          {navLinks.map((item) =>
-            item.isRoute ? (
-              <Link key={item.href} href={item.href}>
-                {item.label}
-              </Link>
-            ) : (
-              <a key={item.href} href={item.href}>
-                {item.label}
-              </a>
-            )
-          )}
+          {navLinks.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              onClick={(e) => handleNavClick(e, item.href)}
+            >
+              {item.label}
+            </a>
+          ))}
         </nav>
         <div className="header-utilities">
           <a href={isEnglish ? '/' : '/en'} hrefLang={isEnglish ? 'ko' : 'en'}>
@@ -53,17 +65,16 @@ export default function SiteHeader({ locale, compact = false }: { locale: Locale
       {/* Mobile Tab Navigation (768px 이하 가로 1열 탭) */}
       <nav className="mobile-tab-nav" aria-label={isEnglish ? 'Mobile navigation tabs' : '모바일 메뉴'}>
         <div className="mobile-tab-scroll">
-          {navLinks.map((item) =>
-            item.isRoute ? (
-              <Link key={item.href} href={item.href} className="mobile-tab-link">
-                {item.label}
-              </Link>
-            ) : (
-              <a key={item.href} href={item.href} className="mobile-tab-link">
-                {item.label}
-              </a>
-            )
-          )}
+          {navLinks.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="mobile-tab-link"
+              onClick={(e) => handleNavClick(e, item.href)}
+            >
+              {item.label}
+            </a>
+          ))}
         </div>
       </nav>
     </header>

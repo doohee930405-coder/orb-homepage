@@ -21,6 +21,17 @@ export const metadata: Metadata = {
 
 export default function EnglishHome() {
   ensureQeegBrainmapImage();
-  const latestColumns = getAllColumns().slice(0, 3);
-  return <ClinicHome locale="en" latestColumns={latestColumns} />;
+  const allColumns = getAllColumns().map((col) => ({
+    id: col.id,
+    slug: col.slug,
+    title: col.title,
+    summary: col.summary,
+    content: '',
+    category: col.category,
+    author: col.author,
+    date: col.date,
+    tags: col.tags || [],
+    thumbnail: col.thumbnail,
+  }));
+  return <ClinicHome locale="en" latestColumns={allColumns} />;
 }
