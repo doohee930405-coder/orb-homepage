@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import ColumnListClient from '../components/ColumnListClient';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
@@ -112,7 +111,7 @@ export default function ColumnsPage() {
       <section className="column-hero-banner">
         <div className="column-hero-inner">
           <nav className="breadcrumbs" aria-label="현재 위치">
-            <Link href="/">홈</Link>
+            <a href="/">홈</a>
             <span>/</span>
             <span>칼럼</span>
           </nav>

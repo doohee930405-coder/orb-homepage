@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { Column } from '../lib/columnTypes';
 import SafeImage from './SafeImage';
@@ -86,7 +85,7 @@ export default function HomeColumnsArchive({
       <div className="home-columns-grid">
         {displayedColumns.map((col) => (
           <article key={col.id || col.slug} className="home-column-card">
-            <Link href={`/columns/${col.slug}`} className="home-column-card-link">
+            <a href={`/columns/${col.slug}`} className="home-column-card-link">
               <div className="home-column-thumb-wrap">
                 <SafeImage
                   src={col.thumbnail || ''}
@@ -124,14 +123,14 @@ export default function HomeColumnsArchive({
                   </span>
                 </div>
               </div>
-            </Link>
+            </a>
           </article>
         ))}
       </div>
 
       {/* View All Action */}
       <div className="home-columns-action">
-        <Link
+        <a
           href={
             selectedCategory === 'all'
               ? '/columns'
@@ -143,7 +142,7 @@ export default function HomeColumnsArchive({
             ? viewAllText
             : `${selectedCategory} 칼럼 전체 보기`}
           <span aria-hidden="true">↗</span>
-        </Link>
+        </a>
       </div>
     </section>
   );

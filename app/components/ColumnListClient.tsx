@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { Column } from '../lib/columnTypes';
 import SafeImage from './SafeImage';
@@ -241,7 +240,7 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
         <div className="column-grid">
           {filteredColumns.map((col) => (
             <article key={col.slug} className="column-card">
-              <Link href={`/columns/${col.slug}`} className="column-card-link">
+              <a href={`/columns/${col.slug}`} className="column-card-link">
                 <div className="column-card-thumb">
                   <SafeImage
                     src={col.thumbnail || ''}
@@ -269,7 +268,7 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
                     </span>
                   </div>
                 </div>
-              </Link>
+              </a>
             </article>
           ))}
         </div>

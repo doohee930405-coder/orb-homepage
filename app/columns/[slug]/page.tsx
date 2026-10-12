@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MarkdownView from '../../components/MarkdownView';
 import SafeImage from '../../components/SafeImage';
@@ -383,17 +382,17 @@ export default async function ColumnDetailPage({
           <nav className="article-breadcrumb-nav" aria-label="브레드크럼 위치">
             <ol className="breadcrumb-ol">
               <li className="breadcrumb-li">
-                <Link href="/">홈</Link>
+                <a href="/">홈</a>
                 <span className="breadcrumb-sep" aria-hidden="true">›</span>
               </li>
               <li className="breadcrumb-li">
-                <Link href="/columns">칼럼 아카이브</Link>
+                <a href="/columns">칼럼 아카이브</a>
                 <span className="breadcrumb-sep" aria-hidden="true">›</span>
               </li>
               <li className="breadcrumb-li">
-                <Link href={`/columns?category=${encodeURIComponent(column.category)}`}>
+                <a href={`/columns?category=${encodeURIComponent(column.category)}`}>
                   {column.category}
-                </Link>
+                </a>
                 <span className="breadcrumb-sep" aria-hidden="true">›</span>
               </li>
               <li className="breadcrumb-li current" aria-current="page">
@@ -449,10 +448,10 @@ export default async function ColumnDetailPage({
                   습식 정량화 뇌파(QEEG)와 정밀 자율신경 검사로 뇌 신경망 피로도와 불균형을 객관적 데이터로 분석하는 오브한의원의 진단 프로토콜을 확인해 보세요.
                 </p>
               </div>
-              <Link href="/columns/qeeg-guide" className="qeeg-guide-banner-link">
+              <a href="/columns/qeeg-guide" className="qeeg-guide-banner-link">
                 <span>습식 정량화 뇌파검사(QEEG) 원리 보러가기</span>
                 <span aria-hidden="true">→</span>
-              </Link>
+              </a>
             </div>
           </aside>
         )}
@@ -463,9 +462,9 @@ export default async function ColumnDetailPage({
             <span className="tags-label">관련 전문 태그:</span>
             <div className="tags-list">
               {column.tags.map((tag) => (
-                <Link key={tag} href={`/columns?tag=${encodeURIComponent(tag)}`} className="tag-pill">
+                <a key={tag} href={`/columns?tag=${encodeURIComponent(tag)}`} className="tag-pill">
                   #{tag}
-                </Link>
+                </a>
               ))}
             </div>
           </footer>
@@ -499,9 +498,9 @@ export default async function ColumnDetailPage({
 
         {/* Back Link */}
         <div className="article-back-bar">
-          <Link href="/columns" className="button button-ghost">
+          <a href="/columns" className="button button-ghost">
             ← 전체 칼럼 목록으로 돌아가기
-          </Link>
+          </a>
         </div>
       </article>
 
@@ -527,7 +526,7 @@ export default async function ColumnDetailPage({
             <div className="column-grid related-grid">
               {relatedColumns.map((col) => (
                 <article key={col.slug} className="column-card">
-                  <Link href={`/columns/${col.slug}`} className="column-card-link">
+                  <a href={`/columns/${col.slug}`} className="column-card-link">
                     <div className="column-card-thumb">
                       <SafeImage
                         src={col.thumbnail || ''}
@@ -541,7 +540,7 @@ export default async function ColumnDetailPage({
                       <h3 className="column-card-title">{col.title}</h3>
                       <p className="column-card-summary">{col.summary}</p>
                     </div>
-                  </Link>
+                  </a>
                 </article>
               ))}
             </div>

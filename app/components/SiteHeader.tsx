@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { clinic, type Locale } from '../lib/clinic';
 import TrackedLink from './TrackedLink';
 
@@ -13,7 +12,7 @@ export default function SiteHeader({ locale, compact = false }: { locale: Locale
     { href: `${home}#treatments`, label: isEnglish ? 'Treatments' : '진료 분야' },
     { href: `${home}#space`, label: isEnglish ? 'Space' : '공간' },
     { href: `${home}#directions`, label: isEnglish ? 'Directions' : '오시는 길' },
-    { href: `${home}#columns`, label: isEnglish ? 'Columns' : '칼럼' },
+    { href: '/columns', label: isEnglish ? 'Columns' : '칼럼' },
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
