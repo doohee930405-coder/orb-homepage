@@ -307,11 +307,6 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
       </section>
 
       <SiteFooter isEnglish={isEnglish} />
-
-      <aside className="mobile-cta" aria-label={isEnglish ? 'Appointment actions' : '예약 바로가기'}>
-        <TrackedLink href={clinic.naverBookingUrl} target="_blank" rel="noreferrer" eventName="booking_click" eventLabel={text.booking}>{text.booking}</TrackedLink>
-        <TrackedLink href={clinic.phoneHref} eventName="phone_click" eventLabel={text.call}>{text.call}</TrackedLink>
-      </aside>
     </main>
   );
 }
