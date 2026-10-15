@@ -111,8 +111,6 @@ export default function HomeColumnsArchive({
               <div className="home-column-content">
                 <div className="home-column-meta">
                   <time dateTime={col.date}>{col.date}</time>
-                  <span className="meta-divider">·</span>
-                  <span className="meta-author">{col.author || '전두희 원장'}</span>
                 </div>
                 <h3 className="home-column-title">{col.title}</h3>
                 <p className="home-column-summary">{col.summary}</p>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import FloatingCtaBar from './components/FloatingCtaBar';
+import AdminShortcutListener from './components/AdminShortcutListener';
 import './globals.css';
 
 const googleAnalyticsId =
@@ -80,6 +81,7 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         <FloatingCtaBar />
+        <AdminShortcutListener />
       </body>
     </html>
   );

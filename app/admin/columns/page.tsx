@@ -148,6 +148,35 @@ export default function AdminColumnsPage() {
     };
   }, []);
 
+  // Keyboard shortcut for quick Naver Blog Migration modal (Alt+N or Ctrl+M)
+  useEffect(() => {
+    const handleAdminKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isInput =
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable);
+
+      if (e.key === 'Escape') {
+        if (!isImporting) setShowNaverModal(false);
+        return;
+      }
+      if (isInput) return;
+
+      if (
+        (e.altKey && (e.key === 'n' || e.key === 'N')) ||
+        ((e.ctrlKey || e.metaKey) && (e.key === 'm' || e.key === 'M'))
+      ) {
+        e.preventDefault();
+        setShowNaverModal(true);
+        setImportSummary(null);
+      }
+    };
+    window.addEventListener('keydown', handleAdminKey);
+    return () => window.removeEventListener('keydown', handleAdminKey);
+  }, [isImporting]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
@@ -807,6 +836,7 @@ export default function AdminColumnsPage() {
                 setImportSummary(null);
               }}
               className="admin-nav-naver-btn"
+              title="네이버 블로그 가져오기 (단축키: Alt+N 또는 Ctrl+M)"
             >
               <span className="naver-n-icon">N</span> 블로그 가져오기
             </button>
@@ -1221,7 +1251,7 @@ export default function AdminColumnsPage() {
                     setImportSummary(null);
                   }}
                   className="button button-naver-import"
-                  title="네이버 블로그의 글을 홈페이지 칼럼으로 일괄 자동 이전합니다"
+                  title="네이버 블로그의 글을 홈페이지 칼럼으로 일괄 자동 이전합니다 (단축키: Alt+N 또는 Ctrl+M)"
                 >
                   <span className="naver-n-icon">N</span> 네이버 블로그 가져오기
                 </button>

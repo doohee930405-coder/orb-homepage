@@ -115,10 +115,8 @@ export default function ColumnsPage() {
             <span>/</span>
             <span>칼럼</span>
           </nav>
-          <p className="eyebrow">CLINICAL COLUMNS · 건강 칼럼</p>
-          <h1>원장 칼럼</h1>
+          <h1>ORB article</h1>
           <p className="column-hero-lede">
-            몸이 보내는 신호를 면밀히 이해하고, 신경계와 체형의 근본적인 회복 방향을 함께 모색합니다.
             오브한의원 대표원장이 직접 임상 경험과 의학적 근거를 바탕으로 집필합니다.
           </p>
         </div>

@@ -139,139 +139,151 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
 
   return (
     <div className="column-list-wrapper">
-      {/* Search and Category Filter Toolbar */}
-      <div className="column-toolbar">
-        <div className="category-chips" role="tablist" aria-label="칼럼 카테고리">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={selectedCategory === 'all'}
-            className={`category-chip ${selectedCategory === 'all' ? 'active' : ''}`}
-            onClick={() => setSelectedCategory('all')}
-          >
-            전체 ({initialColumns.length})
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.name}
-              type="button"
-              role="tab"
-              aria-selected={selectedCategory === cat.name}
-              className={`category-chip ${selectedCategory === cat.name ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(cat.name)}
-            >
-              {cat.name} ({cat.count})
-            </button>
-          ))}
-        </div>
+      <div className="column-layout-container">
+        {/* Left Sidebar: Categories (목차) Navigation */}
+        <aside className="column-sidebar" aria-label="칼럼 목차">
+          <div className="column-sidebar-sticky">
+            <div className="column-sidebar-header">
+              <h2 className="column-sidebar-title">목차</h2>
+              <span className="column-sidebar-count">전체 {initialColumns.length}</span>
+            </div>
+            <nav className="category-vertical-nav" role="tablist" aria-label="칼럼 카테고리">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={selectedCategory === 'all'}
+                className={`category-v-button ${selectedCategory === 'all' ? 'active' : ''}`}
+                onClick={() => setSelectedCategory('all')}
+              >
+                <span className="cat-name">전체</span>
+                <span className="cat-count">{initialColumns.length}</span>
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat.name}
+                  type="button"
+                  role="tab"
+                  aria-selected={selectedCategory === cat.name}
+                  className={`category-v-button ${selectedCategory === cat.name ? 'active' : ''}`}
+                  onClick={() => setSelectedCategory(cat.name)}
+                >
+                  <span className="cat-name">{cat.name}</span>
+                  <span className="cat-count">{cat.count}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+        </aside>
 
-        <div className="search-box">
-          <input
-            type="search"
-            placeholder="증상, 질환, 검사명 검색..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="칼럼 검색"
-            className="search-input"
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              className="search-clear-btn"
-              onClick={() => setSearchQuery('')}
-              aria-label="검색어 지우기"
-            >
-              ✕
-            </button>
+        {/* Right Main Content */}
+        <div className="column-main-content">
+          {/* Top Search Toolbar & Filter Status */}
+          <div className="column-content-topbar">
+            <div className="filter-status">
+              <p>
+                <strong>{selectedCategory === 'all' ? '전체' : selectedCategory}</strong>
+                <span> ({filteredColumns.length})</span>
+                {searchQuery && <span> · &ldquo;{searchQuery}&rdquo; 검색 결과</span>}
+              </p>
+            </div>
+
+            <div className="search-box">
+              <input
+                type="search"
+                placeholder="증상, 질환, 검사명 검색..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="칼럼 검색"
+                className="search-input"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="search-clear-btn"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="검색어 지우기"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* SEO Topic Cluster: Category Definition Header Box */}
+          {activeCategoryDef ? (
+            <aside className="category-definition-header" aria-label={`${selectedCategory} 진료 정의`}>
+              <div className="cat-def-badge-row">
+                <span className="cat-def-badge">TOPIC CLUSTER · CLINICAL FOCUS</span>
+                <span className="cat-def-sub">{activeCategoryDef.subtitle}</span>
+              </div>
+              <h2 className="cat-def-title">{activeCategoryDef.title}</h2>
+              <p className="cat-def-desc">{activeCategoryDef.description}</p>
+              <div className="cat-def-keywords">
+                {activeCategoryDef.keywords.map((kw) => (
+                  <span key={kw} className="cat-def-kw">
+                    #{kw}
+                  </span>
+                ))}
+              </div>
+            </aside>
+          ) : (
+            <aside className="category-definition-header overview" aria-label="오브한의원 임상 칼럼 아카이브 소개">
+              <div className="cat-def-badge-row">
+                <span className="cat-def-badge">ORB CLINICAL ARCHIVE</span>
+                <span className="cat-def-sub">근거 중심 신경계·대사 기능 의학</span>
+              </div>
+              <h2 className="cat-def-title">오브한의원 원장 임상 칼럼 아카이브</h2>
+              <p className="cat-def-desc">
+                뇌신경·자율신경·정량화뇌파(QEEG) 중점 진료 기관으로서, 보이지 않는 신경학적 고통과 만성 증상의 기전을 의학적 근거와 임상 데이터를 바탕으로 명쾌하게 해설합니다. 좌측 목차에서 카테고리를 선택하시면 각 진료 분야별 핵심 정의와 칼럼을 모아보실 수 있습니다.
+              </p>
+              <div className="cat-def-keywords">
+                <span className="cat-def-kw">#습식정량뇌파</span>
+                <span className="cat-def-kw">#자율신경실조증</span>
+                <span className="cat-def-kw">#브레인포그</span>
+                <span className="cat-def-kw">#초민감자(HSP)</span>
+                <span className="cat-def-kw">#ADHD</span>
+                <span className="cat-def-kw">#퀀텀핏다이어트</span>
+                <span className="cat-def-kw">#기능성위장관</span>
+                <span className="cat-def-kw">#갑상선대사</span>
+              </div>
+            </aside>
           )}
-        </div>
-      </div>
 
-      {/* SEO Topic Cluster: Category Definition Header Box */}
-      {activeCategoryDef ? (
-        <aside className="category-definition-header" aria-label={`${selectedCategory} 진료 정의`}>
-          <div className="cat-def-badge-row">
-            <span className="cat-def-badge">TOPIC CLUSTER · CLINICAL FOCUS</span>
-            <span className="cat-def-sub">{activeCategoryDef.subtitle}</span>
-          </div>
-          <h2 className="cat-def-title">{activeCategoryDef.title}</h2>
-          <p className="cat-def-desc">{activeCategoryDef.description}</p>
-          <div className="cat-def-keywords">
-            {activeCategoryDef.keywords.map((kw) => (
-              <span key={kw} className="cat-def-kw">
-                #{kw}
-              </span>
-            ))}
-          </div>
-        </aside>
-      ) : (
-        <aside className="category-definition-header overview" aria-label="오브한의원 임상 칼럼 아카이브 소개">
-          <div className="cat-def-badge-row">
-            <span className="cat-def-badge">ORB CLINICAL ARCHIVE</span>
-            <span className="cat-def-sub">근거 중심 신경계·대사 기능 의학</span>
-          </div>
-          <h2 className="cat-def-title">오브한의원 원장 임상 칼럼 아카이브</h2>
-          <p className="cat-def-desc">
-            뇌신경·자율신경·정량화뇌파(QEEG) 중점 진료 기관으로서, 보이지 않는 신경학적 고통과 만성 증상의 기전을 의학적 근거와 임상 데이터를 바탕으로 명쾌하게 해설합니다. 상단 카테고리를 선택하시면 각 진료 분야별 핵심 정의와 칼럼을 모아보실 수 있습니다.
-          </p>
-          <div className="cat-def-keywords">
-            <span className="cat-def-kw">#습식정량뇌파</span>
-            <span className="cat-def-kw">#자율신경실조증</span>
-            <span className="cat-def-kw">#브레인포그</span>
-            <span className="cat-def-kw">#초민감자(HSP)</span>
-            <span className="cat-def-kw">#ADHD</span>
-            <span className="cat-def-kw">#퀀텀핏다이어트</span>
-            <span className="cat-def-kw">#기능성위장관</span>
-            <span className="cat-def-kw">#갑상선대사</span>
-          </div>
-        </aside>
-      )}
-
-      {/* Results Count & Active Filters */}
-      <div className="filter-status">
-        <p>
-          총 <strong>{filteredColumns.length}</strong>개의 칼럼
-          {searchQuery && <span> · &ldquo;{searchQuery}&rdquo; 검색 결과</span>}
-        </p>
-      </div>
-
-      {/* Columns Grid */}
-      {filteredColumns.length > 0 ? (
-        <div className="column-grid">
-          {filteredColumns.map((col) => (
-            <article key={col.slug} className="column-card">
-              <a href={`/columns/${col.slug}`} className="column-card-link">
-                <div className="column-card-thumb">
-                  <SafeImage
-                    src={col.thumbnail || ''}
-                    alt={col.title}
-                    loading="lazy"
-                  />
-                  <span className="column-badge">{col.category}</span>
-                </div>
-                <div className="column-card-copy">
-                  <div className="column-meta">
-                    <time dateTime={col.date}>{col.date}</time>
-                    <span>·</span>
-                    <span>{col.author}</span>
-                  </div>
-                  <h3 className="column-card-title">{cleanDisplayText(col.title)}</h3>
-                  <p className="column-card-summary">{cleanDisplayText(col.summary)}</p>
-                  <div className="column-card-footer">
-                    <div className="column-tags">
-                      {col.tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="tag-pill">#{tag}</span>
-                      ))}
+          {/* Columns Grid */}
+          {filteredColumns.length > 0 ? (
+            <div className="column-grid">
+              {filteredColumns.map((col) => (
+                <article key={col.slug} className="column-card">
+                  <a href={`/columns/${col.slug}`} className="column-card-link">
+                    <div className="column-card-thumb">
+                      <SafeImage
+                        src={col.thumbnail || ''}
+                        alt={col.title}
+                        loading="lazy"
+                      />
+                      <span className="column-badge">{col.category}</span>
                     </div>
-                    <span className="column-read-more" aria-hidden="true">
-                      읽기 →
-                    </span>
-                  </div>
-                </div>
-              </a>
-            </article>
-          ))}
-        </div>
+                    <div className="column-card-copy">
+                      <div className="column-meta">
+                        <time dateTime={col.date}>{col.date}</time>
+                      </div>
+                      <h3 className="column-card-title">{cleanDisplayText(col.title)}</h3>
+                      <p className="column-card-summary">{cleanDisplayText(col.summary)}</p>
+                      <div className="column-card-footer">
+                        <div className="column-tags">
+                          {col.tags.slice(0, 3).map((tag) => (
+                            <span key={tag} className="tag-pill">#{tag}</span>
+                          ))}
+                        </div>
+                        <span className="column-read-more" aria-hidden="true">
+                          읽기 →
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              ))}
+            </div>
       ) : (
         <div className="column-empty">
           <p>해당 조건에 맞는 칼럼이 없습니다.</p>
@@ -287,6 +299,8 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
           </button>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }
