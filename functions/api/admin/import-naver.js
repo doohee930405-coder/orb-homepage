@@ -74,6 +74,111 @@ async function commitFileToGithub(repo, filePath, contentStr, message, token) {
   return data;
 }
 
+async function commitBatchFilesToGithub(repo, files, message, token) {
+  if (!files || files.length === 0) return null;
+
+  try {
+    // 1. Get latest commit SHA on main
+    const refRes = await fetch(`https://api.github.com/repos/${repo}/git/ref/heads/main`, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'User-Agent': 'Orb-Admin',
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+    if (!refRes.ok) throw new Error('GitHub main 브랜치 정보를 조회하지 못했습니다.');
+    const refData = await refRes.json();
+    const latestCommitSha = refData.object.sha;
+
+    // 2. Get tree SHA of that commit
+    const commitRes = await fetch(`https://api.github.com/repos/${repo}/git/commits/${latestCommitSha}`, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'User-Agent': 'Orb-Admin',
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+    if (!commitRes.ok) throw new Error('GitHub 커밋 트리를 조회하지 못했습니다.');
+    const commitData = await commitRes.json();
+    const baseTreeSha = commitData.tree.sha;
+
+    // 3. Create tree items
+    const treeItems = files.map((f) => ({
+      path: f.path,
+      mode: '100644',
+      type: 'blob',
+      content: f.content,
+    }));
+
+    const newTreeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `token ${token}`,
+        'User-Agent': 'Orb-Admin',
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json',
+      },
+      body: JSON.stringify({
+        base_tree: baseTreeSha,
+        tree: treeItems,
+      }),
+    });
+    if (!newTreeRes.ok) {
+      const err = await newTreeRes.json();
+      throw new Error(err.message || 'GitHub 파일 트리 생성에 실패했습니다.');
+    }
+    const newTreeData = await newTreeRes.json();
+
+    // 4. Create single commit
+    const newCommitRes = await fetch(`https://api.github.com/repos/${repo}/git/commits`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `token ${token}`,
+        'User-Agent': 'Orb-Admin',
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json',
+      },
+      body: JSON.stringify({
+        message,
+        tree: newTreeData.sha,
+        parents: [latestCommitSha],
+      }),
+    });
+    if (!newCommitRes.ok) {
+      const err = await newCommitRes.json();
+      throw new Error(err.message || 'GitHub 커밋 생성에 실패했습니다.');
+    }
+    const newCommitData = await newCommitRes.json();
+
+    // 5. Update ref
+    const updateRefRes = await fetch(`https://api.github.com/repos/${repo}/git/refs/heads/main`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `token ${token}`,
+        'User-Agent': 'Orb-Admin',
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json',
+      },
+      body: JSON.stringify({
+        sha: newCommitData.sha,
+        force: false,
+      }),
+    });
+    if (!updateRefRes.ok) {
+      const err = await updateRefRes.json();
+      throw new Error(err.message || 'GitHub main 브랜치 업데이트에 실패했습니다.');
+    }
+
+    return newCommitData;
+  } catch (err) {
+    // Fallback: if tree API fails, commit each file individually
+    for (const f of files) {
+      await commitFileToGithub(repo, f.path, f.content, message, token);
+    }
+    return null;
+  }
+}
+
 function decodeHtml(text) {
   if (!text) return '';
   return text
@@ -83,6 +188,8 @@ function decodeHtml(text) {
     .replace(/&apos;/g, "'")
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
+    .replace(/&#x3D;/gi, '=')
+    .replace(/&#61;/g, '=')
     .replace(/&amp;/g, '&')
     .replace(/&middot;/g, '·')
     .replace(/&ndash;/g, '–')
@@ -322,12 +429,12 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
     slug,
     title,
     summary,
-    content: markdown,
+    content: markdown.replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n').replace(/\u200B/g, '').trim(),
     category,
     author: '전두희 원장',
     date,
     tags: Array.from(tagsSet),
-    thumbnail,
+    thumbnail: decodeHtml(thumbnail).replace(/&amp;/g, '&'),
     faqs: [],
   };
 }
@@ -456,6 +563,7 @@ export async function onRequestPost(context) {
       }
 
       const results = [];
+      const filesToCommit = [];
       let successCount = 0;
       let failCount = 0;
 
@@ -489,9 +597,10 @@ export async function onRequestPost(context) {
           const jsonStr = JSON.stringify(col, null, 2);
           const mdStr = formatColumnToMarkdown(col);
 
-          // Commit to GitHub
-          await commitFileToGithub(repo, `content/columns/${col.slug}.json`, jsonStr, `feat(column): migrate naver post ${col.slug}.json`, token);
-          await commitFileToGithub(repo, `content/columns/${col.slug}.md`, mdStr, `feat(column): migrate naver post ${col.slug}.md`, token);
+          filesToCommit.push(
+            { path: `content/columns/${col.slug}.json`, content: jsonStr },
+            { path: `content/columns/${col.slug}.md`, content: mdStr }
+          );
 
           successCount++;
           results.push({
@@ -500,6 +609,9 @@ export async function onRequestPost(context) {
             slug: col.slug,
             category: col.category,
             date: col.date,
+            thumbnail: col.thumbnail,
+            summary: col.summary,
+            column: col,
             success: true,
           });
         } catch (err) {
@@ -511,6 +623,15 @@ export async function onRequestPost(context) {
             error: err.message || '가져오기 실패',
           });
         }
+      }
+
+      if (filesToCommit.length > 0 && token) {
+        await commitBatchFilesToGithub(
+          repo,
+          filesToCommit,
+          `feat(column): migrate ${successCount} naver post(s) to ORB articles`,
+          token
+        );
       }
 
       return new Response(
@@ -530,14 +651,15 @@ export async function onRequestPost(context) {
       const urlsText = body.urlsText || '';
       const rawUrls = Array.isArray(body.urls) ? body.urls : urlsText.split('\n');
       const cleanUrls = rawUrls
-        .map(u => u.trim())
-        .filter(u => Boolean(u) && (u.includes('blog.naver.com') || /^\d{8,14}$/.test(u)));
+        .map((u) => u.trim())
+        .filter((u) => Boolean(u) && (u.includes('blog.naver.com') || /^\d{8,14}$/.test(u)));
 
       if (cleanUrls.length === 0) {
         return new Response(JSON.stringify({ success: false, error: '유효한 네이버 블로그 URL을 입력해 주세요.' }), { status: 400, headers: CORS_HEADERS });
       }
 
       const results = [];
+      const filesToCommit = [];
       let successCount = 0;
       let failCount = 0;
 
@@ -579,8 +701,10 @@ export async function onRequestPost(context) {
           const jsonStr = JSON.stringify(col, null, 2);
           const mdStr = formatColumnToMarkdown(col);
 
-          await commitFileToGithub(repo, `content/columns/${col.slug}.json`, jsonStr, `feat(column): import url ${col.slug}.json`, token);
-          await commitFileToGithub(repo, `content/columns/${col.slug}.md`, mdStr, `feat(column): import url ${col.slug}.md`, token);
+          filesToCommit.push(
+            { path: `content/columns/${col.slug}.json`, content: jsonStr },
+            { path: `content/columns/${col.slug}.md`, content: mdStr }
+          );
 
           successCount++;
           results.push({
@@ -589,12 +713,24 @@ export async function onRequestPost(context) {
             slug: col.slug,
             category: col.category,
             date: col.date,
+            thumbnail: col.thumbnail,
+            summary: col.summary,
+            column: col,
             success: true,
           });
         } catch (err) {
           failCount++;
           results.push({ url, error: err.message || '가져오기 실패', success: false });
         }
+      }
+
+      if (filesToCommit.length > 0 && token) {
+        await commitBatchFilesToGithub(
+          repo,
+          filesToCommit,
+          `feat(column): import ${successCount} post(s) from URL to ORB articles`,
+          token
+        );
       }
 
       return new Response(

@@ -283,6 +283,7 @@ export default function AdminColumnsPage() {
   ];
 
   const [isLocalHost, setIsLocalHost] = useState(true);
+  const [pendingSlugs, setPendingSlugs] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -290,20 +291,47 @@ export default function AdminColumnsPage() {
         window.location.hostname === 'localhost' ||
         window.location.hostname === '127.0.0.1';
       setIsLocalHost(isLocal);
+
+      try {
+        const pending = JSON.parse(localStorage.getItem('orb_pending_columns') || '[]');
+        if (Array.isArray(pending)) {
+          setPendingSlugs(new Set(pending.map((c: any) => c.slug)));
+        }
+      } catch {}
     }
   }, []);
 
   const fetchColumns = async () => {
     setIsLoadingColumns(true);
     try {
-      let res = await fetch('/api/columns');
+      let res = await fetch('/api/columns', {
+        headers: {
+          'x-github-token': getActiveGithubToken(),
+        },
+      });
       if (!res.ok) {
         res = await fetch('/api/columns.json');
       }
       if (res.ok) {
         const data = await res.json();
         if (data && data.columns) {
-          setColumns(data.columns);
+          let serverCols: Column[] = data.columns;
+          // Merge pending columns that are still being built by Cloudflare
+          try {
+            const pending = JSON.parse(localStorage.getItem('orb_pending_columns') || '[]');
+            if (Array.isArray(pending) && pending.length > 0) {
+              const serverSlugs = new Set(serverCols.map((c) => c.slug));
+              const stillPending = pending.filter((c: any) => !serverSlugs.has(c.slug));
+              localStorage.setItem('orb_pending_columns', JSON.stringify(stillPending));
+              setPendingSlugs(new Set(stillPending.map((c: any) => c.slug)));
+              if (stillPending.length > 0) {
+                serverCols = [...stillPending, ...serverCols];
+              }
+            } else {
+              setPendingSlugs(new Set());
+            }
+          } catch {}
+          setColumns(serverCols);
         }
       }
     } catch (err) {
@@ -901,12 +929,16 @@ const handleDelete = async (slug: string, title: string) => {
 
         const data = await res.json();
         if (res.ok && data.results) {
+          const newCols: Column[] = [];
           for (const r of data.results) {
             if (r.skipped) {
               skippedCount++;
             } else if (r.success) {
               successCount++;
               categoryCounts[r.category] = (categoryCounts[r.category] || 0) + 1;
+              if (r.column) {
+                newCols.push(r.column);
+              }
             } else {
               failCount++;
               failedErrors.push({
@@ -914,6 +946,20 @@ const handleDelete = async (slug: string, title: string) => {
                 error: r.error || '이전 처리 실패',
               });
             }
+          }
+          if (newCols.length > 0) {
+            setColumns((prev) => {
+              const existingSlugs = new Set(prev.map((c) => c.slug));
+              const toAdd = newCols.filter((c) => !existingSlugs.has(c.slug));
+              return [...toAdd, ...prev];
+            });
+            try {
+              const existingPending = JSON.parse(localStorage.getItem('orb_pending_columns') || '[]');
+              const pendingSlugsMap = new Set(existingPending.map((c: any) => c.slug));
+              const toStore = [...newCols.filter((c) => !pendingSlugsMap.has(c.slug)), ...existingPending];
+              localStorage.setItem('orb_pending_columns', JSON.stringify(toStore));
+              setPendingSlugs(new Set(toStore.map((c: any) => c.slug)));
+            } catch {}
           }
         } else {
           failCount += chunk.length;
@@ -952,6 +998,12 @@ const handleDelete = async (slug: string, title: string) => {
     });
 
     setIsImporting(false);
+    if (successCount > 0) {
+      setActionMessage({
+        type: 'success',
+        text: `🎉 ${successCount}개 글 마이그레이션 성공! 관리자 목록에 즉시 등록되었습니다. (실서버 배포 1~2분 후 홈페이지 자동 공개)`,
+      });
+    }
     fetchColumns();
   };
 
@@ -1006,12 +1058,16 @@ const handleDelete = async (slug: string, title: string) => {
 
         const data = await res.json();
         if (res.ok && data.results) {
+          const newCols: Column[] = [];
           for (const r of data.results) {
             if (r.skipped) {
               skippedCount++;
             } else if (r.success) {
               successCount++;
               categoryCounts[r.category] = (categoryCounts[r.category] || 0) + 1;
+              if (r.column) {
+                newCols.push(r.column);
+              }
             } else {
               failCount++;
               failedErrors.push({
@@ -1019,6 +1075,20 @@ const handleDelete = async (slug: string, title: string) => {
                 error: r.error || '이전 처리 실패',
               });
             }
+          }
+          if (newCols.length > 0) {
+            setColumns((prev) => {
+              const existingSlugs = new Set(prev.map((c) => c.slug));
+              const toAdd = newCols.filter((c) => !existingSlugs.has(c.slug));
+              return [...toAdd, ...prev];
+            });
+            try {
+              const existingPending = JSON.parse(localStorage.getItem('orb_pending_columns') || '[]');
+              const pendingSlugsMap = new Set(existingPending.map((c: any) => c.slug));
+              const toStore = [...newCols.filter((c) => !pendingSlugsMap.has(c.slug)), ...existingPending];
+              localStorage.setItem('orb_pending_columns', JSON.stringify(toStore));
+              setPendingSlugs(new Set(toStore.map((c: any) => c.slug)));
+            } catch {}
           }
         } else {
           failCount += chunk.length;
@@ -1057,6 +1127,12 @@ const handleDelete = async (slug: string, title: string) => {
     });
 
     setIsImporting(false);
+    if (successCount > 0) {
+      setActionMessage({
+        type: 'success',
+        text: `🎉 ${successCount}개 글 마이그레이션 성공! 관리자 목록에 즉시 등록되었습니다. (실서버 배포 1~2분 후 홈페이지 자동 공개)`,
+      });
+    }
     fetchColumns();
   };
 
@@ -1649,7 +1725,14 @@ const handleDelete = async (slug: string, title: string) => {
                           )}
                         </td>
                         <td>
-                          <strong className="admin-col-title">{col.title}</strong>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <strong className="admin-col-title">{col.title}</strong>
+                            {pendingSlugs.has(col.slug) && (
+                              <span style={{ fontSize: '11px', color: '#D97706', background: '#FEF3C7', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>
+                                ⏳ 실서버 자동 배포 중 (1~2분 소요)
+                              </span>
+                            )}
+                          </div>
                           <p className="admin-col-summary">{col.summary}</p>
                           <span className="admin-col-slug">/columns/{col.slug}</span>
                         </td>
@@ -2026,6 +2109,11 @@ const handleDelete = async (slug: string, title: string) => {
                   <div className="summary-header">
                     <span className="summary-badge">MIGRATION COMPLETE</span>
                     <h4>네이버 블로그 글 이전이 완료되었습니다! 🎉</h4>
+                  </div>
+                  <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '12px 16px', borderRadius: '8px', margin: '14px 0', fontSize: '13px', color: '#065F46', lineHeight: 1.6 }}>
+                    <strong>⚡ 실시간 자동 배포 안내:</strong><br />
+                    • 이전된 칼럼은 관리자 목록에 <strong>즉시 추가</strong>되어 바로 확인 및 수정이 가능합니다.<br />
+                    • Cloudflare 배포 파이프라인(약 1~2분 소요)이 완료되면, 홈페이지 <strong>[원장 칼럼]</strong> 메뉴에도 모든 방문자에게 자동 공개됩니다.
                   </div>
                   <div className="summary-stats-grid">
                     <div className="summary-stat-box">

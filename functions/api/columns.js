@@ -122,53 +122,81 @@ export async function onRequestOptions() {
 }
 
 export async function onRequestGet(context) {
-  // 1. Try static assets fetch first
+  let staticCols = [];
+
+  // 1. Fetch static columns.json (fast baseline)
   try {
     if (context.env && context.env.ASSETS) {
       const assetRes = await context.env.ASSETS.fetch(new Request(new URL('/api/columns.json', context.request.url)));
       if (assetRes.ok) {
-        const text = await assetRes.text();
-        return new Response(text, { status: 200, headers: CORS_HEADERS });
+        const data = await assetRes.json();
+        staticCols = data.columns || [];
       }
     }
   } catch {}
 
-  // 2. Direct fetch to local static asset
-  try {
-    const staticRes = await fetch(new URL('/api/columns.json', context.request.url).toString());
-    if (staticRes.ok) {
-      const data = await staticRes.json();
-      return new Response(JSON.stringify(data), { status: 200, headers: CORS_HEADERS });
-    }
-  } catch {}
+  if (staticCols.length === 0) {
+    try {
+      const directRes = await fetch(new URL('/api/columns.json', context.request.url).toString());
+      if (directRes.ok) {
+        const data = await directRes.json();
+        staticCols = data.columns || [];
+      }
+    } catch {}
+  }
 
-  // 3. Fallback to GitHub contents listing
+  // 2. Real-time check: detect newly committed columns on GitHub not yet finished building
   try {
     const { token, repo } = getGithubConfig(context);
-    const ghRes = await fetch(`https://api.github.com/repos/${repo}/contents/content/columns?ref=main`, {
-      headers: {
-        'Authorization': `token ${token}`,
-        'User-Agent': 'Orb-Admin',
-        'Accept': 'application/vnd.github.v3+json',
-      },
-    });
-    if (ghRes.ok) {
-      const files = await ghRes.json();
-      const jsonFiles = Array.isArray(files) ? files.filter(f => f.name.endsWith('.json')) : [];
-      // Fetch up to 100 columns
-      const cols = [];
-      for (const jf of jsonFiles.slice(0, 100)) {
-        try {
-          const itemRes = await fetch(jf.download_url);
-          if (itemRes.ok) cols.push(await itemRes.json());
-        } catch {}
+    if (token && repo) {
+      const knownSlugs = new Set(staticCols.map((c) => c.slug));
+      const treeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees/main?recursive=1`, {
+        headers: {
+          Authorization: `token ${token}`,
+          'User-Agent': 'Orb-Admin',
+          Accept: 'application/vnd.github.v3+json',
+        },
+      });
+
+      if (treeRes.ok) {
+        const treeData = await treeRes.json();
+        const gitJsonFiles = (treeData.tree || []).filter(
+          (t) => t.path.startsWith('content/columns/') && t.path.endsWith('.json')
+        );
+
+        const newFiles = gitJsonFiles.filter((t) => {
+          const slug = t.path.replace('content/columns/', '').replace('.json', '');
+          return !knownSlugs.has(slug);
+        });
+
+        if (newFiles.length > 0) {
+          const newCols = [];
+          for (const f of newFiles.slice(0, 10)) {
+            try {
+              const rawRes = await fetch(
+                `https://raw.githubusercontent.com/${repo}/main/${encodeURIComponent(f.path).replace(/%2F/g, '/')}`,
+                {
+                  headers: { Authorization: `token ${token}` },
+                }
+              );
+              if (rawRes.ok) {
+                newCols.push(await rawRes.json());
+              }
+            } catch {}
+          }
+          if (newCols.length > 0) {
+            staticCols = [...newCols, ...staticCols];
+          }
+        }
       }
-      cols.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      return new Response(JSON.stringify({ success: true, columns: cols }), { status: 200, headers: CORS_HEADERS });
     }
   } catch {}
 
-  return new Response(JSON.stringify({ success: true, columns: [] }), { status: 200, headers: CORS_HEADERS });
+  staticCols.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
+  return new Response(JSON.stringify({ success: true, count: staticCols.length, columns: staticCols }), {
+    status: 200,
+    headers: CORS_HEADERS,
+  });
 }
 
 export async function onRequestPost(context) {
