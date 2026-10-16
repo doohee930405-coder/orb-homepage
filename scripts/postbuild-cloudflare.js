@@ -51,6 +51,28 @@ safeCopy(path.join(clientDir, 'en', 'privacy.rsc'), path.join(clientDir, 'en', '
   safeCopy(path.join(clientDir, `${page}.rsc`), path.join(clientDir, page, 'index.rsc'));
 });
 
+// 3.8 Generate static /api/columns and /api/columns.json feed for Admin & Clients
+const contentColumnsDir = path.join(rootDir, 'content', 'columns');
+if (fs.existsSync(contentColumnsDir)) {
+  const allJsonCols = [];
+  for (const f of fs.readdirSync(contentColumnsDir)) {
+    if (f.endsWith('.json')) {
+      try {
+        const raw = fs.readFileSync(path.join(contentColumnsDir, f), 'utf8');
+        allJsonCols.push(JSON.parse(raw));
+      } catch {}
+    }
+  }
+  allJsonCols.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const apiDir = path.join(clientDir, 'api');
+  if (!fs.existsSync(apiDir)) fs.mkdirSync(apiDir, { recursive: true });
+  const jsonOutput = JSON.stringify({ success: true, columns: allJsonCols });
+  fs.writeFileSync(path.join(apiDir, 'columns.json'), jsonOutput);
+  fs.writeFileSync(path.join(apiDir, 'columns'), jsonOutput);
+  console.log(`[postbuild-cloudflare] Emitted static /api/columns and /api/columns.json (${allJsonCols.length} columns)`);
+}
+
+
 // 4. Create dual routes (both slug.html and slug/index.html) for all column subpages
 const columnsDir = path.join(clientDir, 'columns');
 if (fs.existsSync(columnsDir)) {
