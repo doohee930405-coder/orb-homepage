@@ -385,11 +385,19 @@ export async function onRequestPost(context) {
 
         const text = await res.text();
         let json;
+        const slashQuote = String.fromCharCode(92) + "'";
+        const cleanText = text.split(slashQuote).join("'");
         try {
-          json = JSON.parse(text);
+          json = JSON.parse(cleanText);
         } catch {
-          break;
+          try {
+            const match = cleanText.match(/"postList"\s*:\s*(\[\{.*?\}\])/s);
+            if (match) {
+              json = { postList: JSON.parse(match[1]) };
+            }
+          } catch {}
         }
+        if (!json || !json.postList) break;
 
         const items = json.postList || [];
         if (items.length === 0) break;

@@ -272,11 +272,14 @@ export async function fetchNaverBlogPosts(
         rawText = rawText.slice(1);
       }
 
+      const targetSlashQuote = String.fromCharCode(92) + "'";
+      const cleanRawText = rawText.split(targetSlashQuote).join("'");
+
       let data: any = null;
       try {
-        data = JSON.parse(rawText);
+        data = JSON.parse(cleanRawText);
       } catch {
-        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        const jsonMatch = cleanRawText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           try {
             data = JSON.parse(jsonMatch[0]);
