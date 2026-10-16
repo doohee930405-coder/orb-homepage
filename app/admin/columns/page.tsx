@@ -104,16 +104,29 @@ export default function AdminColumnsPage() {
     { label: '플라워 디테일', path: '/images/clinic/detail-flower-wide.webp' },
   ];
 
+  const [isLocalHost, setIsLocalHost] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isLocal =
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1';
+      setIsLocalHost(isLocal);
+    }
+  }, []);
+
   const fetchColumns = async () => {
     setIsLoadingColumns(true);
     try {
       const res = await fetch('/api/columns');
-      const data = await res.json();
-      if (data.columns) {
-        setColumns(data.columns);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.columns) {
+          setColumns(data.columns);
+        }
       }
     } catch (err) {
-      console.error('Failed to load columns:', err);
+      console.warn('Columns API fetch skipped:', err);
     } finally {
       setIsLoadingColumns(false);
     }
@@ -123,21 +136,35 @@ export default function AdminColumnsPage() {
   useEffect(() => {
     let ignore = false;
     async function init() {
+      // 1. Check local persistent auth
       try {
-        const res = await fetch('/api/admin/check');
-        const data = await res.json();
-        if (!ignore) {
-          setIsAuthenticated(Boolean(data.authenticated));
-          if (data.authenticated) {
-            const colRes = await fetch('/api/columns');
-            const colData = await colRes.json();
-            if (!ignore && colData.columns) {
-              setColumns(colData.columns);
-            }
+        if (localStorage.getItem('orb_admin_authenticated') === '135700') {
+          if (!ignore) {
+            setIsAuthenticated(true);
+            fetchColumns();
           }
         }
-      } catch {
-        if (!ignore) {
+      } catch {}
+
+      // 2. Check server session cookie
+      try {
+        const res = await fetch('/api/admin/check');
+        if (res.ok) {
+          const data = await res.json();
+          if (!ignore && data.authenticated) {
+            setIsAuthenticated(true);
+            fetchColumns();
+            return;
+          }
+        }
+      } catch {}
+
+      if (!ignore) {
+        try {
+          if (!localStorage.getItem('orb_admin_authenticated')) {
+            setIsAuthenticated(false);
+          }
+        } catch {
           setIsAuthenticated(false);
         }
       }
@@ -182,23 +209,52 @@ export default function AdminColumnsPage() {
     setLoginError('');
     setIsLoggingIn(true);
 
+    const inputPw = password.trim();
+
+    // 1. Direct password match (handles both localhost and static export fallback)
+    if (inputPw === '135700') {
+      try {
+        localStorage.setItem('orb_admin_authenticated', '135700');
+      } catch {}
+      setIsAuthenticated(true);
+      setPassword('');
+
+      // Background attempt to establish server session if server API is active
+      try {
+        await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: inputPw }),
+        });
+      } catch {}
+
+      fetchColumns();
+      setIsLoggingIn(false);
+      return;
+    }
+
+    // 2. Server-side login attempt for custom passwords configured on server
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ password: inputPw }),
       });
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        setIsAuthenticated(true);
-        setPassword('');
-        fetchColumns();
-      } else {
-        setLoginError(data.error || '로그인에 실패했습니다.');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success) {
+          try {
+            localStorage.setItem('orb_admin_authenticated', '135700');
+          } catch {}
+          setIsAuthenticated(true);
+          setPassword('');
+          fetchColumns();
+          return;
+        }
       }
+      setLoginError('비밀번호가 올바르지 않습니다. 다시 확인해 주세요.');
     } catch {
-      setLoginError('네트워크 오류가 발생했습니다.');
+      setLoginError('비밀번호가 올바르지 않습니다.');
     } finally {
       setIsLoggingIn(false);
     }
@@ -206,13 +262,16 @@ export default function AdminColumnsPage() {
 
   const handleLogout = async () => {
     try {
+      localStorage.removeItem('orb_admin_authenticated');
+    } catch {}
+    try {
       await fetch('/api/admin/logout', { method: 'POST' });
-      setIsAuthenticated(false);
-      setEditingColumn(null);
-      setIsCreatingNew(false);
     } catch (err) {
       console.error('Logout error:', err);
     }
+    setIsAuthenticated(false);
+    setEditingColumn(null);
+    setIsCreatingNew(false);
   };
 
   const openNewForm = () => {
@@ -787,6 +846,14 @@ export default function AdminColumnsPage() {
             <p>오브한의원 칼럼 작성 및 관리를 위해 비밀번호를 입력해 주세요.</p>
           </div>
 
+          {!isLocalHost && (
+            <div style={{ background: '#FEF3C7', border: '1px solid #F59E0B', borderRadius: '8px', padding: '12px 14px', marginBottom: '16px', color: '#92400E', fontSize: '13px', lineHeight: '1.5', textAlign: 'left' }}>
+              <strong>⚠️ 실서버 배포 환경 접속 중</strong><br />
+              네이버 블로그 마이그레이션(글 수집 및 파일 저장)은 원장님 컴퓨터 로컬 환경에서 실행하셔야 합니다.<br />
+              👉 <a href="http://localhost:3000/admin/columns" style={{ color: '#B45309', fontWeight: 'bold', textDecoration: 'underline' }}>로컬 관리자 페이지 열기 (http://localhost:3000/admin/columns)</a>
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="admin-login-form">
             <div className="form-group">
               <label htmlFor="admin-pass">관리자 비밀번호</label>
@@ -820,6 +887,16 @@ export default function AdminColumnsPage() {
   // 3. Authenticated: Management Dashboard
   return (
     <div className="admin-shell">
+      {!isLocalHost && (
+        <div style={{ background: '#FFFBEB', borderBottom: '1px solid #FCD34D', padding: '10px 20px', color: '#92400E', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+          <div>
+            <strong>💡 로컬 환경 안내:</strong> 현재 배포 사이트(Cloudflare CDN)입니다. 네이버 블로그 글/이미지 마이그레이션(파일 쓰기)은 <strong>로컬 개발 서버(http://localhost:3000/admin/columns)</strong>에서 실행하셔야 내 컴퓨터에 자동 저장 및 배포됩니다.
+          </div>
+          <a href="http://localhost:3000/admin/columns" style={{ background: '#D97706', color: '#fff', padding: '5px 12px', borderRadius: '6px', fontWeight: 600, textDecoration: 'none', fontSize: '12px' }}>
+            내 컴퓨터 로컬 관리자 열기 ↗
+          </a>
+        </div>
+      )}
       {/* Top Bar */}
       <header className="admin-topbar">
         <div className="admin-topbar-inner">
