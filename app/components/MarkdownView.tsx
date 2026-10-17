@@ -489,7 +489,7 @@ export default function MarkdownView({ content, className = '', summary }: Markd
               alt={alt || '오브한의원 임상 칼럼'}
               loading="lazy"
               referrerPolicy="no-referrer"
-              className="w-full rounded-lg my-6 shadow-sm block"
+              className="max-w-full h-auto mx-auto rounded-lg my-6 shadow-sm block"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
@@ -810,7 +810,7 @@ export default function MarkdownView({ content, className = '', summary }: Markd
                   alt={alt || '오브한의원 임상 칼럼'}
                   loading="lazy"
                   referrerPolicy="no-referrer"
-                  className="w-full rounded-lg my-6 shadow-sm block"
+                  className="max-w-full h-auto mx-auto rounded-lg my-6 shadow-sm block"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}

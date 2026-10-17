@@ -2421,14 +2421,17 @@ p {
 
 .article-figure {
   margin: 40px 0;
-  overflow: hidden;
+  text-align: center;
 }
 
 .article-figure img {
-  border-radius: 4px;
-  max-height: 480px;
-  object-fit: cover;
-  width: 100%;
+  border-radius: 8px;
+  max-height: none;
+  object-fit: contain;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
 }
 
 .article-figure figcaption {
@@ -2445,12 +2448,11 @@ p {
 }
 
 .article-inline-image img {
-  border-radius: 6px;
+  border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
   display: block;
   height: auto;
   margin: 0 auto;
-  max-height: 540px;
   max-width: 100%;
   object-fit: contain;
   width: auto;
@@ -3457,17 +3459,22 @@ p {
 /* Inline Image with Alt Caption */
 .article-inline-image {
   margin: 36px 0;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
-  background: #fdfdfd;
-  border: 1px solid var(--line);
+  background: transparent;
+  text-align: center;
 }
 
 .article-inline-image img {
-  width: 100%;
-  max-height: 520px;
-  object-fit: cover;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
   display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .article-inline-image figcaption {
