@@ -561,6 +561,10 @@ export function isInvalidThumbnailUrl(url: string | null | undefined): boolean {
     'profile',
     'dthumb-phinf',
     'blank.gif',
+    'static.map',
+    'staticmap',
+    'blogpfthumb',
+    'og_270x270',
   ];
 
   for (const sig of invalidSignatures) {
@@ -809,17 +813,18 @@ export async function convertNaverHtmlToMasterMarkdown(
 
   // 1. Extract Top Blockquote / Summary (인용구 상단 3줄 요약)
   const quoteRegex =
-    /<blockquote[^>]*class="[^"]*(?:se_blockquote|se-quotation-container|se-quote-container|se-module-blockquote|se-quote|se-quotation)[^"]*"[^>]*>([\s\S]*?)<\/blockquote>/i;
-  const quoteMatch = bodyHtml.match(quoteRegex);
+    /<blockquote[^>]*class="[^"]*(?:se_blockquote|se-quotation-container|se-quote-container|se-module-blockquote|se-quote|se-quotation|se-component-quotation)[^"]*"[^>]*>([\s\S]*?)<\/blockquote>/i;
+  const quoteMatch = bodyHtml.match(quoteRegex) || bodyHtml.match(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/i);
 
   if (quoteMatch) {
     let rawQuote = stripHtml(quoteMatch[1]).trim();
     rawQuote = rawQuote
       .replace(/^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i, '')
+      .replace(/^[>\s💡]+/g, '')
       .trim();
     if (rawQuote.length >= 10) {
       summary = rawQuote;
-      bodyHtml = bodyHtml.replace(quoteRegex, '');
+      bodyHtml = bodyHtml.replace(quoteMatch[0], '');
     }
   }
 
@@ -1258,7 +1263,7 @@ export async function convertNaverHtmlToMasterMarkdown(
         return cleanBold ? `**${boldInner.trim()}**` : '';
       })
       .replace(/<(?:i|em)[^>]*>([\s\S]*?)<\/(?:i|em)>/gi, '*$1*');
-    const cleaned = decodeHtmlEntities(content.replace(/<[^>]*>/g, '')).trim();
+    const cleaned = content.replace(/<[^>]*>/g, '').trim();
     if (!cleaned || !cleaned.replace(/[\s\u200B\uFEFF]/g, '')) return '\n\n';
 
     // Check if starts with bold subtitle like **1.1. 소제목** or **1. 소제목**, split into heading + body
@@ -1274,8 +1279,8 @@ export async function convertNaverHtmlToMasterMarkdown(
 
   // Standard <p> and <div>
   bodyHtml = bodyHtml.replace(/<br\s*\/?>/gi, '\n\n');
-  bodyHtml = bodyHtml.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, inner) => `\n\n${stripHtml(inner)}\n\n`);
-  bodyHtml = bodyHtml.replace(/<div[^>]*>([\s\S]*?)<\/div>/gi, (_, inner) => `\n\n${stripHtml(inner)}\n\n`);
+  bodyHtml = bodyHtml.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, inner) => `\n\n${inner.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()}\n\n`);
+  bodyHtml = bodyHtml.replace(/<div[^>]*>([\s\S]*?)<\/div>/gi, (_, inner) => `\n\n${inner.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()}\n\n`);
 
   // Strip remaining HTML tags
   let markdown = decodeHtmlEntities(bodyHtml.replace(/<[^>]*>/g, ''));

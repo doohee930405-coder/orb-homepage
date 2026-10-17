@@ -654,10 +654,15 @@ export function normalizeColumn(parsed: any): Column {
   if (
     thumbnail === '#' ||
     thumbnail.includes('static.se2') ||
+    thumbnail.includes('static.map') ||
+    thumbnail.includes('staticmap') ||
+    thumbnail.includes('blogpfthumb') ||
+    thumbnail.includes('og_default') ||
+    thumbnail.includes('og_270x270') ||
     thumbnail.startsWith('/images/clinic/')
   ) {
     const firstLocal = extractFirstLocalImage(cleanedContent);
-    thumbnail = firstLocal || '';
+    thumbnail = firstLocal && !firstLocal.includes('static.map') && !firstLocal.includes('staticmap') ? firstLocal : '';
   }
 
   return {
@@ -677,9 +682,8 @@ export function normalizeColumn(parsed: any): Column {
 }
 
 export const CANDIDATE_COLUMN_DIRS = [
-  'C:/Users/doohe/Desktop/orb-homepage-main/content/columns',
   path.join(process.cwd(), 'content', 'columns'),
-  'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage-main/content/columns',
+  'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage/content/columns',
   'C:/Users/doohe/Downloads/orb-homepage-main/content/columns',
   '/tmp/content/columns',
 ];
@@ -687,14 +691,8 @@ export const CANDIDATE_COLUMN_DIRS = [
 export function getProjectRoot(): string {
   const cwd = process.cwd();
   if (fs.existsSync(path.join(cwd, 'content', 'columns'))) return cwd;
-  if (fs.existsSync('C:/Users/doohe/Desktop/orb-homepage-main/content/columns')) {
-    return 'C:/Users/doohe/Desktop/orb-homepage-main';
-  }
-  if (fs.existsSync(path.join(cwd, 'orb-homepage-main', 'content', 'columns'))) {
-    return path.join(cwd, 'orb-homepage-main');
-  }
-  if (fs.existsSync('C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage-main')) {
-    return 'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage-main';
+  if (fs.existsSync('C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage/content/columns')) {
+    return 'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage';
   }
   return cwd || process.cwd() || '.';
 }

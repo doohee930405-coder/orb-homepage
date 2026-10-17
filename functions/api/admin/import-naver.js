@@ -186,6 +186,7 @@ function decodeHtml(text) {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&apos;/g, "'")
+    .replace(/&#x27;/gi, "'")
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&#x3D;/gi, '=')
@@ -198,9 +199,14 @@ function decodeHtml(text) {
     .replace(/&bull;/g, '•');
 }
 
+function stripHtmlPreservingEntities(html) {
+  if (!html) return '';
+  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+}
+
 function stripHtml(html) {
   if (!html) return '';
-  return decodeHtml(html.replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
+  return decodeHtml(stripHtmlPreservingEntities(html));
 }
 
 function matchCategory(catName = '', title = '', content = '') {
@@ -210,11 +216,11 @@ function matchCategory(catName = '', title = '', content = '') {
   if (/뇌파|qeeg|정량뇌파|정량화뇌파|뇌파검사/.test(normCat)) return '정량화뇌파검사';
   if (/초민감|hsp|예민|고감각|민감자/.test(normCat)) return '초민감자(HSP)';
   if (/adhd|주의력|산만|집중력|도파민/.test(normCat)) return 'ADHD';
-  if (/갑상선|저하증|항진증|하시모토/.test(normCat)) return '갑상선';
+  if (/갑상선|저하증|항진증|하시모토|씬지로이드/.test(normCat)) return '갑상선';
   if (/브레인포그|만성피로|피로|무기력|번아웃|brain\s*fog|부신/.test(normCat)) return '브레인포그';
-  if (/다이어트|대사|비만|체중|감량|식욕|부종|체질|감비|퀀텀핏/.test(normCat)) return '다이어트';
-  if (/위장|소화|역류|식도|과민|담적|내과|장질환|변비|설사|위염|복부/.test(normCat)) return '위장관';
-  if (/자율신경|실조증|어지럼|두근거림|공황|기립성|미주신경|심계|통증|추나|목|어깨|허리|체형/.test(normCat)) return '자율신경실조증';
+  if (/다이어트|대사|비만|체중|감량|식욕|부종|체질|감비|퀀텀핏|마운자로|위고비/.test(normCat)) return '다이어트';
+  if (/위장|소화|역류|식도|과민|담적|내과|장질환|변비|설사|위염|복부|복압/.test(normCat)) return '위장관';
+  if (/자율신경|실조증|어지럼|두근거림|공황|기립성|미주신경|심계|통증|추나|목|어깨|허리|체형|상열하한/.test(normCat)) return '자율신경실조증';
 
   const scores = {
     '정량화뇌파검사': 0,
@@ -238,11 +244,11 @@ function matchCategory(catName = '', title = '', content = '') {
   addScore('정량화뇌파검사', ['정량화뇌파', '정량뇌파', 'qeeg', '뇌파검사', '뇌파기계', '알파파', '베타파', '세타파']);
   addScore('초민감자(HSP)', ['hsp', '초민감자', '초민감', '고감각', '예민한', '감각과민', '감각처리민감성', '빛과민', '소리과민']);
   addScore('ADHD', ['adhd', '주의력결핍', '집중력저하', '주의산만', '성인adhd', '충동성', '과잉행동', '도파민']);
-  addScore('갑상선', ['갑상선', '갑상선기능저하증', '갑상선기능항진증', '하시모토', '갑상선염', '티록신', 'tsh']);
+  addScore('갑상선', ['갑상선', '갑상선기능저하증', '갑상선기능항진증', '하시모토', '갑상선염', '티록신', 'tsh', '씬지로이드']);
   addScore('브레인포그', ['브레인포그', 'brain fog', '만성피로', '피로감', '무기력', '번아웃', '기억력', '머리가 멍', '부신피로']);
-  addScore('다이어트', ['다이어트', '체중감량', '감비', '비만', '식욕', '요요', '대사증후군', '체지방', '디톡스', '퀀텀핏']);
-  addScore('위장관', ['위장', '역류성식도염', '소화불량', '담적', '담적병', '과민성대장증후군', '복부팽만', '가스', '속쓰림', '위염']);
-  addScore('자율신경실조증', ['자율신경', '자율신경실조증', '교감신경', '부교감신경', '미주신경', '기립성', '어지럼', '두근거림', '통증', '추나']);
+  addScore('다이어트', ['다이어트', '체중감량', '감비', '비만', '식욕', '요요', '대사증후군', '체지방', '디톡스', '퀀텀핏', '마운자로', '위고비']);
+  addScore('위장관', ['위장', '역류성식도염', '소화불량', '담적', '담적병', '과민성대장증후군', '복부팽만', '가스', '속쓰림', '위염', '복압']);
+  addScore('자율신경실조증', ['자율신경', '자율신경실조증', '교감신경', '부교감신경', '미주신경', '기립성', '어지럼', '두근거림', '통증', '추나', '상열하한', 'gaba']);
 
   let bestCat = '자율신경실조증';
   let bestScore = -1;
@@ -263,12 +269,12 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
 
   // 1. Title
   let title = fallbackTitle || '';
-  const ogTitleMatch = cleanHtml.match(/<meta\s+property=["']og:title["']\s+content=["']([^"']+)["']/i);
+  const ogTitleMatch = cleanHtml.match(/<meta\s+(?:property|name)=["']og:title["']\s+content=(?:"([^"]*)"|'([^']*)')/i);
   const seTitleMatch = cleanHtml.match(/<h3[^>]*class="[^"]*se-title-text[^"]*"[^>]*>([\s\S]*?)<\/h3>/i);
   if (ogTitleMatch) {
-    title = decodeHtml(ogTitleMatch[1]).trim();
+    title = decodeHtml(ogTitleMatch[1] || ogTitleMatch[2]).trim();
   } else if (seTitleMatch) {
-    title = stripHtml(seTitleMatch[1]);
+    title = decodeHtml(stripHtmlPreservingEntities(seTitleMatch[1]));
   }
 
   // 2. Date
@@ -277,7 +283,7 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
     cleanHtml.match(/<span\s+class="[^"]*(?:se_publishDate|publishDate|date)[^"]*"[^>]*>([\s\S]*?)<\/span>/i) ||
     cleanHtml.match(/(\d{4}\.\s*\d{1,2}\.\s*\d{1,2})/);
   if (dateMatch) {
-    const rawDate = stripHtml(dateMatch[1]);
+    const rawDate = stripHtmlPreservingEntities(dateMatch[1]);
     const dMatch = rawDate.match(/(\d{4})[.\-/년]\s*(\d{1,2})[.\-/월]\s*(\d{1,2})/);
     if (dMatch) {
       date = `${dMatch[1]}-${dMatch[2].padStart(2, '0')}-${dMatch[3].padStart(2, '0')}`;
@@ -305,19 +311,43 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
 
   // Extract Summary from top blockquote
   let summary = '';
-  const quoteMatch = bodyHtml.match(/<blockquote[^>]*class="[^"]*se[_-]quote[^"]*"[^>]*>([\s\S]*?)<\/blockquote>/i);
+  const quoteRegex =
+    /<blockquote[^>]*class="[^"]*(?:se_blockquote|se-quotation-container|se-quote-container|se-module-blockquote|se-quote|se-quotation|se-component-quotation)[^"]*"[^>]*>([\s\S]*?)<\/blockquote>/i;
+  const quoteMatch = bodyHtml.match(quoteRegex) || bodyHtml.match(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/i);
   if (quoteMatch) {
-    summary = stripHtml(quoteMatch[1])
+    let rawQuote = decodeHtml(stripHtmlPreservingEntities(quoteMatch[1])).trim();
+    rawQuote = rawQuote
       .replace(/^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i, '')
+      .replace(/^[>\s💡]+/g, '')
       .trim();
-    bodyHtml = bodyHtml.replace(quoteMatch[0], '');
+    if (rawQuote.length >= 10) {
+      summary = rawQuote;
+      bodyHtml = bodyHtml.replace(quoteMatch[0], '');
+    }
   }
 
   // Extract Images
   const imgRegex = /<img\b[^>]*>/gi;
   let imgMatch;
-  const images = [];
-  let thumbnail = '';
+  const validImages = [];
+
+  const isInvalidThumbnail = (s) => {
+    if (!s) return true;
+    const l = s.toLowerCase();
+    return (
+      l.includes('static.map') ||
+      l.includes('staticmap') ||
+      l.includes('blogpfthumb') ||
+      l.includes('profile') ||
+      l.includes('og_default') ||
+      l.includes('og_270x270') ||
+      l.includes('gfmarket') ||
+      l.includes('emoticon') ||
+      l.includes('dthumb-phinf') ||
+      l.includes('blank.gif') ||
+      l.includes('static.se2')
+    );
+  };
 
   while ((imgMatch = imgRegex.exec(bodyHtml)) !== null) {
     const tag = imgMatch[0];
@@ -329,37 +359,51 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
       if (regSrc && regSrc[1]) src = regSrc[1].trim();
     }
 
-    if (!src || src.startsWith('data:') || src.includes('blank.gif') || src.includes('static.se2')) continue;
+    if (!src || src.startsWith('data:') || isInvalidThumbnail(src)) continue;
     if (src.startsWith('//')) src = `https:${src}`;
     if (src.includes('?type=')) src = src.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+    src = src.replace('blogthumb.pstatic.net', 'postfiles.pstatic.net').replace('mblogthumb-phinf.pstatic.net', 'postfiles.pstatic.net');
 
-    let alt = '';
-    const altM = tag.match(/\balt=["']([^"']*)["']/i);
-    if (altM && altM[1]) alt = stripHtml(altM[1]);
-
-    images.push({ src, alt });
-    if (!thumbnail && (src.includes('pstatic.net') || src.includes('blogfiles'))) {
-      thumbnail = src;
-    }
+    validImages.push(src);
   }
 
-  // If thumbnail still empty, check og:image
-  if (!thumbnail) {
-    const ogImg = cleanHtml.match(/<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i);
-    if (ogImg && ogImg[1]) {
-      let t = ogImg[1].trim();
+  let thumbnail = '';
+  // Candidate 1: og:image
+  const ogImg = cleanHtml.match(/<meta\s+(?:property|name)=["'](?:og|twitter):image["']\s+content=(?:"([^"]*)"|'([^']*)')/i);
+  if (ogImg) {
+    const rawOg = (ogImg[1] || ogImg[2] || '').trim();
+    if (!isInvalidThumbnail(rawOg)) {
+      let t = rawOg;
+      if (t.startsWith('//')) t = `https:${t}`;
       if (t.includes('?type=')) t = t.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+      t = t.replace('blogthumb.pstatic.net', 'postfiles.pstatic.net').replace('mblogthumb-phinf.pstatic.net', 'postfiles.pstatic.net');
       thumbnail = t;
     }
   }
 
+  // Candidate 2: first valid body image
+  if (!thumbnail && validImages.length > 0) {
+    thumbnail = validImages[0];
+  }
+
+  // Never allow map or invalid icons as thumbnail
+  if (isInvalidThumbnail(thumbnail)) {
+    thumbnail = '';
+  }
+
   // Parse HTML into Markdown structure
-  let markdown = '';
-  // Convert components:
+  // Naver Map & Place Module conversion
+  bodyHtml = bodyHtml.replace(
+    /<div[^>]*class="[^"]*(?:se-module-map|se-component-map|se-map)[^"]*"[^>]*>[\s\S]*?<\/div>\s*<\/div>/gi,
+    () => `\n\n[📍 **오브한의원 마곡점 (서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층)**](https://map.naver.com/p/search/%EC%98%A4%EB%B8%8C%ED%95%9C%EC%9D%98%EC%9B%90%20%EB%A7%88%EA%B3%A1%EC%A0%90)\n\n`
+  );
+
   // Headings
-  bodyHtml = bodyHtml.replace(/<h[2-4][^>]*>([\s\S]*?)<\/h[2-4]>/gi, (_, text) => `\n\n## ${stripHtml(text)}\n\n`);
+  bodyHtml = bodyHtml.replace(/<h[2-4][^>]*>([\s\S]*?)<\/h[2-4]>/gi, (_, text) => `\n\n## ${stripHtmlPreservingEntities(text)}\n\n`);
+
   // Quotations/Callouts
-  bodyHtml = bodyHtml.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, text) => `\n\n> 💡 ${stripHtml(text)}\n\n`);
+  bodyHtml = bodyHtml.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, text) => `\n\n> 💡 ${stripHtmlPreservingEntities(text)}\n\n`);
+
   // Images
   bodyHtml = bodyHtml.replace(/<img\b[^>]*>/gi, (tag) => {
     let src = '';
@@ -369,22 +413,26 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
       const regSrc = tag.match(/\bsrc=["']([^"']+)["']/i);
       if (regSrc && regSrc[1]) src = regSrc[1].trim();
     }
-    if (!src || src.startsWith('data:') || src.includes('static.se2')) return '';
+    if (!src || src.startsWith('data:') || isInvalidThumbnail(src)) return '';
     if (src.startsWith('//')) src = `https:${src}`;
     if (src.includes('?type=')) src = src.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
+    src = src.replace('blogthumb.pstatic.net', 'postfiles.pstatic.net').replace('mblogthumb-phinf.pstatic.net', 'postfiles.pstatic.net');
     return `\n\n![오브한의원 임상 칼럼](${src})\n\n`;
   });
-  // Paragraphs
+
+  // Paragraphs (preserve entities like &lt; so math/statistics p < 0.001 is never truncated)
   bodyHtml = bodyHtml.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, text) => {
-    const cleanP = stripHtml(text);
-    if (!cleanP) return '';
-    if (cleanP.length < 50 && (cleanP.endsWith('?') || cleanP.endsWith('!') || /^\d+\./.test(cleanP))) {
-      return `\n\n### ${cleanP}\n\n`;
+    const rawP = stripHtmlPreservingEntities(text);
+    if (!rawP) return '';
+    if (rawP.length < 50 && (rawP.endsWith('?') || rawP.endsWith('!') || /^\d+\./.test(rawP))) {
+      return `\n\n### ${rawP}\n\n`;
     }
-    return `\n\n${cleanP}\n\n`;
+    return `\n\n${rawP}\n\n`;
   });
 
-  markdown = bodyHtml.replace(/<[^>]*>/g, '').replace(/\n{3,}/g, '\n\n').trim();
+  // Strip remaining HTML tags FIRST, then decode entities LAST!
+  let markdown = bodyHtml.replace(/<[^>]*>/g, '');
+  markdown = decodeHtml(markdown).replace(/\n{3,}/g, '\n\n').trim();
 
   // Strip Naver checkin / place noise
   markdown = markdown
@@ -392,8 +440,12 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
     .replace(/MY\s*플레이스/gi, '');
 
   if (!summary && markdown.length > 50) {
-    summary = markdown.slice(0, 150).replace(/\n+/g, ' ').trim() + '...';
+    const p1 = markdown.split('\n\n').find(p => p.trim() && !p.startsWith('#') && !p.startsWith('!') && !p.startsWith('---'));
+    summary = (p1 || markdown.slice(0, 150)).replace(/\n+/g, ' ').replace(/^[>\s💡]+/g, '').trim();
   }
+
+  // References formatting
+  markdown = markdown.replace(/(\[\d+\]\s+[^\n]+)/g, '\n\n$1\n\n');
 
   // Append official web archive footer
   const archiveFooter = `\n\n---\n\n📌 [정식 웹 아카이브 안내] 본 칼럼은 오브한의원 공식 네이버 블로그에 연재된 임상 칼럼을 기반으로, 의학적 근거와 최신 검사 기준을 보완하여 영구 보존·게재한 공식 웹 아카이브 문서입니다. 무단 복제 및 전재를 금합니다.`;
@@ -418,10 +470,11 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
 
   const baseSlug = title
     .toLowerCase()
-    .replace(/[^a-z0-9가-힣\s]/g, '')
+    .replace(/[^a-z0-9가-힣\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-')
-    .slice(0, 35) || `post-${logNo}`;
+    .slice(0, 35)
+    .replace(/-+$/, '') || `post-${logNo}`;
   const slug = `${baseSlug}-${logNo.slice(-6)}`;
 
   return {
