@@ -5,7 +5,7 @@ import path from 'path';
 const SLUG_TO_LOGNO = {
   '신경성-위경련과-뒷목-뻣뻣함-굳어버린-장기와-근육을-푸는-천연-958747': '224414958747',
   'brainfog-recovery': '224421852305',
-  'qeeg-guide': '224429314941',
+  'qeeg-guide': '224412844140',
 };
 
 const columnsDir = path.join(process.cwd(), 'content', 'columns');
