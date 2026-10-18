@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import MarkdownView from '../../components/MarkdownView';
+import AdminAnalyticsDashboard from '../../components/AdminAnalyticsDashboard';
 import { CLINIC_CATEGORIES, type Column, type ColumnFaq } from '../../lib/columnTypes';
 
 const ENC_TOKEN_HEX = '565b5a68474a754764567a647d576667015c067b577c5204794605635c6157450d65025d02756f54';
@@ -285,6 +286,7 @@ export default function AdminColumnsPage() {
 
   const [isLocalHost, setIsLocalHost] = useState(true);
   const [pendingSlugs, setPendingSlugs] = useState<Set<string>>(new Set());
+  const [currentAdminTab, setCurrentAdminTab] = useState<'columns' | 'analytics'>('columns');
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -292,6 +294,11 @@ export default function AdminColumnsPage() {
         window.location.hostname === 'localhost' ||
         window.location.hostname === '127.0.0.1';
       setIsLocalHost(isLocal);
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('tab') === 'analytics' || window.location.pathname.includes('/analytics')) {
+        setCurrentAdminTab('analytics');
+      }
 
       try {
         const pending = JSON.parse(localStorage.getItem('orb_pending_columns') || '[]');
@@ -1268,14 +1275,14 @@ const handleDelete = async (slug: string, title: string) => {
   return (
     <div className="admin-shell">
       {/* Top Bar */}
-      <header className="admin-topbar">
-        <div className="admin-topbar-inner">
-          <div className="admin-topbar-title">
-            <a href="/admin/columns" className="admin-logo">ORB CLINIC</a>
-            <span>원장실 통합 대시보드</span>
+      <header className="admin-topbar" style={{ height: 'auto', minHeight: '64px' }}>
+        <div className="admin-topbar-inner" style={{ overflowX: 'auto', gap: '16px', padding: '8px 24px' }}>
+          <div className="admin-topbar-title" style={{ flexShrink: 0 }}>
+            <a href="/admin/columns" className="admin-logo" style={{ whiteSpace: 'nowrap' }}>ORB CLINIC</a>
+            <span style={{ whiteSpace: 'nowrap' }}>원장실 통합 대시보드</span>
           </div>
 
-          {/* Navigation Tabs */}
+          {/* Navigation Tabs (Instant in-page switching) */}
           <nav
             style={{
               display: 'flex',
@@ -1283,46 +1290,61 @@ const handleDelete = async (slug: string, title: string) => {
               background: '#F3F4F6',
               padding: '4px',
               borderRadius: '10px',
+              flexShrink: 0,
             }}
           >
-            <a
-              href="/admin/columns"
+            <button
+              type="button"
+              onClick={() => {
+                setCurrentAdminTab('columns');
+                if (typeof window !== 'undefined') {
+                  window.history.pushState(null, '', '/admin/columns');
+                }
+              }}
               style={{
-                padding: '6px 14px',
+                padding: '7px 16px',
                 borderRadius: '8px',
                 fontSize: '13px',
                 fontWeight: 700,
-                background: '#A9784A',
-                color: '#FFF',
-                textDecoration: 'none',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                background: currentAdminTab === 'columns' ? '#A9784A' : 'transparent',
+                color: currentAdminTab === 'columns' ? '#FFF' : '#4B5563',
+                border: 'none',
                 cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                boxShadow: currentAdminTab === 'columns' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                transition: 'all 0.15s ease',
               }}
             >
               📝 칼럼 관리
-            </a>
-            <a
-              href="/admin/analytics"
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.assign('/admin/analytics');
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setCurrentAdminTab('analytics');
+                if (typeof window !== 'undefined') {
+                  window.history.pushState(null, '', '/admin/columns?tab=analytics');
+                }
               }}
               style={{
-                padding: '6px 14px',
+                padding: '7px 16px',
                 borderRadius: '8px',
                 fontSize: '13px',
-                fontWeight: 600,
-                color: '#4B5563',
-                textDecoration: 'none',
+                fontWeight: 700,
+                background: currentAdminTab === 'analytics' ? '#A9784A' : 'transparent',
+                color: currentAdminTab === 'analytics' ? '#FFF' : '#4B5563',
+                border: 'none',
                 cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                boxShadow: currentAdminTab === 'analytics' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                transition: 'all 0.15s ease',
               }}
             >
               📊 방문자 및 조회수 통계
-            </a>
+            </button>
           </nav>
 
-          <div className="admin-topbar-actions">
-            <span style={{ fontSize: '12px', color: '#059669', background: '#ECFDF5', padding: '4px 10px', borderRadius: '12px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+          <div className="admin-topbar-actions" style={{ flexShrink: 0, gap: '10px' }}>
+            <span style={{ fontSize: '12px', color: '#059669', background: '#ECFDF5', padding: '4px 10px', borderRadius: '12px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '5px', whiteSpace: 'nowrap' }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span>
               실시간 자동 배포
             </span>
@@ -1334,7 +1356,7 @@ const handleDelete = async (slug: string, title: string) => {
                 setGhTokenStatus(null);
               }}
               className="admin-nav-link"
-              style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#4B5563' }}
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#4B5563', whiteSpace: 'nowrap' }}
               title="GitHub 연동 및 배포 토큰 설정"
             >
               ⚙️ 배포 설정
@@ -1346,6 +1368,7 @@ const handleDelete = async (slug: string, title: string) => {
                 setImportSummary(null);
               }}
               className="admin-nav-naver-btn"
+              style={{ whiteSpace: 'nowrap' }}
               title="네이버 블로그 가져오기 (단축키: Alt+N 또는 Ctrl+M)"
             >
               <span className="naver-n-icon">N</span> 블로그 가져오기
@@ -1355,14 +1378,15 @@ const handleDelete = async (slug: string, title: string) => {
               onClick={handleSyncThumbnails}
               disabled={isSyncingThumbs}
               className="admin-nav-sync-btn"
+              style={{ whiteSpace: 'nowrap' }}
               title="네이버 블로그의 실제 대표이미지로 기존 칼럼 썸네일을 일괄 동기화합니다"
             >
               {isSyncingThumbs ? '썸네일 동기화 중...' : '🖼️ 대표 썸네일 원본 동기화'}
             </button>
-            <a href="/columns" target="_blank" rel="noreferrer" className="admin-nav-link">
+            <a href="/columns" target="_blank" rel="noreferrer" className="admin-nav-link" style={{ whiteSpace: 'nowrap' }}>
               칼럼 게시판 보기 ↗
             </a>
-            <button type="button" onClick={handleLogout} className="admin-logout-btn">
+            <button type="button" onClick={handleLogout} className="admin-logout-btn" style={{ whiteSpace: 'nowrap' }}>
               로그아웃
             </button>
           </div>
@@ -1371,8 +1395,13 @@ const handleDelete = async (slug: string, title: string) => {
 
 
       {/* Main Admin Content */}
-      <main className="admin-main">
-        {actionMessage && (
+      {currentAdminTab === 'analytics' ? (
+        <main className="admin-main" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 20px' }}>
+          <AdminAnalyticsDashboard />
+        </main>
+      ) : (
+        <main className="admin-main">
+          {actionMessage && (
           <div className={`admin-alert ${actionMessage.type}`}>
             <span>{actionMessage.text}</span>
             <button type="button" onClick={() => setActionMessage(null)}>✕</button>
@@ -1887,6 +1916,7 @@ const handleDelete = async (slug: string, title: string) => {
           </div>
         )}
       </main>
+    )}
 
       {/* Image Upload Modal */}
       {showImageModal && (
