@@ -1272,8 +1272,48 @@ const handleDelete = async (slug: string, title: string) => {
         <div className="admin-topbar-inner">
           <div className="admin-topbar-title">
             <a href="/admin/columns" className="admin-logo">ORB CLINIC</a>
-            <span>칼럼 관리 시스템 (원장님 전용)</span>
+            <span>원장실 통합 대시보드</span>
           </div>
+
+          {/* Navigation Tabs */}
+          <nav
+            style={{
+              display: 'flex',
+              gap: '6px',
+              background: '#F3F4F6',
+              padding: '4px',
+              borderRadius: '10px',
+            }}
+          >
+            <Link
+              href="/admin/columns"
+              style={{
+                padding: '6px 14px',
+                borderRadius: '8px',
+                fontSize: '13px',
+                fontWeight: 700,
+                background: '#A9784A',
+                color: '#FFF',
+                textDecoration: 'none',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              }}
+            >
+              📝 칼럼 관리
+            </Link>
+            <Link
+              href="/admin/analytics"
+              style={{
+                padding: '6px 14px',
+                borderRadius: '8px',
+                fontSize: '13px',
+                fontWeight: 600,
+                color: '#4B5563',
+                textDecoration: 'none',
+              }}
+            >
+              📊 방문자 및 조회수 통계
+            </Link>
+          </nav>
 
           <div className="admin-topbar-actions">
             <span style={{ fontSize: '12px', color: '#059669', background: '#ECFDF5', padding: '4px 10px', borderRadius: '12px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>

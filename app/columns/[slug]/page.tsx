@@ -5,6 +5,7 @@ import SafeImage from '../../components/SafeImage';
 import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
 import TrackedLink from '../../components/TrackedLink';
+import ColumnViewTracker from '../../components/ColumnViewTracker';
 import { clinic, SITE_URL } from '../../lib/clinic';
 import { getAllColumns, getColumnBySlug } from '../../lib/columns';
 
@@ -374,6 +375,7 @@ export default async function ColumnDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <SiteHeader locale="ko" compact />
+      <ColumnViewTracker slug={column.slug} />
 
       {/* Article Header */}
       <article className="article-container">
