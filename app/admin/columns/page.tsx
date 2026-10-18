@@ -1787,6 +1787,27 @@ const handleDelete = async (slug: string, title: string) => {
                 <button
                   type="button"
                   onClick={() => {
+                    setCurrentAdminTab('analytics');
+                    if (typeof window !== 'undefined') {
+                      window.history.pushState(null, '', '/admin/columns?tab=analytics');
+                    }
+                  }}
+                  className="button button-outline"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    borderColor: '#A9784A',
+                    color: '#A9784A',
+                    fontWeight: 700,
+                  }}
+                  title="칼럼별 조회수 및 일자별 방문 추이 통계 대시보드로 이동합니다"
+                >
+                  📊 방문자 및 조회수 통계 보기
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
                     setShowNaverModal(true);
                     setImportSummary(null);
                   }}

@@ -7,6 +7,8 @@
 /en/              /en/index.html          200
 /admin/columns    /admin/columns/index.html 200
 /admin/columns/   /admin/columns/index.html 200
+/admin            /admin/columns/index.html 200
+/admin/           /admin/columns/index.html 200
 /admin/analytics  /admin/analytics/index.html 200
 /admin/analytics/ /admin/analytics/index.html 200
 
