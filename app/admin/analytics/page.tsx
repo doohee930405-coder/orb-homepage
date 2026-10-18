@@ -614,52 +614,59 @@ export default function AdminAnalyticsPage() {
               <span style={{ fontSize: '12px', color: '#D97706', fontWeight: 700 }}>🏆 Best</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {(analyticsData?.summary?.topColumns || []).slice(0, 3).map((col, idx) => (
-                <div
-                  key={col.slug}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    fontSize: '12px',
-                    gap: '6px',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                    <span
-                      style={{
-                        width: '18px',
-                        height: '18px',
-                        borderRadius: '50%',
-                        background: idx === 0 ? '#FEF3C7' : '#F3F4F6',
-                        color: idx === 0 ? '#B45309' : '#4B5563',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 800,
-                        fontSize: '11px',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {idx + 1}
-                    </span>
-                    <span
-                      style={{
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        color: '#1F2937',
-                        fontWeight: 500,
-                        maxWidth: '160px',
-                      }}
-                      title={col.title}
-                    >
-                      {col.title}
-                    </span>
-                  </div>
-                  <strong style={{ color: '#2563EB', flexShrink: 0 }}>{col.views.toLocaleString()}회</strong>
+              {(analyticsData?.summary?.topColumns || []).length === 0 ? (
+                <div style={{ fontSize: '12px', color: '#9CA3AF', padding: '10px 0', textAlign: 'center' }}>
+                  현재 집계된 방문 기록이 없습니다.<br />
+                  <span style={{ fontSize: '11px', color: '#B45309' }}>칼럼 열람 시 실시간으로 순위가 집계됩니다.</span>
                 </div>
-              ))}
+              ) : (
+                (analyticsData?.summary?.topColumns || []).slice(0, 3).map((col, idx) => (
+                  <div
+                    key={col.slug}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      fontSize: '12px',
+                      gap: '6px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                      <span
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '50%',
+                          background: idx === 0 ? '#FEF3C7' : '#F3F4F6',
+                          color: idx === 0 ? '#B45309' : '#4B5563',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 800,
+                          fontSize: '11px',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {idx + 1}
+                      </span>
+                      <span
+                        style={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          color: '#1F2937',
+                          fontWeight: 500,
+                          maxWidth: '160px',
+                        }}
+                        title={col.title}
+                      >
+                        {col.title}
+                      </span>
+                    </div>
+                    <strong style={{ color: '#2563EB', flexShrink: 0 }}>{col.views.toLocaleString()}회</strong>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

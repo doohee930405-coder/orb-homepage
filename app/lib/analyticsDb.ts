@@ -55,69 +55,11 @@ function getSqliteDb() {
         ON column_daily_stats (column_slug);
     `);
 
-    // Seed realistic initial analytics if empty so admin UI is immediately informative
-    const checkStmt = sqliteDbInstance.prepare('SELECT COUNT(*) as count FROM column_daily_stats');
-    const row = checkStmt.get() as { count: number };
-    if (row && row.count === 0) {
-      seedInitialData(sqliteDbInstance);
-    }
-
     return sqliteDbInstance;
   } catch (err) {
     console.warn('node:sqlite could not be initialized:', err);
     return null;
   }
-}
-
-function seedInitialData(db: any) {
-  try {
-    const columns = getAllColumns();
-    if (!columns || columns.length === 0) return;
-
-    const today = new Date();
-    const insertDailyStmt = db.prepare(`
-      INSERT OR REPLACE INTO column_daily_stats (column_slug, view_date, views_count, unique_visitors)
-      VALUES (?, ?, ?, ?)
-    `);
-
-    // Seed last 14 days of historical view data
-    for (let dayOffset = 13; dayOffset >= 0; dayOffset--) {
-      const d = new Date(today.getTime() - dayOffset * 24 * 60 * 60 * 1000);
-      const dateStr = d.toISOString().slice(0, 10);
-
-      // Vary traffic by day of week (weekdays higher)
-      const dayOfWeek = d.getDay();
-      const baseMultiplier = (dayOfWeek === 0 || dayOfWeek === 6) ? 0.75 : 1.15;
-
-      columns.forEach((col, idx) => {
-        // High interest in top columns (qeeg, autonomic, adhd, brainfog)
-        let weight = 1.0;
-        if (col.slug.includes('qeeg') || col.category === '정량화뇌파검사') weight = 2.4;
-        else if (col.category === '자율신경실조증') weight = 2.0;
-        else if (col.category === '브레인포그' || col.category === 'ADHD') weight = 1.7;
-        else if (idx < 5) weight = 1.8;
-
-        // Pseudo-random view count based on slug and date
-        const hashSeed = Math.abs(hashCode(col.slug + dateStr));
-        const rawViews = Math.floor(((hashSeed % 15) + 3) * baseMultiplier * weight);
-        const views = Math.max(1, rawViews);
-        const uv = Math.max(1, Math.floor(views * 0.85));
-
-        insertDailyStmt.run(col.slug, dateStr, views, uv);
-      });
-    }
-  } catch (e) {
-    console.warn('Initial analytics seed skipped:', e);
-  }
-}
-
-function hashCode(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return hash;
 }
 
 export interface RecordViewOptions {
