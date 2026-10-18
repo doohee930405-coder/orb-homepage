@@ -34,9 +34,11 @@ safeCopy(path.join(clientDir, 'columns.rsc'), path.join(clientDir, 'columns', 'i
 safeCopy(path.join(clientDir, 'en.html'), path.join(clientDir, 'en', 'index.html'));
 safeCopy(path.join(clientDir, 'en.rsc'), path.join(clientDir, 'en', 'index.rsc'));
 
-// 3. Ensure /admin/columns/index.html exists
+// 3. Ensure /admin/columns/index.html and /admin/analytics/index.html exist
 safeCopy(path.join(clientDir, 'admin', 'columns.html'), path.join(clientDir, 'admin', 'columns', 'index.html'));
 safeCopy(path.join(clientDir, 'admin', 'columns.rsc'), path.join(clientDir, 'admin', 'columns', 'index.rsc'));
+safeCopy(path.join(clientDir, 'admin', 'analytics.html'), path.join(clientDir, 'admin', 'analytics', 'index.html'));
+safeCopy(path.join(clientDir, 'admin', 'analytics.rsc'), path.join(clientDir, 'admin', 'analytics', 'index.rsc'));
 
 // Cloudflare Pages redirects *.html to its clean URL. Without directory
 // indexes, the privacy rewrites loop back to themselves.

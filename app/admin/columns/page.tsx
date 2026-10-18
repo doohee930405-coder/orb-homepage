@@ -1285,7 +1285,7 @@ const handleDelete = async (slug: string, title: string) => {
               borderRadius: '10px',
             }}
           >
-            <Link
+            <a
               href="/admin/columns"
               style={{
                 padding: '6px 14px',
@@ -1296,12 +1296,17 @@ const handleDelete = async (slug: string, title: string) => {
                 color: '#FFF',
                 textDecoration: 'none',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                cursor: 'pointer',
               }}
             >
               📝 칼럼 관리
-            </Link>
-            <Link
+            </a>
+            <a
               href="/admin/analytics"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.assign('/admin/analytics');
+              }}
               style={{
                 padding: '6px 14px',
                 borderRadius: '8px',
@@ -1309,10 +1314,11 @@ const handleDelete = async (slug: string, title: string) => {
                 fontWeight: 600,
                 color: '#4B5563',
                 textDecoration: 'none',
+                cursor: 'pointer',
               }}
             >
               📊 방문자 및 조회수 통계
-            </Link>
+            </a>
           </nav>
 
           <div className="admin-topbar-actions">

@@ -374,8 +374,12 @@ export default function AdminAnalyticsPage() {
               borderRadius: '10px',
             }}
           >
-            <Link
+            <a
               href="/admin/columns"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.assign('/admin/columns');
+              }}
               style={{
                 padding: '6px 14px',
                 borderRadius: '8px',
@@ -383,11 +387,12 @@ export default function AdminAnalyticsPage() {
                 fontWeight: 600,
                 color: '#4B5563',
                 textDecoration: 'none',
+                cursor: 'pointer',
               }}
             >
               📝 칼럼 관리
-            </Link>
-            <Link
+            </a>
+            <a
               href="/admin/analytics"
               style={{
                 padding: '6px 14px',
@@ -398,10 +403,11 @@ export default function AdminAnalyticsPage() {
                 color: '#FFF',
                 textDecoration: 'none',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                cursor: 'pointer',
               }}
             >
               📊 방문자 및 조회수 통계
-            </Link>
+            </a>
           </nav>
 
           <div className="admin-topbar-actions">
