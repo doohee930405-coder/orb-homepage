@@ -188,6 +188,7 @@ export default function AdminColumnsPage() {
   const [editingColumn, setEditingColumn] = useState<Column | null>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [editorPreview, setEditorPreview] = useState(false);
+  const [previewColumn, setPreviewColumn] = useState<Column | null>(null);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -300,6 +301,47 @@ export default function AdminColumnsPage() {
       } catch {}
     }
   }, []);
+
+  // Poll pending slugs every 15s to detect when Cloudflare deployment finishes
+  useEffect(() => {
+    if (pendingSlugs.size === 0 || typeof window === 'undefined') return;
+
+    const interval = setInterval(async () => {
+      const remainingPending = new Set(pendingSlugs);
+      let changed = false;
+
+      for (const slug of Array.from(pendingSlugs)) {
+        try {
+          const res = await fetch(`/columns/${encodeURIComponent(slug)}`, {
+            method: 'HEAD',
+            cache: 'no-store',
+          });
+          if (res.ok) {
+            remainingPending.delete(slug);
+            changed = true;
+          }
+        } catch {}
+      }
+
+      if (changed) {
+        setPendingSlugs(new Set(remainingPending));
+        try {
+          const pendingRaw = localStorage.getItem('orb_pending_columns');
+          if (pendingRaw) {
+            const pendingCols: Column[] = JSON.parse(pendingRaw);
+            const updated = pendingCols.filter((c) => remainingPending.has(c.slug));
+            localStorage.setItem('orb_pending_columns', JSON.stringify(updated));
+          }
+        } catch {}
+        setActionMessage({
+          type: 'success',
+          text: '🎉 실서버 클라우드 정적 배포가 완료되었습니다! 이제 전체 방문자에게 정식 공개됩니다.',
+        });
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [pendingSlugs]);
 
   const fetchColumns = async () => {
     setIsLoadingColumns(true);
@@ -1728,8 +1770,8 @@ const handleDelete = async (slug: string, title: string) => {
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                             <strong className="admin-col-title">{col.title}</strong>
                             {pendingSlugs.has(col.slug) && (
-                              <span style={{ fontSize: '11px', color: '#D97706', background: '#FEF3C7', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>
-                                ⏳ 실서버 자동 배포 중 (1~2분 소요)
+                              <span style={{ fontSize: '11px', color: '#92400E', background: '#FEF3C7', border: '1px solid #F59E0B', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>
+                                ⏳ 클라우드 배포 중 (약 3분 소요)
                               </span>
                             )}
                           </div>
@@ -1756,14 +1798,31 @@ const handleDelete = async (slug: string, title: string) => {
                             >
                               수정
                             </button>
-                            <a
-                              href={`/columns/${col.slug}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="admin-view-btn"
-                            >
-                              보기 ↗
-                            </a>
+                            {pendingSlugs.has(col.slug) ? (
+                              <button
+                                type="button"
+                                onClick={() => setPreviewColumn(col)}
+                                className="admin-view-btn"
+                                style={{
+                                  background: '#FEF3C7',
+                                  color: '#92400E',
+                                  borderColor: '#F59E0B',
+                                  cursor: 'pointer',
+                                }}
+                                title="Cloudflare 빌드 중입니다. 클릭 시 즉시 관리자 미리보기로 확인하실 수 있습니다."
+                              >
+                                미리보기 👁️
+                              </button>
+                            ) : (
+                              <a
+                                href={`/columns/${col.slug}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="admin-view-btn"
+                              >
+                                보기 ↗
+                              </a>
+                            )}
                             <button
                               type="button"
                               onClick={() => handleDelete(col.slug, col.title)}
@@ -2320,6 +2379,119 @@ const handleDelete = async (slug: string, title: string) => {
                   설정 저장
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Column Live Preview Modal */}
+      {previewColumn && (
+        <div className="modal-backdrop" onClick={() => setPreviewColumn(null)}>
+          <div
+            className="modal-box"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '850px', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+          >
+            <div className="modal-header">
+              <div>
+                <span className="column-badge" style={{ marginBottom: '6px', display: 'inline-block' }}>
+                  {previewColumn.category}
+                </span>
+                <h3 style={{ fontSize: '18px', lineHeight: 1.4 }}>{previewColumn.title}</h3>
+                <time style={{ fontSize: '12px', color: '#6B7280' }}>
+                  {previewColumn.date} · {previewColumn.author || '전두희 원장'}
+                </time>
+              </div>
+              <button
+                type="button"
+                className="modal-close"
+                onClick={() => setPreviewColumn(null)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body" style={{ overflowY: 'auto', flex: 1, padding: '20px' }}>
+              {pendingSlugs.has(previewColumn.slug) && (
+                <div
+                  style={{
+                    background: '#FEF3C7',
+                    border: '1px solid #F59E0B',
+                    borderRadius: '8px',
+                    padding: '12px 16px',
+                    marginBottom: '20px',
+                    color: '#92400E',
+                    fontSize: '13px',
+                    lineHeight: '1.5',
+                  }}
+                >
+                  <strong>⚡ 실시간 관리자 미리보기</strong>
+                  <br />
+                  현재 Cloudflare Pages에서 새 칼럼 페이지를 생성하여 배포하는 중입니다 (약 3~4분 소요).
+                  배포 완료 전에도 이곳에서 본문 내용과 마크다운 서식을 완벽하게 확인하실 수 있습니다.
+                  <div style={{ marginTop: '8px' }}>
+                    <a
+                      href={`/columns/${previewColumn.slug}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: 'inline-block',
+                        background: '#D97706',
+                        color: '#FFF',
+                        padding: '5px 14px',
+                        borderRadius: '6px',
+                        textDecoration: 'none',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      정식 웹페이지 열기 ↗
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {previewColumn.summary && (
+                <div
+                  style={{
+                    background: '#F9FAFB',
+                    borderLeft: '4px solid #10B981',
+                    padding: '12px 16px',
+                    borderRadius: '4px',
+                    marginBottom: '20px',
+                    color: '#374151',
+                    fontSize: '14px',
+                  }}
+                >
+                  <strong>핵심 요약:</strong> {previewColumn.summary}
+                </div>
+              )}
+
+              <MarkdownView content={previewColumn.content} summary={previewColumn.summary} />
+            </div>
+            <div
+              style={{
+                padding: '16px 20px',
+                borderTop: '1px solid #E5E7EB',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <a
+                href={`/columns/${previewColumn.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="button button-ghost button-sm"
+              >
+                정식 URL 열기 ↗
+              </a>
+              <button
+                type="button"
+                onClick={() => setPreviewColumn(null)}
+                className="button button-solid button-sm"
+              >
+                닫기
+              </button>
             </div>
           </div>
         </div>

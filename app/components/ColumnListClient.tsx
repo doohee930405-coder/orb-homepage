@@ -96,6 +96,67 @@ function cleanDisplayText(text: string): string {
 export default function ColumnListClient({ initialColumns, categories }: ColumnListClientProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [columnsList, setColumnsList] = useState<Column[]>(initialColumns);
+  const [pendingSlugs, setPendingSlugs] = useState<Set<string>>(new Set());
+
+  // Merge pending columns created in admin from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const pendingRaw = localStorage.getItem('orb_pending_columns');
+        if (pendingRaw) {
+          const pendingCols: Column[] = JSON.parse(pendingRaw);
+          if (Array.isArray(pendingCols) && pendingCols.length > 0) {
+            const initialSlugs = new Set(initialColumns.map((c) => c.slug));
+            const newPending = pendingCols.filter((c) => !initialSlugs.has(c.slug));
+            if (newPending.length > 0) {
+              setColumnsList([...newPending, ...initialColumns]);
+              setPendingSlugs(new Set(newPending.map((c) => c.slug)));
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error merging pending columns:', err);
+      }
+    }
+  }, [initialColumns]);
+
+  // Background polling for pending items to clear them when Cloudflare build completes
+  useEffect(() => {
+    if (pendingSlugs.size === 0 || typeof window === 'undefined') return;
+
+    const interval = setInterval(async () => {
+      const remainingPending = new Set(pendingSlugs);
+      let changed = false;
+
+      for (const slug of Array.from(pendingSlugs)) {
+        try {
+          const res = await fetch(`/columns/${encodeURIComponent(slug)}`, {
+            method: 'HEAD',
+            cache: 'no-store',
+          });
+          if (res.ok) {
+            remainingPending.delete(slug);
+            changed = true;
+          }
+        } catch {}
+      }
+
+      if (changed) {
+        setPendingSlugs(new Set(remainingPending));
+        try {
+          const pendingRaw = localStorage.getItem('orb_pending_columns');
+          if (pendingRaw) {
+            const pendingCols: Column[] = JSON.parse(pendingRaw);
+            const updated = pendingCols.filter((c) => remainingPending.has(c.slug));
+            localStorage.setItem('orb_pending_columns', JSON.stringify(updated));
+          }
+        } catch {}
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [pendingSlugs]);
 
   // Read URL query parameters on initial mount (e.g., from breadcrumb or tag click)
   useEffect(() => {
@@ -116,7 +177,7 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
   }, []);
 
   const filteredColumns = useMemo(() => {
-    return initialColumns.filter((col) => {
+    return columnsList.filter((col) => {
       // Category filter
       if (selectedCategory !== 'all' && col.category !== selectedCategory) {
         return false;
@@ -132,7 +193,7 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
       }
       return true;
     });
-  }, [initialColumns, selectedCategory, searchQuery]);
+  }, [columnsList, selectedCategory, searchQuery]);
 
   const activeCategoryDef =
     selectedCategory !== 'all' ? CATEGORY_DEFINITIONS[selectedCategory] : null;
@@ -145,7 +206,7 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
           <div className="column-sidebar-sticky">
             <div className="column-sidebar-header">
               <h2 className="column-sidebar-title">목차</h2>
-              <span className="column-sidebar-count">전체 {initialColumns.length}</span>
+              <span className="column-sidebar-count">전체 {columnsList.length}</span>
             </div>
             <nav className="category-vertical-nav" role="tablist" aria-label="칼럼 카테고리">
               <button
@@ -156,7 +217,7 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
                 onClick={() => setSelectedCategory('all')}
               >
                 <span className="cat-name">전체</span>
-                <span className="cat-count">{initialColumns.length}</span>
+                <span className="cat-count">{columnsList.length}</span>
               </button>
               {categories.map((cat) => (
                 <button
@@ -208,6 +269,31 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
               )}
             </div>
           </div>
+
+          {/* Pending Deployment Notice */}
+          {pendingSlugs.size > 0 && (
+            <div
+              style={{
+                background: '#FEF3C7',
+                border: '1px solid #F59E0B',
+                borderRadius: '10px',
+                padding: '12px 18px',
+                marginBottom: '20px',
+                color: '#92400E',
+                fontSize: '13px',
+                lineHeight: '1.5',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
+              }}
+            >
+              <span style={{ fontSize: '18px' }}>⏳</span>
+              <div>
+                <strong>새 칼럼 실서버 배포 진행 중</strong>: 방금 마이그레이션된 칼럼({pendingSlugs.size}개)이 목록에 즉시 추가되었습니다. 현재 Cloudflare CDN에서 정식 웹페이지를 빌드 중이며 (약 3~4분 소요), 완료 즉시 정식 페이지로 영구 전환됩니다.
+              </div>
+            </div>
+          )}
 
           {/* SEO Topic Cluster: Category Definition Header Box */}
           {activeCategoryDef ? (
@@ -262,6 +348,26 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
                         loading="lazy"
                       />
                       <span className="column-badge">{col.category}</span>
+                      {pendingSlugs.has(col.slug) && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            top: '10px',
+                            right: '10px',
+                            background: '#FEF3C7',
+                            color: '#92400E',
+                            border: '1px solid #F59E0B',
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            padding: '3px 8px',
+                            borderRadius: '12px',
+                            zIndex: 2,
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
+                          }}
+                        >
+                          ⏳ 배포 중
+                        </span>
+                      )}
                     </div>
                     <div className="column-card-copy">
                       <div className="column-meta">

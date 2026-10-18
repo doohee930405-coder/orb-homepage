@@ -398,6 +398,22 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
     () => `\n\n[📍 **오브한의원 마곡점 (서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층)**](https://map.naver.com/p/search/%EC%98%A4%EB%B8%8C%ED%95%9C%EC%9D%98%EC%9B%90%20%EB%A7%88%EA%B3%A1%EC%A0%90)\n\n`
   );
 
+  // Naver oglink (link card) conversion
+  bodyHtml = bodyHtml.replace(
+    /<div[^>]*class="[^"]*(?:se-component\s+se-oglink|se-oglink)[^"]*"[^>]*>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/gi,
+    (match) => {
+      const linkMatch = match.match(/href="([^"]+)"/i);
+      const titleMatch = match.match(/class="[^"]*se-oglink-title[^"]*"[^>]*>([\s\S]*?)<\/strong>/i) ||
+                         match.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);
+      if (linkMatch) {
+        const linkHref = linkMatch[1];
+        const linkTitle = titleMatch ? stripHtml(titleMatch[1]).trim() : '관련 칼럼 바로가기';
+        return `\n\n> 🔗 **연계 칼럼**: [${linkTitle}](${linkHref})\n\n`;
+      }
+      return '';
+    }
+  );
+
   // Headings
   bodyHtml = bodyHtml.replace(/<h[2-4][^>]*>([\s\S]*?)<\/h[2-4]>/gi, (_, text) => `\n\n## ${stripHtmlPreservingEntities(text)}\n\n`);
 
