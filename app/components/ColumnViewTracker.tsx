@@ -27,18 +27,21 @@ export default function ColumnViewTracker({ slug }: ColumnViewTrackerProps) {
 
     const payload = JSON.stringify({ slug, sessionId });
 
-    // Use sendBeacon if available, fallback to fetch with keepalive
-    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
-      const blob = new Blob([payload], { type: 'application/json' });
-      navigator.sendBeacon('/api/analytics/track', blob);
-    } else {
-      fetch('/api/analytics/track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload,
-        keepalive: true,
-      }).catch(() => {});
-    }
+    // Use fetch with keepalive for standard HTTP payload delivery
+    fetch('/api/analytics/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+      keepalive: true,
+    }).catch(() => {
+      // Fallback to sendBeacon if fetch fails or page is unloading
+      try {
+        if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+          const blob = new Blob([payload], { type: 'application/json' });
+          navigator.sendBeacon('/api/analytics/track', blob);
+        }
+      } catch {}
+    });
   }, [slug]);
 
   return null;
