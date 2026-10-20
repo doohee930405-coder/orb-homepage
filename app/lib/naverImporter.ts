@@ -836,13 +836,25 @@ export async function convertNaverHtmlToMasterMarkdown(
       bodyHtml = cleanHtml.slice(startIdx);
     }
   } else {
-    const postViewMatch =
-      cleanHtml.match(/<div id="postViewArea"[^>]*>([\s\S]*?)<\/div>/i) ||
-      cleanHtml.match(
-        /<div[^>]*class="[^"]*(?:se_component_wrap|post_ct|post-view)[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/i
-      );
-    if (postViewMatch) {
-      bodyHtml = postViewMatch[1];
+    const pvaMatch =
+      cleanHtml.match(/<div\b[^>]*id="postViewArea"[^>]*>/i) ||
+      cleanHtml.match(/<div\b[^>]*class="[^"]*(?:se_component_wrap|post_ct|post-view)[^"]*"[^>]*>/i);
+    if (pvaMatch && pvaMatch.index !== undefined) {
+      const startIdx = pvaMatch.index + pvaMatch[0].length;
+      let openCount = 1;
+      let endIndex = cleanHtml.length;
+      const divTagRegex = /<\/?div\b[^>]*>/gi;
+      divTagRegex.lastIndex = startIdx;
+      let m: RegExpExecArray | null;
+      while ((m = divTagRegex.exec(cleanHtml)) !== null) {
+        if (m[0].startsWith('</')) openCount--;
+        else openCount++;
+        if (openCount === 0) {
+          endIndex = m.index;
+          break;
+        }
+      }
+      bodyHtml = cleanHtml.substring(startIdx, endIndex);
     } else {
       const bodyMatch = cleanHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
       bodyHtml = bodyMatch ? bodyMatch[1] : cleanHtml;
@@ -1242,27 +1254,32 @@ export async function convertNaverHtmlToMasterMarkdown(
   };
 
   // Match both outer .se-table wrapper and bare tables
-  const tableWrapperRegex = /<div[^>]*class="[^"]*(?:se-component\s+se-table|se-table)[^"]*"[^>]*>[\s\S]*?<table[^>]*>([\s\S]*?)<\/table>[\s\S]*?<\/div>\s*<\/div>/gi;
-  bodyHtml = bodyHtml.replace(tableWrapperRegex, (_, tableInner) => {
-    const rows = tableInner.match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || [];
-    if (rows.length === 0) return '';
+  bodyHtml = replaceBalancedDivComponent(
+    bodyHtml,
+    '<div[^>]*class="[^"]*(?:se-component\\s+se-table|se-table)[^"]*"[^>]*>',
+    (compHtml) => {
+      const tableMatch = compHtml.match(/<table[^>]*>([\s\S]*?)<\/table>/i);
+      if (!tableMatch) return '';
+      const rows = tableMatch[1].match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || [];
+      if (rows.length === 0) return '';
 
-    const mdRows: string[] = [];
-    rows.forEach((row: string, rIdx: number) => {
-      const cells = row.match(/<(?:th|td)[^>]*>([\s\S]*?)<\/(?:th|td)>/gi) || [];
-      const cellTexts = cells.map(cleanTableCell);
-      if (cellTexts.length > 0) {
-        mdRows.push(`| ${cellTexts.join(' | ')} |`);
-        if (rIdx === 0) {
-          const sep = cellTexts.map(() => ':---').join(' | ');
-          mdRows.push(`| ${sep} |`);
+      const mdRows: string[] = [];
+      rows.forEach((row: string, rIdx: number) => {
+        const cells = row.match(/<(?:th|td)[^>]*>([\s\S]*?)<\/(?:th|td)>/gi) || [];
+        const cellTexts = cells.map(cleanTableCell);
+        if (cellTexts.length > 0) {
+          mdRows.push(`| ${cellTexts.join(' | ')} |`);
+          if (rIdx === 0) {
+            const sep = cellTexts.map(() => ':---').join(' | ');
+            mdRows.push(`| ${sep} |`);
+          }
         }
-      }
-    });
-    const placeholder = `%%%NAVER_TABLE_TOKEN_${convertedTables.length}%%%`;
-    convertedTables.push(mdRows.join('\n'));
-    return `\n\n${placeholder}\n\n`;
-  });
+      });
+      const placeholder = `%%%NAVER_TABLE_TOKEN_${convertedTables.length}%%%`;
+      convertedTables.push(mdRows.join('\n'));
+      return `\n\n${placeholder}\n\n`;
+    }
+  );
 
   bodyHtml = bodyHtml.replace(/<table[^>]*>([\s\S]*?)<\/table>/gi, (_, tableInner) => {
     const rows = tableInner.match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || [];

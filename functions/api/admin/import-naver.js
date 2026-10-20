@@ -347,8 +347,28 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
       .search(/<div[^>]*class="[^"]*(?:post_footer|btn_like|viewTypeSelector|common_post_btn|comment_wrap)[^"]*"/i);
     bodyHtml = postFooterMatch !== -1 ? cleanHtml.slice(startIdx, startIdx + postFooterMatch) : cleanHtml.slice(startIdx);
   } else {
-    const postViewMatch = cleanHtml.match(/<div id="postViewArea"[^>]*>([\s\S]*?)<\/div>/i);
-    bodyHtml = postViewMatch ? postViewMatch[1] : cleanHtml;
+    const pvaMatch = cleanHtml.match(/<div\b[^>]*id="postViewArea"[^>]*>/i) ||
+                     cleanHtml.match(/<div\b[^>]*class="[^"]*(?:se_component_wrap|post_ct|post-view)[^"]*"[^>]*>/i);
+    if (pvaMatch && pvaMatch.index !== undefined) {
+      const startIdx = pvaMatch.index + pvaMatch[0].length;
+      let openCount = 1;
+      let endIndex = cleanHtml.length;
+      const divTagRegex = /<\/?div\b[^>]*>/gi;
+      divTagRegex.lastIndex = startIdx;
+      let m;
+      while ((m = divTagRegex.exec(cleanHtml)) !== null) {
+        if (m[0].startsWith('</')) openCount--;
+        else openCount++;
+        if (openCount === 0) {
+          endIndex = m.index;
+          break;
+        }
+      }
+      bodyHtml = cleanHtml.substring(startIdx, endIndex);
+    } else {
+      const bodyMatch = cleanHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      bodyHtml = bodyMatch ? bodyMatch[1] : cleanHtml;
+    }
   }
 
   // Extract Summary from top blockquote
@@ -469,6 +489,49 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
       return '';
     }
   );
+
+  // Tables Conversion
+  bodyHtml = replaceBalancedDivComponent(
+    bodyHtml,
+    '<div[^>]*class="[^"]*(?:se-component\\s+se-table|se-table)[^"]*"[^>]*>',
+    (compHtml) => {
+      const tableMatch = compHtml.match(/<table[^>]*>([\s\S]*?)<\/table>/i);
+      if (!tableMatch) return '';
+      const rows = tableMatch[1].match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || [];
+      if (rows.length === 0) return '';
+
+      const mdRows = [];
+      rows.forEach((row, rIdx) => {
+        const cells = row.match(/<(?:th|td)[^>]*>([\s\S]*?)<\/(?:th|td)>/gi) || [];
+        const cellTexts = cells.map(c => stripHtmlPreservingEntities(c).replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim() || '-');
+        if (cellTexts.length > 0) {
+          mdRows.push(`| ${cellTexts.join(' | ')} |`);
+          if (rIdx === 0) {
+            mdRows.push(`| ${cellTexts.map(() => ':---').join(' | ')} |`);
+          }
+        }
+      });
+      return `\n\n${mdRows.join('\n')}\n\n`;
+    }
+  );
+
+  bodyHtml = bodyHtml.replace(/<table[^>]*>([\s\S]*?)<\/table>/gi, (_, tableInner) => {
+    const rows = tableInner.match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || [];
+    if (rows.length === 0) return '';
+
+    const mdRows = [];
+    rows.forEach((row, rIdx) => {
+      const cells = row.match(/<(?:th|td)[^>]*>([\s\S]*?)<\/(?:th|td)>/gi) || [];
+      const cellTexts = cells.map(c => stripHtmlPreservingEntities(c).replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim() || '-');
+      if (cellTexts.length > 0) {
+        mdRows.push(`| ${cellTexts.join(' | ')} |`);
+        if (rIdx === 0) {
+          mdRows.push(`| ${cellTexts.map(() => ':---').join(' | ')} |`);
+        }
+      }
+    });
+    return `\n\n${mdRows.join('\n')}\n\n`;
+  });
 
   // Headings
   bodyHtml = bodyHtml.replace(/<h[2-4][^>]*>([\s\S]*?)<\/h[2-4]>/gi, (_, text) => `\n\n## ${stripHtmlPreservingEntities(text)}\n\n`);
