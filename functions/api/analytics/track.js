@@ -65,6 +65,33 @@ export async function onRequestPost(context) {
       '127.0.0.1';
     const userAgent = context.request.headers.get('user-agent') || '';
 
+    // Filter out bots, automated crawlers, and AI agents
+    const uaLower = userAgent.toLowerCase();
+    const isBot =
+      uaLower.includes('bot') ||
+      uaLower.includes('crawler') ||
+      uaLower.includes('spider') ||
+      uaLower.includes('googlebot') ||
+      uaLower.includes('bingbot') ||
+      uaLower.includes('yeti') ||
+      uaLower.includes('daum') ||
+      uaLower.includes('slurp') ||
+      uaLower.includes('headlesschrome') ||
+      uaLower.includes('lighthouse') ||
+      uaLower.includes('bytespider') ||
+      uaLower.includes('gptbot') ||
+      uaLower.includes('claude') ||
+      uaLower.includes('perplexity') ||
+      uaLower.includes('semrush') ||
+      uaLower.includes('ahrefs');
+
+    if (isBot) {
+      return new Response(
+        JSON.stringify({ success: true, recorded: false, isBot: true }),
+        { status: 200, headers: CORS_HEADERS }
+      );
+    }
+
     // SHA-256 hash for IP privacy
     const enc = new TextEncoder();
     const hashBuffer = await crypto.subtle.digest(

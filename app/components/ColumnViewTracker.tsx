@@ -11,6 +11,17 @@ export default function ColumnViewTracker({ slug }: ColumnViewTrackerProps) {
 
   useEffect(() => {
     if (!slug || trackedRef.current || typeof window === 'undefined') return;
+
+    // Exclude automated bots and headless browsers
+    if (
+      navigator.webdriver ||
+      (window as any)._phantom ||
+      (window as any).__nightmare ||
+      /bot|crawler|spider|headless|googlebot|bingbot|yeti|gptbot/i.test(navigator.userAgent || '')
+    ) {
+      return;
+    }
+
     trackedRef.current = true;
 
     // Retrieve or initialize session identifier
