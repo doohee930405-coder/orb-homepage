@@ -4,7 +4,7 @@ import AdminShortcutListener from './components/AdminShortcutListener';
 import './globals.css';
 
 const googleAnalyticsId =
-  process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID?.trim() || 'G-J9Z8BXQGKQ';
+  process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID?.trim() || 'G-GQX6CVFZ7X';
 const hasGoogleAnalyticsId = Boolean(
   googleAnalyticsId && /^G-[A-Z0-9]+$/.test(googleAnalyticsId),
 );
@@ -54,29 +54,26 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
+        {/* Google tag (gtag.js) */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+        />
+        <script
+          id="google-analytics"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${googleAnalyticsId}');
+            `,
+          }}
+        />
         <meta
           name="naver-site-verification"
           content="b19d9d8ee27b50ae5638467a973184ef2e7be5c0"
         />
-        {hasGoogleAnalyticsId && googleAnalyticsId ? (
-          <>
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
-            />
-            <script
-              id="google-analytics"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${googleAnalyticsId}');
-                `,
-              }}
-            />
-          </>
-        ) : null}
       </head>
       <body className="antialiased">
         {children}
