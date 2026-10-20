@@ -82,6 +82,56 @@ export function stripHtml(html: string): string {
 }
 
 /**
+ * Safely replaces a nested div component (like Naver map or oglink cards)
+ * by counting balanced opening and closing div tags, preventing greedy swallow of subsequent content.
+ */
+export function replaceBalancedDivComponent(
+  htmlStr: string,
+  startPattern: string,
+  replacerFn: (compHtml: string) => string
+): string {
+  let result = '';
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  const startRegex = new RegExp(startPattern, 'gi');
+
+  while ((match = startRegex.exec(htmlStr)) !== null) {
+    const startIndex = match.index;
+    result += htmlStr.substring(lastIndex, startIndex);
+
+    let openCount = 0;
+    let endIndex = -1;
+    const tagRegex = /<\/?div\b[^>]*>/gi;
+    tagRegex.lastIndex = startIndex;
+
+    let tagMatch: RegExpExecArray | null;
+    while ((tagMatch = tagRegex.exec(htmlStr)) !== null) {
+      if (tagMatch[0].startsWith('</')) {
+        openCount--;
+      } else {
+        openCount++;
+      }
+      if (openCount === 0) {
+        endIndex = tagMatch.index + tagMatch[0].length;
+        break;
+      }
+    }
+
+    if (endIndex === -1) {
+      lastIndex = startIndex + match[0].length;
+    } else {
+      const compHtml = htmlStr.substring(startIndex, endIndex);
+      result += replacerFn(compHtml);
+      lastIndex = endIndex;
+      startRegex.lastIndex = endIndex;
+    }
+  }
+
+  result += htmlStr.substring(lastIndex);
+  return result;
+}
+
+/**
  * Parses any form of Naver blog post URL to extract blogId and logNo
  */
 export function normalizeNaverUrl(inputUrl: string): { blogId: string; logNo: string } | null {
@@ -1085,34 +1135,44 @@ export async function convertNaverHtmlToMasterMarkdown(
   };
 
   // Naver Map & Place Module conversion to authentic place URL
-  const mapModuleRegex = /<div[^>]*class="[^"]*(?:se-module-map|se-component-map|se-map)[^"]*"[^>]*>[\s\S]*?<\/div>\s*<\/div>/gi;
-  bodyHtml = bodyHtml.replace(mapModuleRegex, () => {
-    return `\n\n[📍 **오브한의원 마곡점 (서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층)**](${NAVER_PLACE_SEARCH_URL})\n\n`;
-  });
+  bodyHtml = replaceBalancedDivComponent(
+    bodyHtml,
+    '<div[^>]*class="[^"]*(?:se-component\\s+se-placesMap|se-placesMap|se-section-placesMap|se-module-map|se-component-map|se-map)[^"]*"[^>]*>',
+    () => `\n\n[📍 **오브한의원 마곡점 (서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층)**](${NAVER_PLACE_SEARCH_URL})\n\n`
+  );
 
   // 5. OpenGraph Card Links (네이버 지도 플레이스, 톡톡, 뇌파기기 소개글 등 보존 및 치환)
-  const ogLinkRegex = /<div[^>]*class="[^"]*se-module-oglink[^"]*"[^>]*>[\s\S]*?<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>[\s\S]*?<\/div>/gi;
-  bodyHtml = bodyHtml.replace(ogLinkRegex, (_, href, inner) => {
-    const titleMatch = inner.match(/<strong[^>]*class="[^"]*se-oglink-title[^"]*"[^>]*>([\s\S]*?)<\/strong>/i);
-    const linkTitle = titleMatch ? stripHtml(titleMatch[1]) : '관련 정보 바로가기';
+  bodyHtml = replaceBalancedDivComponent(
+    bodyHtml,
+    '<div[^>]*class="[^"]*(?:se-component\\s+se-oglink|se-oglink|se-module-oglink)[^"]*"[^>]*>',
+    (compHtml) => {
+      const linkMatch = compHtml.match(/href="([^"]+)"/i);
+      const titleMatch = compHtml.match(/class="[^"]*se-oglink-title[^"]*"[^>]*>([\s\S]*?)<\/strong>/i) ||
+                         compHtml.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);
+      if (linkMatch) {
+        const href = linkMatch[1];
+        const linkTitle = titleMatch ? stripHtml(titleMatch[1]).trim() : '관련 정보 바로가기';
 
-    if (isQeegPostReference(href, linkTitle)) {
-      return `\n\n[👉 오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기](/columns/습식-정량-뇌파-측정-과정에-대해-안내해드립니다-314941)\n\n`;
+        if (isQeegPostReference(href, linkTitle)) {
+          return `\n\n[👉 오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기](/columns/습식-정량-뇌파-측정-과정에-대해-안내해드립니다-314941)\n\n`;
+        }
+        if (href.includes('booking.naver.com')) {
+          return `\n\n[🗓️ **오브한의원 마곡점 네이버 빠른 예약 바로가기**](${href})\n\n`;
+        }
+        if (href.includes('map.naver.com') || href.includes('naver.me') || href.includes('place.naver.com')) {
+          return `\n\n[📍 **오브한의원 마곡점 네이버 지도(플레이스) 바로가기**](${href})\n\n`;
+        }
+        if (href.includes('talk.naver.com')) {
+          return `\n\n[💬 **오브한의원 네이버 톡톡 1:1 상담 바로가기**](${href})\n\n`;
+        }
+        if (href.includes('pf.kakao.com')) {
+          return `\n\n[💬 **오브한의원 카카오톡 채널 문의 바로가기**](${href})\n\n`;
+        }
+        return `\n\n[🔗 **${linkTitle}**](${href})\n\n`;
+      }
+      return '';
     }
-    if (href.includes('booking.naver.com')) {
-      return `\n\n[🗓️ **오브한의원 마곡점 네이버 빠른 예약 바로가기**](${href})\n\n`;
-    }
-    if (href.includes('map.naver.com') || href.includes('naver.me') || href.includes('place.naver.com')) {
-      return `\n\n[📍 **오브한의원 마곡점 네이버 지도(플레이스) 바로가기**](${href})\n\n`;
-    }
-    if (href.includes('talk.naver.com')) {
-      return `\n\n[💬 **오브한의원 네이버 톡톡 1:1 상담 바로가기**](${href})\n\n`;
-    }
-    if (href.includes('pf.kakao.com')) {
-      return `\n\n[💬 **오브한의원 카카오톡 채널 문의 바로가기**](${href})\n\n`;
-    }
-    return `\n\n[🔗 **${linkTitle}**](${href})\n\n`;
-  });
+  );
 
   // Regular anchor links
   bodyHtml = bodyHtml.replace(/<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (_, href, text) => {

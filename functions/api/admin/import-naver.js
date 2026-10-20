@@ -261,6 +261,48 @@ function matchCategory(catName = '', title = '', content = '') {
   return bestCat;
 }
 
+function replaceBalancedDivComponent(htmlStr, startPattern, replacerFn) {
+  let result = '';
+  let lastIndex = 0;
+  let match;
+  const startRegex = new RegExp(startPattern, 'gi');
+
+  while ((match = startRegex.exec(htmlStr)) !== null) {
+    const startIndex = match.index;
+    result += htmlStr.substring(lastIndex, startIndex);
+
+    let openCount = 0;
+    let endIndex = -1;
+    const tagRegex = /<\/?div\b[^>]*>/gi;
+    tagRegex.lastIndex = startIndex;
+
+    let tagMatch;
+    while ((tagMatch = tagRegex.exec(htmlStr)) !== null) {
+      if (tagMatch[0].startsWith('</')) {
+        openCount--;
+      } else {
+        openCount++;
+      }
+      if (openCount === 0) {
+        endIndex = tagMatch.index + tagMatch[0].length;
+        break;
+      }
+    }
+
+    if (endIndex === -1) {
+      lastIndex = startIndex + match[0].length;
+    } else {
+      const compHtml = htmlStr.substring(startIndex, endIndex);
+      result += replacerFn(compHtml);
+      lastIndex = endIndex;
+      startRegex.lastIndex = endIndex;
+    }
+  }
+
+  result += htmlStr.substring(lastIndex);
+  return result;
+}
+
 function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
   let cleanHtml = html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
@@ -393,21 +435,35 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
 
   // Parse HTML into Markdown structure
   // Naver Map & Place Module conversion
-  bodyHtml = bodyHtml.replace(
-    /<div[^>]*class="[^"]*(?:se-module-map|se-component-map|se-map)[^"]*"[^>]*>[\s\S]*?<\/div>\s*<\/div>/gi,
+  bodyHtml = replaceBalancedDivComponent(
+    bodyHtml,
+    '<div[^>]*class="[^"]*(?:se-component\\s+se-placesMap|se-placesMap|se-section-placesMap|se-module-map|se-component-map|se-map)[^"]*"[^>]*>',
     () => `\n\n[📍 **오브한의원 마곡점 (서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층)**](https://map.naver.com/p/search/%EC%98%A4%EB%B8%8C%ED%95%9C%EC%9D%98%EC%9B%90%20%EB%A7%88%EA%B3%A1%EC%A0%90)\n\n`
   );
 
   // Naver oglink (link card) conversion
-  bodyHtml = bodyHtml.replace(
-    /<div[^>]*class="[^"]*(?:se-component\s+se-oglink|se-oglink)[^"]*"[^>]*>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/gi,
-    (match) => {
-      const linkMatch = match.match(/href="([^"]+)"/i);
-      const titleMatch = match.match(/class="[^"]*se-oglink-title[^"]*"[^>]*>([\s\S]*?)<\/strong>/i) ||
-                         match.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);
+  bodyHtml = replaceBalancedDivComponent(
+    bodyHtml,
+    '<div[^>]*class="[^"]*(?:se-component\\s+se-oglink|se-oglink|se-module-oglink)[^"]*"[^>]*>',
+    (compHtml) => {
+      const linkMatch = compHtml.match(/href="([^"]+)"/i);
+      const titleMatch = compHtml.match(/class="[^"]*se-oglink-title[^"]*"[^>]*>([\s\S]*?)<\/strong>/i) ||
+                         compHtml.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);
       if (linkMatch) {
         const linkHref = linkMatch[1];
-        const linkTitle = titleMatch ? stripHtml(titleMatch[1]).trim() : '관련 칼럼 바로가기';
+        const linkTitle = titleMatch ? stripHtml(titleMatch[1]).trim() : '관련 정보 바로가기';
+        if (linkHref.includes('booking.naver.com')) {
+          return `\n\n[🗓️ **오브한의원 마곡점 네이버 빠른 예약 바로가기**](${linkHref})\n\n`;
+        }
+        if (linkHref.includes('map.naver.com') || linkHref.includes('naver.me') || linkHref.includes('place.naver.com')) {
+          return `\n\n[📍 **오브한의원 마곡점 네이버 지도(플레이스) 바로가기**](${linkHref})\n\n`;
+        }
+        if (linkHref.includes('talk.naver.com')) {
+          return `\n\n[💬 **오브한의원 네이버 톡톡 1:1 상담 바로가기**](${linkHref})\n\n`;
+        }
+        if (linkHref.includes('pf.kakao.com')) {
+          return `\n\n[💬 **오브한의원 카카오톡 채널 문의 바로가기**](${linkHref})\n\n`;
+        }
         return `\n\n> 🔗 **연계 칼럼**: [${linkTitle}](${linkHref})\n\n`;
       }
       return '';
