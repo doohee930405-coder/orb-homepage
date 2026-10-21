@@ -14,7 +14,9 @@ export default function SiteFooter({ isEnglish = false }: SiteFooterProps) {
     <footer className="site-footer">
       {/* [좌측] */}
       <div className="footer-brand">
-        <strong>ORB</strong>
+        <Link href="/admin/columns" title="관리자 페이지" style={{ color: 'inherit', textDecoration: 'none' }}>
+          <strong>ORB</strong>
+        </Link>
         <span>{isEnglish ? 'ORB Korean Medicine Clinic' : '오브한의원 마곡점'}</span>
       </div>
 
