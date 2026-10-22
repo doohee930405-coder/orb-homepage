@@ -318,7 +318,6 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
                 <span className="cat-def-badge">ORB CLINICAL ARCHIVE</span>
                 <span className="cat-def-sub">근거 중심 신경계·대사 기능 의학</span>
               </div>
-              <h2 className="cat-def-title">오브한의원 원장 임상 칼럼 아카이브</h2>
               <p className="cat-def-desc">
                 뇌신경·자율신경·정량화뇌파(QEEG) 중점 진료 기관으로서, 보이지 않는 신경학적 고통과 만성 증상의 기전을 의학적 근거와 임상 데이터를 바탕으로 명쾌하게 해설합니다. 좌측 목차에서 카테고리를 선택하시면 각 진료 분야별 핵심 정의와 칼럼을 모아보실 수 있습니다.
               </p>
