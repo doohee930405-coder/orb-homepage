@@ -450,7 +450,7 @@ export default function MarkdownView({ content, className = '', summary }: Markd
     let key = 0;
 
     // Pattern for inline elements: match image first ![alt](url), then links [text](url), **bold**, *italic*, `code`, <br>
-    const inlineRegex = /(!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|<br\s*\/?>)/i;
+    const inlineRegex = /(!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|<u>[\s\S]*?<\/u>|<(?:b|strong)\b[^>]*>[\s\S]*?<\/(?:b|strong)>|<(?:i|em)\b[^>]*>[\s\S]*?<\/(?:i|em)>|\*[^*]+\*|`[^`]+`|<br\s*\/?>)/i;
 
     while (remaining.length > 0) {
       const match = remaining.match(inlineRegex);
@@ -614,6 +614,15 @@ export default function MarkdownView({ content, className = '', summary }: Markd
         );
       } else if (token.startsWith('**') && token.endsWith('**')) {
         parts.push(<strong key={key++}>{renderInline(token.slice(2, -2))}</strong>);
+      } else if (/^<u\b[^>]*>([\s\S]*?)<\/u>$/i.test(token)) {
+        const uInner = token.replace(/^<u\b[^>]*>|<\/u>$/gi, '');
+        parts.push(<u key={key++} className="article-underline">{renderInline(uInner)}</u>);
+      } else if (/^<(?:b|strong)\b[^>]*>([\s\S]*?)<\/(?:b|strong)>$/i.test(token)) {
+        const bInner = token.replace(/^<(?:b|strong)\b[^>]*>|<\/(?:b|strong)>$/gi, '');
+        parts.push(<strong key={key++}>{renderInline(bInner)}</strong>);
+      } else if (/^<(?:i|em)\b[^>]*>([\s\S]*?)<\/(?:i|em)>$/i.test(token)) {
+        const iInner = token.replace(/^<(?:i|em)\b[^>]*>|<\/(?:i|em)>$/gi, '');
+        parts.push(<em key={key++} className="article-italic">{renderInline(iInner)}</em>);
       } else if (token.startsWith('*') && token.endsWith('*')) {
         parts.push(<em key={key++}>{renderInline(token.slice(1, -1))}</em>);
       } else if (token.startsWith('`') && token.endsWith('`')) {

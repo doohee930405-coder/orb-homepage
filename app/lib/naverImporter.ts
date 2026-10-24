@@ -82,6 +82,129 @@ export function stripHtml(html: string): string {
 }
 
 /**
+ * Strips HTML tags except specified allowed tags (e.g. u, b, strong, i, em)
+ */
+export function stripTagsExcept(html: string, allowedTags: string[] = ['u', 'b', 'strong', 'i', 'em']): string {
+  const allowedSet = new Set(allowedTags.map((t) => t.toLowerCase()));
+  return html.replace(/<\/?([a-zA-Z0-9_-]+)\b[^>]*>/gi, (match, tagName) => {
+    if (allowedSet.has(tagName.toLowerCase())) {
+      const isClosing = match.startsWith('</');
+      return isClosing ? `</${tagName.toLowerCase()}>` : `<${tagName.toLowerCase()}>`;
+    }
+    return '';
+  });
+}
+
+/**
+ * Converts a Naver SmartEditor paragraph to Markdown, preserving subheadings (se-fs-fs19+),
+ * bold (**...**), underline (<u>...</u>), and italics (*...*).
+ */
+export function convertHtmlParagraph(innerHtml: string): string {
+  const isLargeFont =
+    /se-fs-fs(1[89]|2[0-9]|3[0-9])/i.test(innerHtml) ||
+    /font-size:\s*(1[89]|2[0-9]|3[0-9])px/i.test(innerHtml) ||
+    /se-heading|se-title/i.test(innerHtml);
+
+  const textContent = decodeHtmlEntities(innerHtml.replace(/<[^>]*>/g, ''))
+    .replace(/[\s\u200B\uFEFF]/g, ' ')
+    .trim();
+  if (!textContent) return '';
+
+  if (
+    textContent === '오브한의원' ||
+    textContent === '궁금할 땐 네이버 톡톡하세요!' ||
+    textContent === 'MY플레이스' ||
+    textContent === '이 블로그의 체크인' ||
+    textContent === '이 장소의 다른 글'
+  ) {
+    return '';
+  }
+
+  // Heading detection: large font or standalone bold block
+  const isEntirelyBold =
+    /^[\s\u200B\uFEFF]*(?:<span[^>]*>[\s\u200B\uFEFF]*)*<(?:b|strong)\b[^>]*>([\s\S]*?)<\/(?:b|strong)>(?:[\s\u200B\uFEFF]*<\/span>)*[\s\u200B\uFEFF]*$/i.test(
+      innerHtml.trim()
+    );
+
+  if (
+    isLargeFont &&
+    textContent.length <= 110 &&
+    !/(?:습니다|합니다|입니다|됩니다|있습니다|했으나|하지만|따라서|보입니다)\.\s*$/.test(textContent)
+  ) {
+    return `\n\n## ${textContent}\n\n`;
+  }
+
+  // Bullet symbol heading (e.g. ■ 위장 장애와 함께 시작되는 대뇌 신경염증)
+  if (
+    /^[■●◆▶★]\s*[^.!?\n]{3,80}$/.test(textContent) &&
+    !/(?:습니다|합니다|입니다|됩니다|있습니다|했으나)\.\s*$/.test(textContent)
+  ) {
+    return `\n\n## ${textContent}\n\n`;
+  }
+
+  if (
+    isEntirelyBold &&
+    textContent.length >= 3 &&
+    textContent.length <= 80 &&
+    !textContent.endsWith(',') &&
+    !textContent.startsWith('※')
+  ) {
+    if (/^(?:\d+\.|\d+\.\d+|[①-⑩]|\[\d+단계\]|\d+단계)/.test(textContent)) {
+      return `\n\n### ${textContent}\n\n`;
+    }
+    if (
+      !/(?:습니다|합니다|입니다|됩니다|있습니다|했으나)\.\s*$/.test(textContent) &&
+      !textContent.startsWith('Q.') &&
+      !textContent.startsWith('A.')
+    ) {
+      return `\n\n## ${textContent}\n\n`;
+    }
+  }
+
+  // Inline formatting:
+  let parsed = innerHtml
+    .replace(/<br\s*\/?>/gi, '\n\n')
+    // Bold: <b> / <strong> -> **...**
+    .replace(/<(?:b|strong)\b[^>]*>([\s\S]*?)<\/(?:b|strong)>/gi, (_, boldText) => {
+      const clean = decodeHtmlEntities(boldText.replace(/<[^>]*>/g, '')).replace(/[\s\u200B\uFEFF]/g, '');
+      if (!clean) return '';
+      const innerFormatted = stripTagsExcept(boldText, ['u', 'i', 'em']);
+      return `**${innerFormatted.trim()}**`;
+    })
+    // Italic: <i> / <em> -> *...*
+    .replace(/<(?:i|em)\b[^>]*>([\s\S]*?)<\/(?:i|em)>/gi, (_, italicText) => {
+      const clean = decodeHtmlEntities(italicText.replace(/<[^>]*>/g, '')).replace(/[\s\u200B\uFEFF]/g, '');
+      if (!clean) return '';
+      const innerFormatted = stripTagsExcept(italicText, ['u', 'b', 'strong']);
+      return `*${innerFormatted.trim()}*`;
+    })
+    // Underline: <u> -> <u>...</u>
+    .replace(/<u\b[^>]*>([\s\S]*?)<\/u>/gi, (_, uText) => {
+      const clean = decodeHtmlEntities(uText.replace(/<[^>]*>/g, '')).replace(/[\s\u200B\uFEFF]/g, '');
+      if (!clean) return '';
+      return `<u>${uText.trim()}</u>`;
+    });
+
+  // Strip remaining HTML tags except <u>, <img>, <a>
+  parsed = parsed.replace(/<\/?(?!u\b|img\b|a\b)[a-zA-Z0-9_-]+\b[^>]*>/gi, '');
+  parsed = decodeHtmlEntities(parsed).trim();
+
+  // If paragraph starts with bold step subtitle like **1. HPA축...** 본문..., split into H3 + body
+  const boldPrefixMatch = parsed.match(/^(\*(?:\d+\.|\d+\.\d+|[①-⑩]|\[\d+단계\]|[^\*\n]{2,50})\*\*)\s*(.+)$/s);
+  if (boldPrefixMatch) {
+    const heading = boldPrefixMatch[1].replace(/\*\*/g, '').trim();
+    const body = boldPrefixMatch[2].trim();
+    if (heading.length <= 60 && !heading.includes('니다')) {
+      return `\n\n### ${heading}\n\n${body}\n\n`;
+    }
+  }
+
+  return `\n\n${parsed}\n\n`;
+}
+
+
+
+/**
  * Safely replaces a nested div component (like Naver map or oglink cards)
  * by counting balanced opening and closing div tags, preventing greedy swallow of subsequent content.
  */
@@ -813,6 +936,7 @@ export async function convertNaverHtmlToMasterMarkdown(
 
   // Step 0: 100% completely strip <script>...</script>, <style>...</style>, and <noscript>...</noscript> tags and their contents
   let cleanHtml = html
+    .replace(/<!--[\s\S]*?-->/g, '')
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
@@ -1302,7 +1426,7 @@ export async function convertNaverHtmlToMasterMarkdown(
     return `\n\n${placeholder}\n\n`;
   });
 
-  // 7. Subheadings Conversion (H2, H3, standalone bold paragraphs)
+  // 7. Subheadings & Paragraphs Conversion (H2, H3, large fonts, bold, underline, italic)
   bodyHtml = bodyHtml.replace(
     /<div[^>]*class="[^"]*(?:se-heading|se-section-documentTitle|se-title-text)[^"]*"[^>]*>([\s\S]*?)<\/div>/gi,
     (_, inner) => `\n\n## ${stripHtml(inner)}\n\n`
@@ -1312,55 +1436,18 @@ export async function convertNaverHtmlToMasterMarkdown(
   bodyHtml = bodyHtml.replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, (_, inner) => `\n\n### ${stripHtml(inner)}\n\n`);
   bodyHtml = bodyHtml.replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, (_, inner) => `\n\n### ${stripHtml(inner)}\n\n`);
 
-  // Bold paragraphs that act as headings
-  bodyHtml = bodyHtml.replace(
-    /<p[^>]*class="[^"]*se-text-paragraph[^"]*"[^>]*>\s*<span[^>]*>\s*<(?:b|strong)[^>]*>([\s\S]*?)<\/(?:b|strong)>\s*<\/span>\s*<\/p>/gi,
-    (_, text) => {
-      const clean = stripHtml(text).replace(/[\u200B\uFEFF]/g, '').trim();
-      if (!clean) return '\n\n';
-      if (
-        clean.length >= 3 &&
-        clean.length <= 80 &&
-        !clean.endsWith('.') &&
-        !clean.endsWith(',') &&
-        !clean.startsWith('※')
-      ) {
-        return `\n\n## ${clean}\n\n`;
-      }
-      return `\n\n**${clean}**\n\n`;
-    }
-  );
-
-  // 8. Paragraphs & Line Breaks Retention
+  // Parse se-text-paragraph with full formatting retention
   bodyHtml = bodyHtml.replace(/<p[^>]*class="[^"]*se-text-paragraph[^"]*"[^>]*>([\s\S]*?)<\/p>/gi, (_, inner) => {
-    const content = inner
-      .replace(/<br\s*\/?>/gi, '\n\n')
-      .replace(/<(?:b|strong)[^>]*>([\s\S]*?)<\/(?:b|strong)>/gi, (m, boldInner) => {
-        const cleanBold = decodeHtmlEntities(boldInner.replace(/<[^>]*>/g, '')).replace(/[\s\u200B\uFEFF]/g, '');
-        return cleanBold ? `**${boldInner.trim()}**` : '';
-      })
-      .replace(/<(?:i|em)[^>]*>([\s\S]*?)<\/(?:i|em)>/gi, '*$1*');
-    const cleaned = content.replace(/<[^>]*>/g, '').trim();
-    if (!cleaned || !cleaned.replace(/[\s\u200B\uFEFF]/g, '')) return '\n\n';
-
-    // Check if starts with bold subtitle like **1.1. 소제목** or **1. 소제목**, split into heading + body
-    const boldTitleMatch = cleaned.match(/^(\*\*(?:\d+\.|\d+\.\d+|[①-⑩]|[^\*\n]{2,50})\*\*)\s*(.+)$/s);
-    if (boldTitleMatch) {
-      const headingText = boldTitleMatch[1].replace(/\*\*/g, '').trim();
-      const bodyText = boldTitleMatch[2].trim();
-      return `\n\n### ${headingText}\n\n${bodyText}\n\n`;
-    }
-
-    return `\n\n${cleaned}\n\n`;
+    return convertHtmlParagraph(inner);
   });
 
   // Standard <p> and <div>
   bodyHtml = bodyHtml.replace(/<br\s*\/?>/gi, '\n\n');
-  bodyHtml = bodyHtml.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, inner) => `\n\n${inner.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()}\n\n`);
-  bodyHtml = bodyHtml.replace(/<div[^>]*>([\s\S]*?)<\/div>/gi, (_, inner) => `\n\n${inner.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()}\n\n`);
+  bodyHtml = bodyHtml.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, inner) => convertHtmlParagraph(inner));
+  bodyHtml = bodyHtml.replace(/<div[^>]*>([\s\S]*?)<\/div>/gi, (_, inner) => convertHtmlParagraph(inner));
 
-  // Strip remaining HTML tags
-  let markdown = decodeHtmlEntities(bodyHtml.replace(/<[^>]*>/g, ''));
+  // Strip remaining HTML tags except preserved <u> tags
+  let markdown = decodeHtmlEntities(bodyHtml.replace(/<\/?(?!u\b)[a-zA-Z0-9_-]+\b[^>]*>/gi, ''));
 
   // Restore preserved tables
   if (convertedTables.length > 0) {

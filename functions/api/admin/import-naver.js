@@ -209,6 +209,122 @@ function stripHtml(html) {
   return decodeHtml(stripHtmlPreservingEntities(html));
 }
 
+function stripTagsExcept(html, allowedTags = ['u', 'b', 'strong', 'i', 'em', 's', 'strike']) {
+  const allowedSet = new Set(allowedTags.map(t => t.toLowerCase()));
+  return html.replace(/<\/?([a-zA-Z0-9_-]+)\b[^>]*>/gi, (match, tagName) => {
+    if (allowedSet.has(tagName.toLowerCase())) {
+      const isClosing = match.startsWith('</');
+      return isClosing ? `</${tagName.toLowerCase()}>` : `<${tagName.toLowerCase()}>`;
+    }
+    return '';
+  });
+}
+
+function convertHtmlParagraph(innerHtml) {
+  const isLargeFont =
+    /se-fs-fs(1[89]|2[0-9]|3[0-9])/i.test(innerHtml) ||
+    /font-size:\s*(1[89]|2[0-9]|3[0-9])px/i.test(innerHtml) ||
+    /se-heading|se-title/i.test(innerHtml);
+
+  const textContent = decodeHtml(innerHtml.replace(/<[^>]*>/g, ''))
+    .replace(/[\s\u200B\uFEFF]/g, ' ')
+    .trim();
+  if (!textContent) return '';
+
+  if (
+    textContent === '오브한의원' ||
+    textContent === '궁금할 땐 네이버 톡톡하세요!' ||
+    textContent === 'MY플레이스' ||
+    textContent === '이 블로그의 체크인' ||
+    textContent === '이 장소의 다른 글'
+  ) {
+    return '';
+  }
+
+  // Heading detection: large font or standalone bold block
+  const isEntirelyBold =
+    /^[\s\u200B\uFEFF]*(?:<span[^>]*>[\s\u200B\uFEFF]*)*<(?:b|strong)\b[^>]*>([\s\S]*?)<\/(?:b|strong)>(?:[\s\u200B\uFEFF]*<\/span>)*[\s\u200B\uFEFF]*$/i.test(
+      innerHtml.trim()
+    );
+
+  if (
+    isLargeFont &&
+    textContent.length <= 110 &&
+    !/(?:습니다|합니다|입니다|됩니다|있습니다|했으나|하지만|따라서|보입니다)\.\s*$/.test(textContent)
+  ) {
+    return `\n\n## ${textContent}\n\n`;
+  }
+
+  // Bullet symbol heading (e.g. ■ 위장 장애와 함께 시작되는 대뇌 신경염증)
+  if (
+    /^[■●◆▶★]\s*[^.!?\n]{3,80}$/.test(textContent) &&
+    !/(?:습니다|합니다|입니다|됩니다|있습니다|했으나)\.\s*$/.test(textContent)
+  ) {
+    return `\n\n## ${textContent}\n\n`;
+  }
+
+  if (
+    isEntirelyBold &&
+    textContent.length >= 3 &&
+    textContent.length <= 80 &&
+    !textContent.endsWith(',') &&
+    !textContent.startsWith('※')
+  ) {
+    if (/^(?:\d+\.|\d+\.\d+|[①-⑩]|\[\d+단계\]|\d+단계)/.test(textContent)) {
+      return `\n\n### ${textContent}\n\n`;
+    }
+    if (
+      !/(?:습니다|합니다|입니다|됩니다|있습니다|했으나)\.\s*$/.test(textContent) &&
+      !textContent.startsWith('Q.') &&
+      !textContent.startsWith('A.')
+    ) {
+      return `\n\n## ${textContent}\n\n`;
+    }
+  }
+
+  // Inline formatting:
+  let parsed = innerHtml
+    .replace(/<br\s*\/?>/gi, '\n\n')
+    // Bold: <b> / <strong> -> **...**
+    .replace(/<(?:b|strong)\b[^>]*>([\s\S]*?)<\/(?:b|strong)>/gi, (_, boldText) => {
+      const clean = decodeHtml(boldText.replace(/<[^>]*>/g, '')).replace(/[\s\u200B\uFEFF]/g, '');
+      if (!clean) return '';
+      const innerFormatted = stripTagsExcept(boldText, ['u', 'i', 'em']);
+      return `**${innerFormatted.trim()}**`;
+    })
+    // Italic: <i> / <em> -> *...*
+    .replace(/<(?:i|em)\b[^>]*>([\s\S]*?)<\/(?:i|em)>/gi, (_, italicText) => {
+      const clean = decodeHtml(italicText.replace(/<[^>]*>/g, '')).replace(/[\s\u200B\uFEFF]/g, '');
+      if (!clean) return '';
+      const innerFormatted = stripTagsExcept(italicText, ['u', 'b', 'strong']);
+      return `*${innerFormatted.trim()}*`;
+    })
+    // Underline: <u> -> <u>...</u>
+    .replace(/<u\b[^>]*>([\s\S]*?)<\/u>/gi, (_, uText) => {
+      const clean = decodeHtml(uText.replace(/<[^>]*>/g, '')).replace(/[\s\u200B\uFEFF]/g, '');
+      if (!clean) return '';
+      return `<u>${uText.trim()}</u>`;
+    });
+
+  // Strip remaining HTML tags except <u>, <img>, <a>
+  parsed = parsed.replace(/<\/?(?!u\b|img\b|a\b)[a-zA-Z0-9_-]+\b[^>]*>/gi, '');
+  parsed = decodeHtml(parsed).trim();
+
+  // If paragraph starts with bold step subtitle like **1. HPA축...** 본문..., split into H3 + body
+  const boldPrefixMatch = parsed.match(/^(\*(?:\d+\.|\d+\.\d+|[①-⑩]|\[\d+단계\]|[^\*\n]{2,50})\*\*)\s*(.+)$/s);
+  if (boldPrefixMatch) {
+    const heading = boldPrefixMatch[1].replace(/\*\*/g, '').trim();
+    const body = boldPrefixMatch[2].trim();
+    if (heading.length <= 60 && !heading.includes('니다')) {
+      return `\n\n### ${heading}\n\n${body}\n\n`;
+    }
+  }
+
+  return `\n\n${parsed}\n\n`;
+}
+
+
+
 function matchCategory(catName = '', title = '', content = '') {
   const normCat = (catName || '').toLowerCase().trim();
   const text = `${title} ${content.slice(0, 1500)}`.toLowerCase();
@@ -305,6 +421,7 @@ function replaceBalancedDivComponent(htmlStr, startPattern, replacerFn) {
 
 function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
   let cleanHtml = html
+    .replace(/<!--[\s\S]*?-->/g, '')
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
     .replace(/<noscript\b[^<]*(?:(?!<\/noscript>)<[^<]*)*<\/noscript>/gi, '');
@@ -555,18 +672,12 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
     return `\n\n![오브한의원 임상 칼럼](${src})\n\n`;
   });
 
-  // Paragraphs (preserve entities like &lt; so math/statistics p < 0.001 is never truncated)
-  bodyHtml = bodyHtml.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, text) => {
-    const rawP = stripHtmlPreservingEntities(text);
-    if (!rawP) return '';
-    if (rawP.length < 50 && (rawP.endsWith('?') || rawP.endsWith('!') || /^\d+\./.test(rawP))) {
-      return `\n\n### ${rawP}\n\n`;
-    }
-    return `\n\n${rawP}\n\n`;
-  });
+  // Paragraphs with headings, bold, underline, italic retention
+  bodyHtml = bodyHtml.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, text) => convertHtmlParagraph(text));
+  bodyHtml = bodyHtml.replace(/<div[^>]*class="[^"]*(?:se-text-paragraph|se-paragraph)[^"]*"[^>]*>([\s\S]*?)<\/div>/gi, (_, text) => convertHtmlParagraph(text));
 
-  // Strip remaining HTML tags FIRST, then decode entities LAST!
-  let markdown = bodyHtml.replace(/<[^>]*>/g, '');
+  // Strip remaining HTML tags except preserved <u> tags
+  let markdown = bodyHtml.replace(/<\/?(?!u\b)[a-zA-Z0-9_-]+\b[^>]*>/gi, '');
   markdown = decodeHtml(markdown).replace(/\n{3,}/g, '\n\n').trim();
 
   // Strip Naver checkin / place noise
