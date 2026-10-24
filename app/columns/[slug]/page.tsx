@@ -185,6 +185,23 @@ function getMedicalSpecialty(category: string): string[] {
 
 
 
+
+function cleanDisplayText(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/&middot;/g, '·')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&ndash;/g, '–')
+    .replace(/&mdash;/g, '—')
+    .replace(/&hellip;/g, '…')
+    .replace(/&nbsp;/g, ' ');
+}
+
 export default async function ColumnDetailPage({
   params,
 }: {
@@ -525,22 +542,42 @@ export default async function ColumnDetailPage({
               <p className="eyebrow">TOPIC CLUSTER · {column.category}</p>
               <h2>{column.category} 관련 추천 임상 칼럼</h2>
             </div>
-            <div className="column-grid related-grid">
+            <div className="column-grid">
               {relatedColumns.map((col) => (
                 <article key={col.slug} className="column-card">
                   <a href={`/columns/${col.slug}`} className="column-card-link">
                     <div className="column-card-thumb">
-                      <SafeImage
-                        src={col.thumbnail || ''}
-                        alt={col.title}
-                        loading="lazy"
-                      />
+                      <div className="column-card-fallback" aria-hidden="true">
+                        <div className="fallback-orb-mark">
+                          <span className="fallback-orb-icon">ORB</span>
+                          <span className="fallback-orb-sub">CLINICAL COLUMN</span>
+                        </div>
+                      </div>
+                      {col.thumbnail && (
+                        <SafeImage
+                          src={col.thumbnail}
+                          alt={col.title}
+                          loading="lazy"
+                        />
+                      )}
                       <span className="column-badge">{col.category}</span>
                     </div>
                     <div className="column-card-copy">
-                      <time dateTime={col.date}>{col.date}</time>
-                      <h3 className="column-card-title">{col.title}</h3>
-                      <p className="column-card-summary">{col.summary}</p>
+                      <div className="column-meta">
+                        <time dateTime={col.date}>{col.date}</time>
+                      </div>
+                      <h3 className="column-card-title">{cleanDisplayText(col.title)}</h3>
+                      <p className="column-card-summary">{cleanDisplayText(col.summary)}</p>
+                      <div className="column-card-footer">
+                        <div className="column-tags">
+                          {col.tags.slice(0, 3).map((tag) => (
+                            <span key={tag} className="tag-pill">#{tag}</span>
+                          ))}
+                        </div>
+                        <span className="column-read-more" aria-hidden="true">
+                          읽기 →
+                        </span>
+                      </div>
                     </div>
                   </a>
                 </article>

@@ -341,11 +341,19 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
                 <article key={col.slug} className="column-card">
                   <a href={`/columns/${col.slug}`} className="column-card-link">
                     <div className="column-card-thumb">
-                      <SafeImage
-                        src={col.thumbnail || ''}
-                        alt={col.title}
-                        loading="lazy"
-                      />
+                      <div className="column-card-fallback" aria-hidden="true">
+                        <div className="fallback-orb-mark">
+                          <span className="fallback-orb-icon">ORB</span>
+                          <span className="fallback-orb-sub">CLINICAL COLUMN</span>
+                        </div>
+                      </div>
+                      {col.thumbnail && (
+                        <SafeImage
+                          src={col.thumbnail}
+                          alt={col.title}
+                          loading="lazy"
+                        />
+                      )}
                       <span className="column-badge">{col.category}</span>
                       {pendingSlugs.has(col.slug) && (
                         <span

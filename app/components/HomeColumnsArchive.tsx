@@ -87,12 +87,20 @@ export default function HomeColumnsArchive({
           <article key={col.id || col.slug} className="home-column-card">
             <a href={`/columns/${col.slug}`} className="home-column-card-link">
               <div className="home-column-thumb-wrap">
-                <SafeImage
-                  src={col.thumbnail || ''}
-                  alt={col.title}
-                  className="home-column-thumb"
-                  loading="lazy"
-                />
+                <div className="column-card-fallback" aria-hidden="true">
+                  <div className="fallback-orb-mark">
+                    <span className="fallback-orb-icon">ORB</span>
+                    <span className="fallback-orb-sub">CLINICAL COLUMN</span>
+                  </div>
+                </div>
+                {col.thumbnail && (
+                  <SafeImage
+                    src={col.thumbnail}
+                    alt={col.title}
+                    className="home-column-thumb"
+                    loading="lazy"
+                  />
+                )}
                 {/* 사진 속 뱃지 탭 클릭 시 해당 카테고리로 즉시 전환 */}
                 <button
                   type="button"

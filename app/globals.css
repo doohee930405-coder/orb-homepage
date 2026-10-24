@@ -1316,12 +1316,12 @@ p {
   font-size: clamp(1.8rem, 3vw, 2.25rem);
 }
 
-.related-grid {
+.related-section .related-grid {
   border-top: 1px solid var(--line);
   margin-top: 40px;
 }
 
-.related-grid a {
+.related-section .related-grid a {
   align-items: center;
   border-bottom: 1px solid var(--line);
   display: grid;
@@ -1330,23 +1330,23 @@ p {
   padding: 20px 4px;
 }
 
-.related-grid a span {
+.related-section .related-grid a span {
   color: var(--taupe);
   font-family: var(--font-sans);
   font-size: 0.8rem;
 }
 
-.related-grid a strong {
+.related-section .related-grid a strong {
   font-size: 1rem;
   font-weight: 600;
 }
 
-.related-grid a i {
+.related-section .related-grid a i {
   font-style: normal;
   transition: transform 180ms ease;
 }
 
-.related-grid a:hover i {
+.related-section .related-grid a:hover i {
   transform: translateX(5px);
 }
 
@@ -2184,9 +2184,95 @@ p {
 
 .column-card-thumb img {
   height: 100%;
+  left: 0;
   object-fit: cover;
+  position: absolute;
+  top: 0;
   transition: transform 500ms ease;
   width: 100%;
+  z-index: 1;
+}
+
+/* Fallback Editorial Card Cover for text-only columns */
+.column-card-fallback {
+  align-items: center;
+  background: linear-gradient(135deg, #fbf9f6 0%, #ece5dc 100%);
+  display: flex;
+  height: 100%;
+  inset: 0;
+  justify-content: center;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+  z-index: 0;
+}
+
+.column-card-fallback::before {
+  border: 1px solid rgba(169, 120, 74, 0.22);
+  border-radius: 50%;
+  content: '';
+  height: 140px;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 550ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease;
+  width: 140px;
+}
+
+.column-card-fallback::after {
+  border: 1px dashed rgba(169, 120, 74, 0.15);
+  border-radius: 50%;
+  content: '';
+  height: 210px;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  width: 210px;
+}
+
+.column-card:hover .column-card-fallback::before,
+.home-column-card:hover .column-card-fallback::before {
+  border-color: rgba(169, 120, 74, 0.42);
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+.column-card:hover .column-card-fallback::after,
+.home-column-card:hover .column-card-fallback::after {
+  transform: translate(-50%, -50%) scale(1.1) rotate(15deg);
+}
+
+.fallback-orb-mark {
+  align-items: center;
+  color: var(--taupe);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  position: relative;
+  user-select: none;
+  z-index: 1;
+}
+
+.fallback-orb-icon {
+  color: #a9784a;
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  padding-left: 0.25em;
+}
+
+.fallback-orb-sub {
+  color: #8c7b71;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .column-card:hover .column-card-thumb img {
@@ -4937,9 +5023,13 @@ p {
 .home-column-thumb {
   filter: saturate(0.88) contrast(0.98);
   height: 100%;
+  left: 0;
   object-fit: cover;
+  position: absolute;
+  top: 0;
   transition: transform 550ms ease, filter 300ms ease;
   width: 100%;
+  z-index: 1;
 }
 
 .home-column-card:hover .home-column-thumb {
