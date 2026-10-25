@@ -243,12 +243,7 @@ if (fs.existsSync(indexPath)) {
   }
 }
 
-// 7.5 Ensure robots.txt, logo.png, and sitemap.xml are in dist/client
-safeCopy(path.join(rootDir, 'public', 'robots.txt'), path.join(clientDir, 'robots.txt'));
-safeCopy(path.join(rootDir, 'public', 'logo.png'), path.join(clientDir, 'logo.png'));
-safeCopy(path.join(rootDir, 'public', 'sitemap.xml'), path.join(clientDir, 'sitemap.xml'));
-
-// 8. Mirror dist/client directly into dist/ root so users can upload EITHER 'dist' OR 'dist/client'
+// 8. Copy entire public/ directory directly into dist/client/
 function copyDirRecursive(src, dest) {
   if (!fs.existsSync(src)) return;
   if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
@@ -259,7 +254,6 @@ function copyDirRecursive(src, dest) {
     const destPath = path.join(dest, entry.name);
 
     if (entry.isDirectory()) {
-      // Avoid copying into self if dest is inside src or vice versa
       if (srcPath !== dest && destPath !== src) {
         copyDirRecursive(srcPath, destPath);
       }
@@ -269,7 +263,13 @@ function copyDirRecursive(src, dest) {
   }
 }
 
-// Copy client assets to dist root (except server and .openai)
+const publicDir = path.join(rootDir, 'public');
+if (fs.existsSync(publicDir)) {
+  copyDirRecursive(publicDir, clientDir);
+  console.log('[postbuild-cloudflare] Copied all files and folders from public/ into dist/client/');
+}
+
+// 9. Mirror dist/client directly into dist/ root so users can upload EITHER 'dist' OR 'dist/client'
 const clientEntries = fs.readdirSync(clientDir, { withFileTypes: true });
 for (const entry of clientEntries) {
   const srcPath = path.join(clientDir, entry.name);
@@ -281,6 +281,17 @@ for (const entry of clientEntries) {
   } else {
     fs.copyFileSync(srcPath, destPath);
   }
+}
+
+// 10. Verify that critical static files exist in dist/client
+const requiredFiles = ['robots.txt', 'sitemap.xml', '_headers', '_routes.json', '_redirects'];
+for (const file of requiredFiles) {
+  const targetPath = path.join(clientDir, file);
+  if (!fs.existsSync(targetPath)) {
+    throw new Error(`[postbuild-cloudflare] Verification failed: dist/client/${file} does not exist!`);
+  }
+  const stat = fs.statSync(targetPath);
+  console.log(`[postbuild-cloudflare] Verified: dist/client/${file} (${stat.size} bytes)`);
 }
 
 console.log('[postbuild-cloudflare] Successfully prepared dist and dist/client for Cloudflare Pages deployment!');
