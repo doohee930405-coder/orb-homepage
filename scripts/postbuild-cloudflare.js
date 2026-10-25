@@ -195,6 +195,54 @@ if (fs.existsSync(functionsDir)) {
   console.log('[postbuild-cloudflare] Emitted functions/sitemap.xml.js with prebaked XML');
 }
 
+// 7.8 Enforce Schema.org JSON-LD in index.html head
+const indexPath = path.join(clientDir, 'index.html');
+if (fs.existsSync(indexPath)) {
+  let indexHtml = fs.readFileSync(indexPath, 'utf8');
+  const exactClinicJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "MedicalClinic",
+    "name": "오브한의원 마곡점",
+    "alternateName": "ORBMED CLINIC",
+    "url": "https://orbmed.co.kr",
+    "telephone": "02-6959-5982",
+    "description": "습식 정량화 뇌파(qEEG) 및 자율신경 검사 기반 뇌신경·자율신경·통증 중점 한의원",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "마곡중앙로 111 롯데캐슬 르웨스트 104동 2층 238호·239호",
+      "addressLocality": "강서구",
+      "addressRegion": "서울특별시",
+      "addressCountry": "KR"
+    },
+    "medicalSpecialty": [
+      "TraditionalChineseMedicine",
+      "Neurology"
+    ],
+    "physician": {
+      "@type": "Physician",
+      "name": "전두희",
+      "jobTitle": "대표원장"
+    }
+  };
+  const jsonLdTag = `<script type="application/ld+json">\n${JSON.stringify(exactClinicJsonLd, null, 2)}\n</script>`;
+  const headEndIndex = indexHtml.indexOf('</head>');
+  if (headEndIndex !== -1) {
+    const headPart = indexHtml.slice(0, headEndIndex);
+    const restPart = indexHtml.slice(headEndIndex);
+    if (/<script type="application\/ld\+json"[^>]*>[\s\S]*?MedicalClinic[\s\S]*?<\/script>/i.test(headPart)) {
+      const updatedHead = headPart.replace(
+        /<script type="application\/ld\+json"[^>]*>[\s\S]*?MedicalClinic[\s\S]*?<\/script>/i,
+        jsonLdTag
+      );
+      indexHtml = updatedHead + restPart;
+    } else {
+      indexHtml = headPart + '\n' + jsonLdTag + '\n' + restPart;
+    }
+    fs.writeFileSync(indexPath, indexHtml, 'utf8');
+    console.log('[postbuild-cloudflare] Injected and verified exact Schema.org MedicalClinic JSON-LD into index.html <head>');
+  }
+}
+
 // 7.5 Ensure robots.txt, logo.png, and sitemap.xml are in dist/client
 safeCopy(path.join(rootDir, 'public', 'robots.txt'), path.join(clientDir, 'robots.txt'));
 safeCopy(path.join(rootDir, 'public', 'logo.png'), path.join(clientDir, 'logo.png'));

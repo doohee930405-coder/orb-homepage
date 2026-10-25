@@ -6,7 +6,6 @@ import SiteHeader from './SiteHeader';
 import SiteFooter from './SiteFooter';
 import SiteMotion from './SiteMotion';
 import TrackedLink from './TrackedLink';
-import MedicalJsonLd from './MedicalJsonLd';
 import HomeColumnsArchive from './HomeColumnsArchive';
 import { Column } from '../lib/columns';
 import {
@@ -305,13 +304,7 @@ export default function ClinicHome({
   return (
     <main className={`site-shell locale-${locale}`} lang={locale}>
       <SiteMotion />
-      <MedicalJsonLd
-        locale={locale}
-        pageUrl={`${SITE_URL}${isEnglish ? '/en' : ''}`}
-        pageTitle={`${text.title} ${text.branch} | ${isEnglish ? 'Specialized Neuro-Autonomic Clinic' : '자율신경·뇌신경·통증 중점 한의원'}`}
-        pageDescription={text.heroBody}
-      />
-      <SiteHeader locale={locale} />
+            <SiteHeader locale={locale} />
 
       {/* 1. HERO SECTION */}
       <section className="hero-section" id="top">
