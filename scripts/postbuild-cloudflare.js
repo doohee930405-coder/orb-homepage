@@ -175,24 +175,16 @@ fs.writeFileSync(path.join(clientDir, 'sitemap.xml'), sitemapXml);
 fs.writeFileSync(path.join(rootDir, 'public', 'sitemap.xml'), sitemapXml);
 console.log(`[postbuild-cloudflare] Wrote ${canonicalUrls.size} canonical URLs to sitemap.xml and public/sitemap.xml`);
 
-// Write functions/sitemap.xml.js with embedded XML for guaranteed 200 OK dynamic edge delivery
+// Ensure functions/ does NOT intercept static assets (robots.txt, sitemap.xml)
 const functionsDir = path.join(rootDir, 'functions');
 if (fs.existsSync(functionsDir)) {
-  const sitemapFnCode = `export async function onRequest(context) {
-  const sitemapXml = ${JSON.stringify(sitemapXml)};
-  return new Response(sitemapXml, {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
-      'Access-Control-Allow-Origin': '*',
-      'X-Robots-Tag': 'all',
-    },
-  });
-}
-`;
-  fs.writeFileSync(path.join(functionsDir, 'sitemap.xml.js'), sitemapFnCode, 'utf8');
-  console.log('[postbuild-cloudflare] Emitted functions/sitemap.xml.js with prebaked XML');
+  for (const unwanted of ['robots.txt.js', 'sitemap.xml.js', '_middleware.js']) {
+    const unwantedPath = path.join(functionsDir, unwanted);
+    if (fs.existsSync(unwantedPath)) {
+      fs.unlinkSync(unwantedPath);
+      console.log(`[postbuild-cloudflare] Removed function interceptor to guarantee pure static asset serving: ${unwanted}`);
+    }
+  }
 }
 
 // 7.8 Enforce Schema.org JSON-LD in index.html head
