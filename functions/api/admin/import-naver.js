@@ -327,7 +327,7 @@ function convertHtmlParagraph(innerHtml) {
 
 function matchCategory(catName = '', title = '', content = '') {
   const normCat = (catName || '').toLowerCase().trim();
-  const text = `${title} ${content.slice(0, 1500)}`.toLowerCase();
+  const text = `${title} ${(content || '').slice(0, 2000)}`.toLowerCase();
 
   if (/뇌파|qeeg|정량뇌파|정량화뇌파|뇌파검사/.test(normCat)) return '정량화뇌파검사';
   if (/초민감|hsp|예민|고감각|민감자/.test(normCat)) return '초민감자(HSP)';
@@ -335,8 +335,8 @@ function matchCategory(catName = '', title = '', content = '') {
   if (/갑상선|저하증|항진증|하시모토|씬지로이드/.test(normCat)) return '갑상선';
   if (/브레인포그|만성피로|피로|무기력|번아웃|brain\s*fog|부신/.test(normCat)) return '브레인포그';
   if (/다이어트|대사|비만|체중|감량|식욕|부종|체질|감비|퀀텀핏|마운자로|위고비/.test(normCat)) return '다이어트';
-  if (/위장|소화|역류|식도|과민|담적|내과|장질환|변비|설사|위염|복부|복압/.test(normCat)) return '위장관';
-  if (/자율신경|실조증|어지럼|두근거림|공황|기립성|미주신경|심계|통증|추나|목|어깨|허리|체형|상열하한/.test(normCat)) return '자율신경실조증';
+  if (/위장|소화|역류|식도|과민|담적|내과|장질환|변비|설사|위염|복부|복압|장누수|장-뇌|장벽/.test(normCat)) return '위장관';
+  if (/자율신경|실조증|어지럼|두근거림|공황|기립성|미주신경|심계|통증|추나|목|어깨|허리|체형|상열하한|상행성/.test(normCat)) return '자율신경실조증';
 
   const scores = {
     '정량화뇌파검사': 0,
@@ -352,7 +352,7 @@ function matchCategory(catName = '', title = '', content = '') {
   const addScore = (cat, terms) => {
     for (const term of terms) {
       const lower = term.toLowerCase();
-      if (title.toLowerCase().includes(lower)) scores[cat] += 3;
+      if (title.toLowerCase().includes(lower)) scores[cat] += 4;
       if (text.includes(lower)) scores[cat] += 1;
     }
   };
@@ -363,11 +363,15 @@ function matchCategory(catName = '', title = '', content = '') {
   addScore('갑상선', ['갑상선', '갑상선기능저하증', '갑상선기능항진증', '하시모토', '갑상선염', '티록신', 'tsh', '씬지로이드']);
   addScore('브레인포그', ['브레인포그', 'brain fog', '만성피로', '피로감', '무기력', '번아웃', '기억력', '머리가 멍', '부신피로']);
   addScore('다이어트', ['다이어트', '체중감량', '감비', '비만', '식욕', '요요', '대사증후군', '체지방', '디톡스', '퀀텀핏', '마운자로', '위고비']);
-  addScore('위장관', ['위장', '역류성식도염', '소화불량', '담적', '담적병', '과민성대장증후군', '복부팽만', '가스', '속쓰림', '위염', '복압']);
-  addScore('자율신경실조증', ['자율신경', '자율신경실조증', '교감신경', '부교감신경', '미주신경', '기립성', '어지럼', '두근거림', '통증', '추나', '상열하한', 'gaba']);
+  addScore('위장관', [
+    '위장', '역류성식도염', '소화불량', '담적', '담적병', '과민성대장증후군',
+    '복부팽만', '가스', '속쓰림', '위염', '복압', '장누수', '장누수증후군', '장-뇌', '장뇌축', 'gut-brain',
+    '장벽', '밀착연접', '장관', '장내', '장염', '대장', '소장', '유산균', '변비', '설사', '소화', '복통'
+  ]);
+  addScore('자율신경실조증', ['자율신경', '자율신경실조증', '교감신경', '부교감신경', '미주신경', '기립성', '어지럼', '두근거림', '통증', '추나', '상열하한', 'gaba', '상행성']);
 
   let bestCat = '자율신경실조증';
-  let bestScore = -1;
+  let bestScore = 0;
   for (const [c, sc] of Object.entries(scores)) {
     if (sc > bestScore) {
       bestScore = sc;
@@ -449,10 +453,34 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
     }
   }
 
-  // 3. Category
+  // 3. Category (Robust Naver extraction)
   let categoryName = '';
-  const catMatch = cleanHtml.match(/<a\s+[^>]*class="[^"]*category[^"]*"[^>]*>([\s\S]*?)<\/a>/i);
-  if (catMatch) categoryName = stripHtml(catMatch[1]);
+  const catMatch1 = cleanHtml.match(/sendClickNlog\(['"]pst\.category['"][^>]*>([^<]+)<\/a>/i);
+  const catMatch2 = cleanHtml.match(/href=['"][^'"]*categoryNo=\d+[^'"]*['"][^>]*class=['"][^'"]*pcol2[^'"]*['"][^>]*>([^<]+)<\/a>/i);
+  const catMatch3 = cleanHtml.match(/(?:baParams|nlog2Params)\.categoryName\s*=\s*['"]([^'"]+)['"]/i);
+  const catMatch4 = cleanHtml.match(/CategoryName\s*=\s*"([^"\r\n]+)"/i);
+  const catMatch5 = cleanHtml.match(/categoryName\s*=\s*"%([0-9a-fA-F%]+)"/i);
+  const catMatchLegacy = cleanHtml.match(/<a\s+[^>]*class="[^"]*category[^"]*"[^>]*>([\s\S]*?)<\/a>/i);
+
+  if (catMatch1 && catMatch1[1].trim()) {
+    categoryName = stripHtml(catMatch1[1]);
+  } else if (catMatch2 && catMatch2[1].trim()) {
+    categoryName = stripHtml(catMatch2[1]);
+  } else if (catMatch3 && catMatch3[1].trim() && catMatch3[1].trim() !== '전체보기') {
+    categoryName = catMatch3[1].trim();
+  } else if (catMatch4 && catMatch4[1].trim()) {
+    try {
+      categoryName = JSON.parse('"' + catMatch4[1] + '"').trim();
+    } catch {
+      categoryName = catMatch4[1].trim();
+    }
+  } else if (catMatch5 && catMatch5[1]) {
+    try {
+      categoryName = decodeURIComponent('%' + catMatch5[1]).trim();
+    } catch {}
+  } else if (catMatchLegacy) {
+    categoryName = stripHtml(catMatchLegacy[1]);
+  }
 
   // 4. Main container
   let bodyHtml = '';
@@ -774,6 +802,28 @@ export async function onRequestPost(context) {
       const maxPosts = body.maxPosts || 100;
       const allPosts = [];
 
+      // Pre-fetch RSS feed to map logNo -> true Naver blog category name
+      const rssCatMap = {};
+      try {
+        const rssRes = await fetch(`https://rss.blog.naver.com/${encodeURIComponent(blogId)}.xml`, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+        });
+        if (rssRes.ok) {
+          const xml = await rssRes.text();
+          const items = xml.match(/<item>[\s\S]*?<\/item>/gi) || [];
+          for (const it of items) {
+            const linkM = it.match(/<link>([\s\S]*?)<\/link>/i);
+            const catM = it.match(/<category><!\[CDATA\[([\s\S]*?)\]\]><\/category>/i) || it.match(/<category>([\s\S]*?)<\/category>/i);
+            const logNo = linkM ? linkM[1].match(/(\d{6,14})/)?.[1] : null;
+            if (logNo && catM) {
+              rssCatMap[logNo] = catM[1].trim();
+            }
+          }
+        }
+      } catch (e) {
+        console.error('RSS category map error:', e);
+      }
+
       let page = 1;
       const countPerPage = 30;
       const maxPages = 5;
@@ -815,7 +865,7 @@ export async function onRequestPost(context) {
             rawTitle = decodeURIComponent(rawTitle.replace(/\+/g, ' '));
           } catch {}
 
-          let rawCat = item.categoryName || '';
+          let rawCat = rssCatMap[logNo] || item.categoryName || '';
           try {
             rawCat = decodeURIComponent(rawCat.replace(/\+/g, ' '));
           } catch {}

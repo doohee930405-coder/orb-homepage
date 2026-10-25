@@ -316,7 +316,7 @@ export function matchCategory(naverCategory: string = '', title: string = '', co
   if (/다이어트|대사|비만|체중|감량|식욕|부종|체질|감비|퀀텀핏/.test(normCat)) {
     return '다이어트';
   }
-  if (/위장|소화|역류|식도|과민|담적|내과|장질환|변비|설사|위염|복부/.test(normCat)) {
+  if (/위장|소화|역류|식도|과민|담적|내과|장질환|변비|설사|위염|복부|복압|장누수|장-뇌|장벽/.test(normCat)) {
     return '위장관';
   }
   if (/자율신경|실조증|어지럼|두근거림|공황|기립성|미주신경|심계|통증|추나|목|어깨|허리|체형/.test(normCat)) {
@@ -379,7 +379,8 @@ export function matchCategory(naverCategory: string = '', title: string = '', co
 
   scoreTerms('위장관', [
     '위장', '역류성식도염', '소화불량', '담적', '담적병', '과민성대장증후군',
-    '복부팽만', '가스', '속쓰림', '체기', '위염', '변비', '설사', '장누수', '장-뇌'
+    '복부팽만', '가스', '속쓰림', '체기', '위염', '변비', '설사', '장누수', '장누수증후군', '장-뇌', '장뇌축', 'gut-brain',
+    '장벽', '밀착연접', '장관', '장내', '장염', '대장', '소장', '유산균', '소화', '복통'
   ]);
 
   scoreTerms('자율신경실조증', [
@@ -389,7 +390,7 @@ export function matchCategory(naverCategory: string = '', title: string = '', co
   ]);
 
   let maxCategory = '자율신경실조증';
-  let maxScore = -1;
+  let maxScore = 0;
   for (const [cat, sc] of Object.entries(scores)) {
     if (sc > maxScore) {
       maxScore = sc;
@@ -414,6 +415,31 @@ export async function fetchNaverBlogPosts(
 
   const allPosts: NaverDiscoveredPost[] = [];
   const seenLogNos = new Set<string>();
+
+  // Pre-fetch RSS feed to map logNo -> true Naver blog category
+  const rssCatMap: Record<string, string> = {};
+  try {
+    const rssRes = await fetch(`https://rss.blog.naver.com/${cleanId}.xml`, {
+      headers: {
+        'User-Agent': USER_AGENT,
+        Accept: 'application/xml,text/xml,*/*',
+      },
+    });
+    if (rssRes.ok) {
+      const xml = await rssRes.text();
+      const items = xml.match(/<item>[\s\S]*?<\/item>/gi) || [];
+      for (const it of items) {
+        const linkM = it.match(/<link>([\s\S]*?)<\/link>/i);
+        const catM = it.match(/<category><!\[CDATA\[([\s\S]*?)\]\]><\/category>/i) || it.match(/<category>([\s\S]*?)<\/category>/i);
+        const logNo = linkM ? linkM[1].match(/(\d{6,14})/)?.[1] : null;
+        if (logNo && catM) {
+          rssCatMap[logNo] = catM[1].trim();
+        }
+      }
+    }
+  } catch (e) {
+    console.error('RSS prefetch error:', e);
+  }
 
   // 1. Mandatory Pagination Loop via PostTitleListAsync.naver
   try {
@@ -485,7 +511,7 @@ export async function fetchNaverBlogPosts(
         }
         const title = decodeHtmlEntities(rawTitle.replace(/<[^>]*>/g, '')).trim();
 
-        let rawCat = item.categoryName || '';
+        let rawCat = rssCatMap[logNo] || item.categoryName || '';
         try {
           rawCat = decodeURIComponent(rawCat.replace(/\+/g, ' '));
         } catch {
@@ -1836,12 +1862,34 @@ export async function importSingleNaverPost(input: {
   // Extract Category from page if not provided
   let categoryName = input.categoryName || '';
   if (!categoryName) {
-    const catMatch =
+    const catMatch1 = html.match(/sendClickNlog\(['"]pst\.category['"][^>]*>([^<]+)<\/a>/i);
+    const catMatch2 = html.match(/href=['"][^'"]*categoryNo=\d+[^'"]*['"][^>]*class=['"][^'"]*pcol2[^'"]*['"][^>]*>([^<]+)<\/a>/i);
+    const catMatch3 = html.match(/(?:baParams|nlog2Params)\.categoryName\s*=\s*['"]([^'"]+)['"]/i);
+    const catMatch4 = html.match(/CategoryName\s*=\s*"([^"\r\n]+)"/i);
+    const catMatch5 = html.match(/categoryName\s*=\s*"%([0-9a-fA-F%]+)"/i);
+    const catMatchLegacy =
       html.match(/<span[^>]*class="[^"]*category_title[^"]*"[^>]*>([\s\S]*?)<\/span>/i) ||
       html.match(/<a[^>]*class="[^"]*blog2_series[^"]*"[^>]*>([\s\S]*?)<\/a>/i) ||
       html.match(/<a[^>]*class="[^"]*link_category[^"]*"[^>]*>([\s\S]*?)<\/a>/i);
-    if (catMatch) {
-      categoryName = stripHtml(catMatch[1]);
+
+    if (catMatch1 && catMatch1[1].trim()) {
+      categoryName = stripHtml(catMatch1[1]);
+    } else if (catMatch2 && catMatch2[1].trim()) {
+      categoryName = stripHtml(catMatch2[1]);
+    } else if (catMatch3 && catMatch3[1].trim() && catMatch3[1].trim() !== '전체보기') {
+      categoryName = catMatch3[1].trim();
+    } else if (catMatch4 && catMatch4[1].trim()) {
+      try {
+        categoryName = JSON.parse('"' + catMatch4[1] + '"').trim();
+      } catch {
+        categoryName = catMatch4[1].trim();
+      }
+    } else if (catMatch5 && catMatch5[1]) {
+      try {
+        categoryName = decodeURIComponent('%' + catMatch5[1]).trim();
+      } catch {}
+    } else if (catMatchLegacy) {
+      categoryName = stripHtml(catMatchLegacy[1]);
     }
   }
 
