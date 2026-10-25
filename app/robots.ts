@@ -8,8 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: 'OAI-SearchBot', allow: '/' },
       { userAgent: 'PerplexityBot', allow: '/' },
       { userAgent: 'ClaudeBot', allow: '/' },
-      { userAgent: 'anthropic-ai', allow: '/' },
-      { userAgent: 'Googlebot', allow: '/' },
       { userAgent: 'Google-Extended', allow: '/' },
       { userAgent: 'Yeti', allow: '/' },
       { userAgent: 'Bingbot', allow: '/' },

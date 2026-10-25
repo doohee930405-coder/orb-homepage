@@ -14,12 +14,6 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: Googlebot
-Allow: /
-
 User-agent: Google-Extended
 Allow: /
 

@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL, treatments } from './lib/clinic';
+import { treatments } from './lib/clinic';
 import { getAllColumns } from './lib/columns';
+
+const DOMAIN = 'https://orbmed.co.kr';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const columns = getAllColumns();
@@ -9,54 +11,53 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Core Pages
   const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: `${SITE_URL}/`,
+      url: `${DOMAIN}/`,
       lastModified: now,
       changeFrequency: 'daily',
       priority: 1.0,
     },
     {
-      url: `${SITE_URL}/columns`,
+      url: `${DOMAIN}/columns`,
       lastModified: now,
       changeFrequency: 'daily',
       priority: 0.95,
     },
     {
-      url: `${SITE_URL}/location`,
+      url: `${DOMAIN}/location`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
-      url: `${SITE_URL}/en`,
+      url: `${DOMAIN}/en`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
-      url: `${SITE_URL}/privacy`,
+      url: `${DOMAIN}/privacy`,
       lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.2,
     },
     {
-      url: `${SITE_URL}/en/privacy`,
+      url: `${DOMAIN}/en/privacy`,
       lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.2,
     },
   ];
 
-  // Only canonical treatment URLs belong in the sitemap. Legacy aliases and
-  // category query URLs declare different canonical URLs on their pages.
+  // Only canonical treatment URLs belong in the sitemap.
   const treatmentRoutes: MetadataRoute.Sitemap = treatments.flatMap(({ slug }) => [
     {
-      url: `${SITE_URL}/treatments/${slug}`,
+      url: `${DOMAIN}/treatments/${slug}`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.8,
     },
     {
-      url: `${SITE_URL}/en/treatments/${slug}`,
+      url: `${DOMAIN}/en/treatments/${slug}`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
@@ -75,7 +76,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const isQeegGuide = col.slug === 'qeeg-guide';
 
     return {
-      url: `${SITE_URL}/columns/${col.slug}`,
+      url: `${DOMAIN}/columns/${encodeURIComponent(col.slug)}`,
       lastModified: dateObj,
       changeFrequency: isQeegGuide ? 'weekly' : 'monthly',
       priority: isQeegGuide ? 0.9 : 0.8,

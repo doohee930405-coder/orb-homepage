@@ -120,9 +120,15 @@ if (fs.existsSync(headersSrc)) {
   safeCopy(headersSrc, path.join(clientDir, '_headers'));
 }
 
+const routesSrc = path.join(rootDir, 'public', '_routes.json');
+if (fs.existsSync(routesSrc)) {
+  safeCopy(routesSrc, path.join(clientDir, '_routes.json'));
+}
+
 // 7. Vinext does not emit app/sitemap.ts for static builds. Build a sitemap
 // from the canonical URLs in the pages that were actually prerendered.
-const siteOrigin = 'https://www.orbmed.co.kr';
+// Target origin strictly without 'www' as specified for SEO/AEO: https://orbmed.co.kr
+const targetOrigin = 'https://orbmed.co.kr';
 const canonicalUrls = new Set();
 
 function collectCanonicalUrls(dir) {
@@ -140,16 +146,16 @@ function collectCanonicalUrls(dir) {
     if (!canonical) continue;
 
     const url = new URL(canonical);
-    if (url.origin !== siteOrigin || url.search || url.hash) continue;
+    if ((url.origin !== 'https://orbmed.co.kr' && url.origin !== 'https://www.orbmed.co.kr') || url.search || url.hash) continue;
     const pathname = url.pathname;
     if (!(
       pathname === '/' || pathname === '/columns' || pathname === '/en' ||
-      pathname === '/location' ||
+      pathname === '/location' || pathname === '/diet' || pathname === '/qeeg' || pathname === '/pain' ||
       pathname === '/privacy' || pathname === '/en/privacy' ||
       /^\/columns\/[^/]+$/.test(pathname) ||
       /^\/(?:en\/)?treatments\/[^/]+$/.test(pathname)
     )) continue;
-    canonicalUrls.add(url.href);
+    canonicalUrls.add(`${targetOrigin}${pathname}`);
   }
 }
 
@@ -169,9 +175,30 @@ fs.writeFileSync(path.join(clientDir, 'sitemap.xml'), sitemapXml);
 fs.writeFileSync(path.join(rootDir, 'public', 'sitemap.xml'), sitemapXml);
 console.log(`[postbuild-cloudflare] Wrote ${canonicalUrls.size} canonical URLs to sitemap.xml and public/sitemap.xml`);
 
-// 7.5 Ensure robots.txt and logo.png are in dist/client
+// Write functions/sitemap.xml.js with embedded XML for guaranteed 200 OK dynamic edge delivery
+const functionsDir = path.join(rootDir, 'functions');
+if (fs.existsSync(functionsDir)) {
+  const sitemapFnCode = `export async function onRequest(context) {
+  const sitemapXml = ${JSON.stringify(sitemapXml)};
+  return new Response(sitemapXml, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600',
+      'Access-Control-Allow-Origin': '*',
+      'X-Robots-Tag': 'all',
+    },
+  });
+}
+`;
+  fs.writeFileSync(path.join(functionsDir, 'sitemap.xml.js'), sitemapFnCode, 'utf8');
+  console.log('[postbuild-cloudflare] Emitted functions/sitemap.xml.js with prebaked XML');
+}
+
+// 7.5 Ensure robots.txt, logo.png, and sitemap.xml are in dist/client
 safeCopy(path.join(rootDir, 'public', 'robots.txt'), path.join(clientDir, 'robots.txt'));
 safeCopy(path.join(rootDir, 'public', 'logo.png'), path.join(clientDir, 'logo.png'));
+safeCopy(path.join(rootDir, 'public', 'sitemap.xml'), path.join(clientDir, 'sitemap.xml'));
 
 // 8. Mirror dist/client directly into dist/ root so users can upload EITHER 'dist' OR 'dist/client'
 function copyDirRecursive(src, dest) {

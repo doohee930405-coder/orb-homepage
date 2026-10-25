@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "include": [
+    "/api/*",
+    "/robots.txt",
+    "/sitemap.xml"
+  ],
+  "exclude": []
+}

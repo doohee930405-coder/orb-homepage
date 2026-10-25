@@ -10,7 +10,7 @@ const hasGoogleAnalyticsId = Boolean(
 );
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.orbmed.co.kr'),
+  metadataBase: new URL('https://orbmed.co.kr'),
   title: {
     default: '오브한의원 마곡점 | 마곡 오브한의원',
     template: '%s | 오브한의원 마곡점',
@@ -52,10 +52,8 @@ const clinicJsonLd = {
   name: '오브한의원 마곡점',
   alternateName: 'ORBMED CLINIC',
   url: 'https://orbmed.co.kr',
-  logo: 'https://orbmed.co.kr/logo.png',
-  description:
-    '마곡나루역 위치, 습식 정량화 뇌파(qEEG) 및 자율신경 검사 기반 뇌신경·자율신경·통증·다이어트 중점 한의원',
   telephone: '02-6959-5982',
+  description: '습식 정량화 뇌파(qEEG) 및 자율신경 검사 기반 뇌신경·자율신경·통증 중점 한의원',
   address: {
     '@type': 'PostalAddress',
     streetAddress: '마곡중앙로 111 롯데캐슬 르웨스트 104동 2층 238호·239호',
@@ -68,26 +66,7 @@ const clinicJsonLd = {
     '@type': 'Physician',
     name: '전두희',
     jobTitle: '대표원장',
-    description: '한의사, 대한뇌파한의학회 회원, 척추신경추나의학회 회원',
   },
-  availableService: [
-    {
-      '@type': 'MedicalTherapy',
-      name: '습식 정량화 뇌파 검사(qEEG)',
-    },
-    {
-      '@type': 'MedicalTherapy',
-      name: '자율신경계(HRV) 검사 및 치료',
-    },
-    {
-      '@type': 'MedicalTherapy',
-      name: '뇌신경 추나요법',
-    },
-    {
-      '@type': 'MedicalTherapy',
-      name: '적외선체열검사(DITI)',
-    },
-  ],
 };
 
 export default function RootLayout({
