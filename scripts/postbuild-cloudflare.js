@@ -166,7 +166,12 @@ const sitemapXml = [
   '',
 ].join('\n');
 fs.writeFileSync(path.join(clientDir, 'sitemap.xml'), sitemapXml);
-console.log(`[postbuild-cloudflare] Wrote ${canonicalUrls.size} canonical URLs to sitemap.xml`);
+fs.writeFileSync(path.join(rootDir, 'public', 'sitemap.xml'), sitemapXml);
+console.log(`[postbuild-cloudflare] Wrote ${canonicalUrls.size} canonical URLs to sitemap.xml and public/sitemap.xml`);
+
+// 7.5 Ensure robots.txt and logo.png are in dist/client
+safeCopy(path.join(rootDir, 'public', 'robots.txt'), path.join(clientDir, 'robots.txt'));
+safeCopy(path.join(rootDir, 'public', 'logo.png'), path.join(clientDir, 'logo.png'));
 
 // 8. Mirror dist/client directly into dist/ root so users can upload EITHER 'dist' OR 'dist/client'
 function copyDirRecursive(src, dest) {

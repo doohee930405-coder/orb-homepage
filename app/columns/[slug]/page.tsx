@@ -79,6 +79,16 @@ export async function generateMetadata({
       description: column.summary,
       images: [imageUrl],
     },
+    other: {
+      'article:published_time': column.date,
+      'article:modified_time': column.updatedAt || column.date,
+      'article:author': authorName,
+      'article:section': column.category,
+      'article:tag': column.tags.join(', '),
+      'datePublished': column.date,
+      'dateModified': column.updatedAt || column.date,
+      'author': authorName,
+    },
   };
 }
 
@@ -249,7 +259,46 @@ export default async function ColumnDetailPage({
   // Advanced Schema.org Graph for Google Medical SEO & AI Search Engines (AEO / GEO)
   const schemaGraph: any[] = [
     {
-      '@type': ['MedicalWebPage', 'Article'],
+      '@type': 'Article',
+      '@id': `${pageUrl}#article`,
+      isPartOf: {
+        '@type': 'WebSite',
+        '@id': `${SITE_URL}#website`,
+        name: '오브한의원 마곡점',
+        url: 'https://orbmed.co.kr',
+      },
+      headline: column.title,
+      description: column.summary,
+      inLanguage: 'ko-KR',
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': pageUrl,
+      },
+      datePublished: column.date,
+      dateModified: column.updatedAt || column.date,
+      image: [imageUrl],
+      keywords: column.tags.join(', '),
+      articleSection: column.category,
+      author: {
+        '@type': 'Person',
+        '@id': `${SITE_URL}/#physician-jeon`,
+        name: '전두희',
+        jobTitle: '오브한의원 대표원장',
+        description: '한의사, 대한뇌파한의학회 회원, 척추신경추나의학회 회원',
+        url: 'https://orbmed.co.kr',
+      },
+      publisher: {
+        '@type': 'MedicalClinic',
+        name: '오브한의원 마곡점',
+        url: 'https://orbmed.co.kr',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://orbmed.co.kr/logo.png',
+        },
+      },
+    },
+    {
+      '@type': 'MedicalWebPage',
       '@id': `${pageUrl}#medical-webpage`,
       isPartOf: {
         '@type': 'WebSite',
@@ -395,7 +444,10 @@ export default async function ColumnDetailPage({
       <ColumnViewTracker slug={column.slug} />
 
       {/* Article Header */}
-      <article className="article-container">
+      <article className="article-container" itemScope itemType="https://schema.org/Article">
+        <meta itemProp="mainEntityOfPage" content={pageUrl} />
+        <meta itemProp="dateModified" content={column.updatedAt || column.date} />
+        {imageUrl && <meta itemProp="image" content={imageUrl} />}
         <header className="article-header">
           {/* 4-Step Semantic Breadcrumb Navigation */}
           <nav className="article-breadcrumb-nav" aria-label="브레드크럼 위치">
@@ -421,11 +473,15 @@ export default async function ColumnDetailPage({
           </nav>
 
           <div className="article-header-meta">
-            <span className="column-badge">{column.category}</span>
-            <time dateTime={column.date}>{column.date}</time>
+            <span className="column-badge" itemProp="articleSection">{column.category}</span>
+            <time dateTime={column.date} itemProp="datePublished">{column.date}</time>
+            <span className="article-author" itemProp="author" itemScope itemType="https://schema.org/Person">
+              <meta itemProp="jobTitle" content="대표원장" />
+              <span itemProp="name">전두희 원장</span>
+            </span>
           </div>
 
-          <h1 className="article-title">{column.title}</h1>
+          <h1 className="article-title" itemProp="headline">{column.title}</h1>
         </header>
 
         {/* AI & GEO / AEO Summary Box (Answer Engine Optimized) */}
