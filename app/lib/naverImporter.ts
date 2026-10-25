@@ -678,26 +678,31 @@ export async function downloadAndSaveImage(
 
     const safeSlug = slugPrefix
       .replace(/[^a-zA-Z0-9가-힣_-]/g, '')
-      .slice(0, 20);
-    const fileName = `naver_${safeSlug}_${Date.now()}_${index + 1}${ext}`;
+      .slice(0, 25);
+    const fileName = `naver_${safeSlug}_img_${index + 1}${ext}`;
 
     const candidateImageDirs = [
-      'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage-main/public/images/columns',
-      'C:/Users/doohe/Downloads/orb-homepage-main/public/images/columns',
       path.join(getProjectRoot(), 'public', 'images', 'columns'),
       path.join(process.cwd(), 'public', 'images', 'columns'),
-      '/tmp/public/images/columns',
     ];
 
     for (const uploadDir of candidateImageDirs) {
-      if (uploadDir.startsWith('/tmp')) continue;
+      const destination = path.join(uploadDir, fileName);
+      if (fs.existsSync(destination) && fs.statSync(destination).size > 3000) {
+        return `/images/columns/${fileName}`;
+      }
+    }
+
+    for (const uploadDir of candidateImageDirs) {
       try {
         if (!fs.existsSync(uploadDir)) {
           fs.mkdirSync(uploadDir, { recursive: true });
         }
         const destination = path.join(uploadDir, fileName);
         fs.writeFileSync(destination, buffer);
-        return `/images/columns/${fileName}`;
+        if (fs.existsSync(destination) && fs.statSync(destination).size > 0) {
+          return `/images/columns/${fileName}`;
+        }
       } catch {
         // try next candidate dir
       }
