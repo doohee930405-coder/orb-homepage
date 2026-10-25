@@ -1,9 +1,11 @@
 {
   "version": 1,
   "include": [
-    "/api/*",
-    "/robots.txt",
-    "/sitemap.xml"
+    "/api/*"
   ],
-  "exclude": []
+  "exclude": [
+    "/robots.txt",
+    "/sitemap.xml",
+    "/favicon.ico"
+  ]
 }
