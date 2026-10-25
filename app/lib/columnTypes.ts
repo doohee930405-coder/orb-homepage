@@ -7,6 +7,7 @@ export const CLINIC_CATEGORIES = [
   '위장관',
   '갑상선',
   '정량화뇌파검사',
+  '통증',
 ] as const;
 
 export type ClinicCategory = (typeof CLINIC_CATEGORIES)[number];

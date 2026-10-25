@@ -16,7 +16,7 @@ export function getMemoryStore(): Map<string, Column> {
 }
 
 export function normalizeCategory(rawCat: string = ''): string {
-  if (rawCat.includes('통증') || rawCat.includes('추나')) return '자율신경실조증';
+  if (rawCat.includes('통증') || rawCat.includes('추나') || rawCat.includes('재활') || rawCat.includes('교정')) return '통증';
   if (/뇌파|qeeg/i.test(rawCat)) return '정량화뇌파검사';
   if (rawCat.includes('브레인포그')) return '브레인포그';
   if (rawCat.includes('다이어트')) return '다이어트';
@@ -1095,9 +1095,7 @@ export function getAllCategories(): { name: string; count: number }[] {
   for (const [name, count] of Object.entries(counts)) {
     if (
       !CLINIC_CATEGORIES.includes(name as any) &&
-      count > 0 &&
-      !name.includes('통증') &&
-      !name.includes('추나')
+      count > 0 
     ) {
       result.push({ name, count });
     }

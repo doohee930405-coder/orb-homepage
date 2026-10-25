@@ -188,6 +188,8 @@ function getMedicalSpecialty(category: string): string[] {
       return [...base, 'Endocrinology', 'ThyroidDisorders'];
     case '정량화뇌파검사':
       return [...base, 'QuantitativeEEG', 'ClinicalNeurophysiology', 'BrainMapping'];
+    case '통증':
+      return [...base, 'PainMedicine', 'Musculoskeletal', 'PhysicalTherapy', 'Orthopedics'];
     default:
       return base;
   }

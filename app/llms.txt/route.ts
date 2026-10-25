@@ -39,7 +39,7 @@ export async function GET() {
   text += `- **퀀텀핏 심부 열대사 고주파 치료**: 온다(ONDA) 리프팅과 동일한 심부 열대사 기술로 자율신경 실조로 인한 냉증, 림프 순환 부전, 대사 저하를 치료.\n\n`;
 
   text += `## 중점 진료 분야 및 전문 칼럼 아카이브 (Clinical Columns by Category)\n`;
-  text += `오브한의원 대표원장이 직접 집필한 8대 중점 진료 분야별 임상 칼럼 색인입니다.\n\n`;
+  text += `오브한의원 대표원장이 직접 집필한 9대 중점 진료 분야별 임상 칼럼 색인입니다.\n\n`;
 
   for (const category of CLINIC_CATEGORIES) {
     const categoryColumns = columns.filter((c) => c.category === category);
