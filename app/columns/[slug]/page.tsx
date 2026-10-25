@@ -497,7 +497,7 @@ export default async function ColumnDetailPage({
                 <strong>의학적 집필 및 감수:</strong> 오브한의원 대표원장 <strong>전두희</strong>
               </p>
               <p className="authority-standard">
-                <strong>진단 기준:</strong> 습식 정량화 뇌파(QEEG) 및 자율신경 기능 의학
+                <strong>진단 기준:</strong> 자율신경검사(HRV) 및 정량화 뇌파검사(QEEG), 기능 의학
               </p>
               <p className="authority-note">
                 오브한의원은 과학적이고 정량화된 뇌파 및 자율신경 데이터에 근거하여 개인별 원인 치료를 진행합니다.
