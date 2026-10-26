@@ -24,19 +24,49 @@ export default function ColumnViewTracker({ slug }: ColumnViewTrackerProps) {
 
     trackedRef.current = true;
 
-    // Retrieve or initialize session identifier
+    // Cooldown check for the same article (avoid double-counting rapid reload/re-render within 15s)
+    try {
+      const lastViewKey = `orb_last_view_${slug}`;
+      const lastViewTime = parseInt(sessionStorage.getItem(lastViewKey) || '0', 10);
+      const now = Date.now();
+      if (now - lastViewTime < 15000) {
+        return;
+      }
+      sessionStorage.setItem(lastViewKey, now.toString());
+    } catch {}
+
+    // 1. Retrieve or initialize persistent visitor identifier (across sessions, 1-year lifetime)
+    let visitorId = '';
+    try {
+      visitorId = localStorage.getItem('orb_vid') || '';
+      if (!visitorId) {
+        const cookieMatch = document.cookie.match(/(?:^|;\s*)orb_vid=([^;]+)/);
+        if (cookieMatch) visitorId = decodeURIComponent(cookieMatch[1]);
+      }
+      if (!visitorId) {
+        visitorId = `vid_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 10)}`;
+        localStorage.setItem('orb_vid', visitorId);
+        document.cookie = `orb_vid=${encodeURIComponent(visitorId)}; path=/; max-age=31536000; SameSite=Lax`;
+      }
+    } catch {
+      if (!visitorId) {
+        visitorId = `vid_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 10)}`;
+      }
+    }
+
+    // 2. Retrieve or initialize session identifier (per-session)
     let sessionId = '';
     try {
       sessionId = sessionStorage.getItem('orb_visitor_session_id') || '';
       if (!sessionId) {
-        sessionId = `sess_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+        sessionId = `sess_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 9)}`;
         sessionStorage.setItem('orb_visitor_session_id', sessionId);
       }
     } catch {
       sessionId = `sess_${Date.now()}`;
     }
 
-    const payload = JSON.stringify({ slug, sessionId });
+    const payload = JSON.stringify({ slug, visitorId, sessionId });
 
     // Use fetch with keepalive for standard HTTP payload delivery
     fetch('/api/analytics/track', {

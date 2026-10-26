@@ -147,11 +147,20 @@ export async function onRequestGet(context) {
 
     while (cur <= end) {
       const dStr = cur.toISOString().slice(0, 10);
-      const dayData = dailyStats[dStr]?.columns?.[slug] || { views: 0, uv: 0 };
+      const dayCol = dailyStats[dStr]?.columns?.[slug] || { views: 0, uv: 0, visitors: [] };
+      const views = dayCol.views || 0;
+      let uv = 0;
+      if (Array.isArray(dayCol.visitors) && dayCol.visitors.length > 0) {
+        uv = dayCol.visitors.length;
+      } else if (dayCol.uv) {
+        uv = dayCol.uv;
+      } else if (views > 0) {
+        uv = 1;
+      }
       trend.push({
         date: dStr,
-        views: dayData.views || 0,
-        uv: dayData.uv || 0,
+        views,
+        uv,
       });
       cur.setDate(cur.getDate() + 1);
     }
@@ -163,44 +172,68 @@ export async function onRequestGet(context) {
   }
 
   // Case B: Full Dashboard Analytics
-  // 1. Calculate continuous daily trends in range
+  // 1. Calculate continuous daily trends in range and collect unique visitors
   const dailyTrends = [];
   const cur = new Date(startDate);
   const end = new Date(todayStr);
 
   const rangeColumnCounts = {};
+  const periodVisitorsSet = new Set();
+  const columnVisitorsMap = new Map();
 
   while (cur <= end) {
     const dStr = cur.toISOString().slice(0, 10);
-    const dayData = dailyStats[dStr] || { views: 0, uv: 0, columns: {} };
+    const dayData = dailyStats[dStr] || { views: 0, uv: 0, visitors: [], columns: {} };
+
+    if (Array.isArray(dayData.visitors)) {
+      dayData.visitors.forEach((v) => periodVisitorsSet.add(v));
+    }
+
+    const dayUV = Array.isArray(dayData.visitors) && dayData.visitors.length > 0
+      ? dayData.visitors.length
+      : (dayData.uv || 0);
+
     dailyTrends.push({
       date: dStr,
       views: dayData.views || 0,
-      uv: dayData.uv || 0,
+      uv: dayUV,
     });
 
     if (dayData.columns) {
       for (const colSlug in dayData.columns) {
         if (!rangeColumnCounts[colSlug]) {
-          rangeColumnCounts[colSlug] = { views: 0, uv: 0 };
+          rangeColumnCounts[colSlug] = { views: 0 };
         }
-        rangeColumnCounts[colSlug].views += dayData.columns[colSlug].views || 0;
-        rangeColumnCounts[colSlug].uv += dayData.columns[colSlug].uv || 0;
+        const colDay = dayData.columns[colSlug];
+        rangeColumnCounts[colSlug].views += colDay.views || 0;
+
+        if (!columnVisitorsMap.has(colSlug)) {
+          columnVisitorsMap.set(colSlug, new Set());
+        }
+        if (Array.isArray(colDay.visitors)) {
+          colDay.visitors.forEach((v) => columnVisitorsMap.get(colSlug).add(v));
+        }
       }
     }
 
     cur.setDate(cur.getDate() + 1);
   }
 
-  // 2. Combine with all columns
-  let totalRangeViews = 0;
-  let totalRangeUV = 0;
+  // 2. Calculate total range views from daily aggregated trends
+  let totalRangeViews = dailyTrends.reduce((sum, d) => sum + (d.views || 0), 0);
 
   const columnsStats = allColumns.map((col) => {
-    const r = rangeColumnCounts[col.slug] || { views: 0, uv: 0 };
-    const tot = columnsTotal[col.slug]?.views || r.views || 0;
-    totalRangeViews += r.views;
-    totalRangeUV += r.uv;
+    const r = rangeColumnCounts[col.slug] || { views: 0 };
+    const views = r.views || 0;
+    const vSet = columnVisitorsMap.get(col.slug);
+    let uv = 0;
+    if (vSet && vSet.size > 0) {
+      uv = vSet.size;
+    } else if (views > 0) {
+      // Historical fallback if visitors set was not tracked
+      uv = Math.min(views, Math.max(1, Math.round(views * 0.7)));
+    }
+    const tot = columnsTotal[col.slug]?.views || views || 0;
 
     return {
       slug: col.slug,
@@ -208,10 +241,24 @@ export async function onRequestGet(context) {
       date: col.date,
       category: col.category,
       totalViews: tot,
-      rangeViews: r.views,
-      rangeUV: r.uv,
+      rangeViews: views,
+      rangeUV: uv,
     };
   });
+
+  // Calculate true totalRangeUV across the period (distinct visitors)
+  let totalRangeUV = periodVisitorsSet.size;
+  if (totalRangeUV === 0 && totalRangeViews > 0) {
+    const recentInPeriod = (store?.recentViews || []).filter(
+      (rv) => rv.date >= startDate && rv.date <= todayStr
+    );
+    if (recentInPeriod.length > 0) {
+      const distinctRecent = new Set(recentInPeriod.map((rv) => rv.vidToken || rv.ipHash));
+      totalRangeUV = distinctRecent.size;
+    } else {
+      totalRangeUV = Math.max(1, Math.round(totalRangeViews * 0.35));
+    }
+  }
 
   // Sort by range views descending
   columnsStats.sort((a, b) => b.rangeViews - a.rangeViews);

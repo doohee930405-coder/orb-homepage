@@ -51,6 +51,7 @@ export async function onRequestPost(context) {
     }
 
     const slug = (body.slug || '').trim();
+    const visitorId = (body.visitorId || '').trim();
     const sessionId = (body.sessionId || 'session').trim();
 
     if (!slug) {
@@ -103,6 +104,9 @@ export async function onRequestPost(context) {
       .join('')
       .slice(0, 16);
 
+    // Compact visitor token: persistent visitorId or hashed fallback
+    const vidToken = visitorId ? visitorId.slice(0, 20) : `ip_${ipHash.slice(0, 10)}`;
+
     const nowMs = Date.now();
     const { dateStr: viewDate, isoStr: createdAt } = getKstDate(new Date(nowMs));
     const token = getGithubToken(context.env);
@@ -110,7 +114,7 @@ export async function onRequestPost(context) {
     // 1. Fetch persistent store from GitHub Gist
     let store = {
       updatedAt: createdAt,
-      summary: { totalViews: 0, totalUV: 0 },
+      summary: { totalViews: 0, totalUV: 0, visitors: [] },
       dailyStats: {},
       columnsTotal: {},
       dedupLog: {},
@@ -142,18 +146,17 @@ export async function onRequestPost(context) {
     store.columnsTotal = store.columnsTotal || {};
     store.dedupLog = store.dedupLog || {};
     store.recentViews = store.recentViews || [];
-    store.summary = store.summary || { totalViews: 0, totalUV: 0 };
+    store.summary = store.summary || { totalViews: 0, totalUV: 0, visitors: [] };
+    if (!Array.isArray(store.summary.visitors)) {
+      store.summary.visitors = [];
+    }
 
-    // 2. Check 30-minute deduplication (per-column & per-session/ip)
-    const dedupSessionKey = `${slug}:sess_${sessionId}`;
-    const dedupIpKey = `${slug}:ip_${ipHash}`;
-    const COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes
+    // 2. Cooldown against rapid reload/double-clicking spam on the EXACT SAME article (15 seconds)
+    const dedupArticleKey = `${slug}:${vidToken}`;
+    const COOLDOWN_MS = 15 * 1000; // 15 seconds
 
-    const lastSessionTime = store.dedupLog[dedupSessionKey] || 0;
-    const lastIpTime = store.dedupLog[dedupIpKey] || 0;
-
-    const isDuplicate =
-      nowMs - lastSessionTime < COOLDOWN_MS || nowMs - lastIpTime < COOLDOWN_MS;
+    const lastViewTime = store.dedupLog[dedupArticleKey] || 0;
+    const isDuplicate = nowMs - lastViewTime < COOLDOWN_MS;
 
     if (isDuplicate) {
       return new Response(
@@ -162,44 +165,70 @@ export async function onRequestPost(context) {
       );
     }
 
-    // 3. Record new unique visit
-    // Update dedup timestamps
-    store.dedupLog[dedupSessionKey] = nowMs;
-    store.dedupLog[dedupIpKey] = nowMs;
+    // 3. Record new page view and update unique visitor sets
+    store.dedupLog[dedupArticleKey] = nowMs;
 
-    // Prune entries older than 60 minutes to maintain light payload
-    const PRUNE_CUTOFF = nowMs - 60 * 60 * 1000;
+    // Prune dedup log entries older than 10 minutes to maintain light payload
+    const PRUNE_CUTOFF = nowMs - 10 * 60 * 1000;
     for (const k in store.dedupLog) {
       if (store.dedupLog[k] < PRUNE_CUTOFF) {
         delete store.dedupLog[k];
       }
     }
 
-    // Initialize daily entry if not exists
+    // A. Daily entry
     if (!store.dailyStats[viewDate]) {
-      store.dailyStats[viewDate] = { views: 0, uv: 0, columns: {} };
+      store.dailyStats[viewDate] = { views: 0, uv: 0, visitors: [], columns: {} };
     }
     const dayEntry = store.dailyStats[viewDate];
-    dayEntry.views = (dayEntry.views || 0) + 1;
-    dayEntry.uv = (dayEntry.uv || 0) + 1;
+    if (!Array.isArray(dayEntry.visitors)) {
+      dayEntry.visitors = [];
+    }
 
+    // PV increments on every view
+    dayEntry.views = (dayEntry.views || 0) + 1;
+
+    // UV only increments if this visitor is distinct for the day
+    if (!dayEntry.visitors.includes(vidToken)) {
+      dayEntry.visitors.push(vidToken);
+    }
+    dayEntry.uv = dayEntry.visitors.length;
+
+    // B. Column daily entry
     dayEntry.columns = dayEntry.columns || {};
     if (!dayEntry.columns[slug]) {
-      dayEntry.columns[slug] = { views: 0, uv: 0 };
+      dayEntry.columns[slug] = { views: 0, uv: 0, visitors: [] };
     }
-    dayEntry.columns[slug].views = (dayEntry.columns[slug].views || 0) + 1;
-    dayEntry.columns[slug].uv = (dayEntry.columns[slug].uv || 0) + 1;
+    const colDay = dayEntry.columns[slug];
+    if (!Array.isArray(colDay.visitors)) {
+      colDay.visitors = [];
+    }
+    colDay.views = (colDay.views || 0) + 1;
+    if (!colDay.visitors.includes(vidToken)) {
+      colDay.visitors.push(vidToken);
+    }
+    colDay.uv = colDay.visitors.length;
 
-    // Update column all-time totals
+    // C. Column all-time totals
     if (!store.columnsTotal[slug]) {
-      store.columnsTotal[slug] = { views: 0, uv: 0 };
+      store.columnsTotal[slug] = { views: 0, uv: 0, visitors: [] };
     }
-    store.columnsTotal[slug].views = (store.columnsTotal[slug].views || 0) + 1;
-    store.columnsTotal[slug].uv = (store.columnsTotal[slug].uv || 0) + 1;
+    const colTotal = store.columnsTotal[slug];
+    if (!Array.isArray(colTotal.visitors)) {
+      colTotal.visitors = [];
+    }
+    colTotal.views = (colTotal.views || 0) + 1;
+    if (!colTotal.visitors.includes(vidToken)) {
+      colTotal.visitors.push(vidToken);
+    }
+    colTotal.uv = colTotal.visitors.length;
 
-    // Update global summary
+    // D. Global summary
     store.summary.totalViews = (store.summary.totalViews || 0) + 1;
-    store.summary.totalUV = (store.summary.totalUV || 0) + 1;
+    if (!store.summary.visitors.includes(vidToken)) {
+      store.summary.visitors.push(vidToken);
+    }
+    store.summary.totalUV = store.summary.visitors.length;
     store.updatedAt = createdAt;
 
     // Append to recent views (max 50)
@@ -208,6 +237,7 @@ export async function onRequestPost(context) {
       date: viewDate,
       time: createdAt,
       ipHash,
+      vidToken,
     });
     if (store.recentViews.length > 50) {
       store.recentViews = store.recentViews.slice(0, 50);
@@ -240,7 +270,7 @@ export async function onRequestPost(context) {
             `INSERT INTO column_views_log (column_slug, session_id, ip_hash, user_agent, view_date, created_at) VALUES (?, ?, ?, ?, ?, ?)`
           ).bind(slug, sessionId, ipHash, userAgent.slice(0, 200), viewDate, createdAt),
           context.env.DB.prepare(
-            `INSERT INTO column_daily_stats (column_slug, view_date, views_count, unique_visitors) VALUES (?, ?, 1, 1) ON CONFLICT(column_slug, view_date) DO UPDATE SET views_count = views_count + 1, unique_visitors = unique_visitors + 1`
+            `INSERT INTO column_daily_stats (column_slug, view_date, views_count, unique_visitors) VALUES (?, ?, 1, 1) ON CONFLICT(column_slug, view_date) DO UPDATE SET views_count = views_count + 1`
           ).bind(slug, viewDate),
         ]);
       } catch (d1Err) {

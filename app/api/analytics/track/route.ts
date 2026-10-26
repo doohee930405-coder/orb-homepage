@@ -15,7 +15,7 @@ export async function OPTIONS() {
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { slug, sessionId } = body;
+    const { slug, visitorId, sessionId } = body;
 
     if (!slug || typeof slug !== 'string') {
       return NextResponse.json({ error: '유효한 slug가 필요합니다.' }, { status: 400 });
@@ -29,9 +29,10 @@ export async function POST(req: Request) {
 
     const userAgent = req.headers.get('user-agent') || '';
 
-    // Record view with 30-minute deduplication
+    // Record view with anti-spam deduplication and unique visitor tracking
     const result = recordColumnView({
       slug,
+      visitorId: visitorId || '',
       sessionId: sessionId || 'default-session',
       ip,
       userAgent,

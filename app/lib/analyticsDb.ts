@@ -42,6 +42,7 @@ function getSqliteDb() {
       CREATE TABLE IF NOT EXISTS column_views_log (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         column_slug TEXT NOT NULL,
+        visitor_id TEXT DEFAULT '',
         session_id TEXT NOT NULL,
         ip_hash TEXT NOT NULL,
         user_agent TEXT,
@@ -73,6 +74,11 @@ function getSqliteDb() {
         ON column_daily_stats (column_slug);
     `);
 
+    // Migration: add visitor_id column if table already existed without it
+    try {
+      sqliteDbInstance.exec(`ALTER TABLE column_views_log ADD COLUMN visitor_id TEXT DEFAULT ''`);
+    } catch {}
+
     return sqliteDbInstance;
   } catch (err) {
     console.warn('node:sqlite could not be initialized:', err);
@@ -82,16 +88,18 @@ function getSqliteDb() {
 
 export interface RecordViewOptions {
   slug: string;
+  visitorId?: string;
   sessionId: string;
   ip?: string;
   userAgent?: string;
 }
 
-export function recordColumnView({ slug, sessionId, ip = '', userAgent = '' }: RecordViewOptions): {
+export function recordColumnView({ slug, visitorId = '', sessionId, ip = '', userAgent = '' }: RecordViewOptions): {
   recorded: boolean;
   isDuplicate: boolean;
 } {
   const cleanSlug = slug.trim();
+  const cleanVisitorId = visitorId.trim();
   const cleanSessionId = (sessionId || 'anonymous-session').trim();
   const salt = process.env.ANALYTICS_SALT || 'orb_clinic_salt_2026';
   const ipHash = crypto
@@ -100,39 +108,41 @@ export function recordColumnView({ slug, sessionId, ip = '', userAgent = '' }: R
     .digest('hex')
     .slice(0, 16);
 
+  const vidToken = cleanVisitorId ? cleanVisitorId.slice(0, 20) : `ip_${ipHash.slice(0, 10)}`;
+
   const kstNow = new Date(Date.now() + 9 * 3600000);
   const viewDate = kstNow.toISOString().slice(0, 10);
   const createdAt = kstNow.toISOString();
-  const thirtyMinsAgo = new Date(kstNow.getTime() - 30 * 60 * 1000).toISOString();
+  const fifteenSecsAgo = new Date(kstNow.getTime() - 15 * 1000).toISOString();
 
   const db = getSqliteDb();
   if (db) {
     try {
+      // Cooldown: 15 seconds against spam on the exact same column
       const checkStmt = db.prepare(`
         SELECT id FROM column_views_log
         WHERE column_slug = ? 
-          AND (session_id = ? OR ip_hash = ?)
+          AND (visitor_id = ? OR session_id = ? OR ip_hash = ?)
           AND created_at >= ?
         LIMIT 1
       `);
-      const existing = checkStmt.get(cleanSlug, cleanSessionId, ipHash, thirtyMinsAgo);
+      const existing = checkStmt.get(cleanSlug, vidToken, cleanSessionId, ipHash, fifteenSecsAgo);
 
       if (existing) {
         return { recorded: false, isDuplicate: true };
       }
 
       const insertLogStmt = db.prepare(`
-        INSERT INTO column_views_log (column_slug, session_id, ip_hash, user_agent, view_date, created_at)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO column_views_log (column_slug, visitor_id, session_id, ip_hash, user_agent, view_date, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `);
-      insertLogStmt.run(cleanSlug, cleanSessionId, ipHash, (userAgent || '').slice(0, 200), viewDate, createdAt);
+      insertLogStmt.run(cleanSlug, vidToken, cleanSessionId, ipHash, (userAgent || '').slice(0, 200), viewDate, createdAt);
 
       const upsertStatsStmt = db.prepare(`
         INSERT INTO column_daily_stats (column_slug, view_date, views_count, unique_visitors)
         VALUES (?, ?, 1, 1)
         ON CONFLICT(column_slug, view_date) DO UPDATE SET
-          views_count = views_count + 1,
-          unique_visitors = unique_visitors + 1
+          views_count = views_count + 1
       `);
       upsertStatsStmt.run(cleanSlug, viewDate);
     } catch (err) {
@@ -153,50 +163,72 @@ export function recordColumnView({ slug, sessionId, ip = '', userAgent = '' }: R
         store.dailyStats = store.dailyStats || {};
         store.columnsTotal = store.columnsTotal || {};
         store.dedupLog = store.dedupLog || {};
-        store.summary = store.summary || { totalViews: 0, totalUV: 0 };
+        store.summary = store.summary || { totalViews: 0, totalUV: 0, visitors: [] };
+        if (!Array.isArray(store.summary.visitors)) {
+          store.summary.visitors = [];
+        }
 
-        const dedupSessionKey = `${cleanSlug}:sess_${cleanSessionId}`;
-        const dedupIpKey = `${cleanSlug}:ip_${ipHash}`;
+        const dedupArticleKey = `${cleanSlug}:${vidToken}`;
         const nowMs = Date.now();
-        const COOLDOWN_MS = 30 * 60 * 1000;
+        const COOLDOWN_MS = 15 * 1000; // 15 seconds
 
-        if (
-          nowMs - (store.dedupLog[dedupSessionKey] || 0) < COOLDOWN_MS ||
-          nowMs - (store.dedupLog[dedupIpKey] || 0) < COOLDOWN_MS
-        ) {
+        if (nowMs - (store.dedupLog[dedupArticleKey] || 0) < COOLDOWN_MS) {
           return;
         }
 
-        store.dedupLog[dedupSessionKey] = nowMs;
-        store.dedupLog[dedupIpKey] = nowMs;
+        store.dedupLog[dedupArticleKey] = nowMs;
 
-        // Prune dedup log
-        const PRUNE_CUTOFF = nowMs - 60 * 60 * 1000;
+        // Prune dedup log older than 10 minutes
+        const PRUNE_CUTOFF = nowMs - 10 * 60 * 1000;
         for (const k in store.dedupLog) {
           if (store.dedupLog[k] < PRUNE_CUTOFF) delete store.dedupLog[k];
         }
 
         if (!store.dailyStats[viewDate]) {
-          store.dailyStats[viewDate] = { views: 0, uv: 0, columns: {} };
+          store.dailyStats[viewDate] = { views: 0, uv: 0, visitors: [], columns: {} };
         }
         const dayEntry = store.dailyStats[viewDate];
+        if (!Array.isArray(dayEntry.visitors)) {
+          dayEntry.visitors = [];
+        }
         dayEntry.views = (dayEntry.views || 0) + 1;
-        dayEntry.uv = (dayEntry.uv || 0) + 1;
+        if (!dayEntry.visitors.includes(vidToken)) {
+          dayEntry.visitors.push(vidToken);
+        }
+        dayEntry.uv = dayEntry.visitors.length;
+
         dayEntry.columns = dayEntry.columns || {};
         if (!dayEntry.columns[cleanSlug]) {
-          dayEntry.columns[cleanSlug] = { views: 0, uv: 0 };
+          dayEntry.columns[cleanSlug] = { views: 0, uv: 0, visitors: [] };
         }
-        dayEntry.columns[cleanSlug].views += 1;
-        dayEntry.columns[cleanSlug].uv += 1;
+        const colDay = dayEntry.columns[cleanSlug];
+        if (!Array.isArray(colDay.visitors)) {
+          colDay.visitors = [];
+        }
+        colDay.views = (colDay.views || 0) + 1;
+        if (!colDay.visitors.includes(vidToken)) {
+          colDay.visitors.push(vidToken);
+        }
+        colDay.uv = colDay.visitors.length;
 
         if (!store.columnsTotal[cleanSlug]) {
-          store.columnsTotal[cleanSlug] = { views: 0, uv: 0 };
+          store.columnsTotal[cleanSlug] = { views: 0, uv: 0, visitors: [] };
         }
-        store.columnsTotal[cleanSlug].views += 1;
-        store.columnsTotal[cleanSlug].uv += 1;
+        const colTot = store.columnsTotal[cleanSlug];
+        if (!Array.isArray(colTot.visitors)) {
+          colTot.visitors = [];
+        }
+        colTot.views = (colTot.views || 0) + 1;
+        if (!colTot.visitors.includes(vidToken)) {
+          colTot.visitors.push(vidToken);
+        }
+        colTot.uv = colTot.visitors.length;
 
-        store.summary.totalViews += 1;
-        store.summary.totalUV += 1;
+        store.summary.totalViews = (store.summary.totalViews || 0) + 1;
+        if (!store.summary.visitors.includes(vidToken)) {
+          store.summary.visitors.push(vidToken);
+        }
+        store.summary.totalUV = store.summary.visitors.length;
         store.updatedAt = createdAt;
 
         await fetch(`https://api.github.com/gists/${GIST_ID}`, {
@@ -278,11 +310,12 @@ export function getColumnAnalytics({
   }
 
   try {
+    // 1. Query daily trend with distinct unique visitors
     const dailyStmt = db.prepare(`
       SELECT view_date as date, 
-             SUM(views_count) as views, 
-             SUM(unique_visitors) as uv
-      FROM column_daily_stats
+             COUNT(*) as views, 
+             COUNT(DISTINCT CASE WHEN visitor_id != '' THEN visitor_id ELSE ip_hash END) as uv
+      FROM column_views_log
       WHERE view_date >= ? AND view_date <= ?
       GROUP BY view_date
       ORDER BY view_date ASC
@@ -315,9 +348,9 @@ export function getColumnAnalytics({
 
     const rangeStatsStmt = db.prepare(`
       SELECT column_slug,
-             SUM(views_count) as range_views,
-             SUM(unique_visitors) as range_uv
-      FROM column_daily_stats
+             COUNT(*) as range_views,
+             COUNT(DISTINCT CASE WHEN visitor_id != '' THEN visitor_id ELSE ip_hash END) as range_uv
+      FROM column_views_log
       WHERE view_date >= ? AND view_date <= ?
       GROUP BY column_slug
     `);
@@ -335,8 +368,8 @@ export function getColumnAnalytics({
     });
 
     const totalStatsStmt = db.prepare(`
-      SELECT column_slug, SUM(views_count) as total_views
-      FROM column_daily_stats
+      SELECT column_slug, COUNT(*) as total_views
+      FROM column_views_log
       GROUP BY column_slug
     `);
     const totalRows = totalStatsStmt.all() as Array<{
@@ -348,14 +381,21 @@ export function getColumnAnalytics({
       totalMap.set(r.column_slug, Number(r.total_views || 0));
     });
 
+    // Query true period-wide unique visitors (not sum of daily or column UV)
+    const totalUVStmt = db.prepare(`
+      SELECT COUNT(DISTINCT CASE WHEN visitor_id != '' THEN visitor_id ELSE ip_hash END) as total_uv
+      FROM column_views_log
+      WHERE view_date >= ? AND view_date <= ?
+    `);
+    const totalUVRow = totalUVStmt.get(finalStart, finalEnd) as { total_uv: number } | undefined;
+    const totalRangeUV = totalUVRow ? Number(totalUVRow.total_uv || 0) : 0;
+
     let totalRangeViews = 0;
-    let totalRangeUV = 0;
 
     const columnsStats = allColumns.map((col) => {
       const r = rangeMap.get(col.slug) || { rangeViews: 0, rangeUV: 0 };
       const tot = totalMap.get(col.slug) || 0;
       totalRangeViews += r.rangeViews;
-      totalRangeUV += r.rangeUV;
       return {
         slug: col.slug,
         title: col.title,
@@ -419,9 +459,12 @@ export function getSingleColumnDailyTrend(slug: string, days = 30) {
 
   try {
     const stmt = db.prepare(`
-      SELECT view_date as date, views_count as views, unique_visitors as uv
-      FROM column_daily_stats
+      SELECT view_date as date, 
+             COUNT(*) as views, 
+             COUNT(DISTINCT CASE WHEN visitor_id != '' THEN visitor_id ELSE ip_hash END) as uv
+      FROM column_views_log
       WHERE column_slug = ? AND view_date >= ? AND view_date <= ?
+      GROUP BY view_date
       ORDER BY view_date ASC
     `);
     const rows = stmt.all(slug, startStr, endStr) as Array<{
