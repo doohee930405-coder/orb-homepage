@@ -261,13 +261,13 @@ export default async function ColumnDetailPage({
   // Advanced Schema.org Graph for Google Medical SEO & AI Search Engines (AEO / GEO)
   const schemaGraph: any[] = [
     {
-      '@type': 'Article',
+      '@type': ['MedicalWebPage', 'Article'],
       '@id': `${pageUrl}#article`,
       isPartOf: {
         '@type': 'WebSite',
         '@id': `${SITE_URL}#website`,
         name: '오브한의원 마곡점',
-        url: 'https://orbmed.co.kr',
+        url: SITE_URL,
       },
       headline: column.title,
       description: column.summary,
@@ -281,55 +281,15 @@ export default async function ColumnDetailPage({
       image: [imageUrl],
       keywords: column.tags.join(', '),
       articleSection: column.category,
-      author: {
-        '@type': 'Person',
-        '@id': `${SITE_URL}/#physician-jeon`,
-        name: '전두희',
-        jobTitle: '오브한의원 대표원장',
-        description: '한의사, 대한뇌파한의학회 회원, 척추신경추나의학회 회원',
-        url: 'https://orbmed.co.kr',
-      },
-      publisher: {
-        '@type': 'MedicalClinic',
-        name: '오브한의원 마곡점',
-        url: 'https://orbmed.co.kr',
-        logo: {
-          '@type': 'ImageObject',
-          url: 'https://orbmed.co.kr/logo.png',
-        },
-      },
-    },
-    {
-      '@type': 'MedicalWebPage',
-      '@id': `${pageUrl}#medical-webpage`,
-      isPartOf: {
-        '@type': 'WebSite',
-        '@id': `${SITE_URL}#website`,
-        name: '오브한의원 마곡점',
-        url: SITE_URL,
-      },
-      headline: column.title,
-      description: column.summary,
-      inLanguage: 'ko-KR',
-      mainEntityOfPage: pageUrl,
-      datePublished: column.date,
-      dateModified: column.updatedAt || column.date,
-      image: imageUrl,
-      keywords: column.tags.join(', '),
-      articleSection: column.category,
       medicalSpecialty: medicalSpecialties,
       citation: citations.length > 0 ? citations : undefined,
       author: {
-        '@type': ['Physician', 'Person'],
+        '@type': 'Physician',
         '@id': `${SITE_URL}/#physician-jeon`,
         name: '전두희',
-        jobTitle: '오브한의원 대표원장',
-        medicalSpecialty: [
-          'KoreanMedicine',
-          'AutonomicNervousSystem',
-          'QuantitativeEEG',
-          'Neurocognitive',
-        ],
+        jobTitle: '한의사 / 대표원장',
+        description: '한의사, 대한뇌파한의학회 회원, 척추신경추나의학회 회원',
+        url: SITE_URL,
         worksFor: {
           '@type': 'MedicalClinic',
           name: '오브한의원 마곡점',
@@ -344,17 +304,6 @@ export default async function ColumnDetailPage({
           },
         },
       },
-      reviewedBy: {
-        '@type': ['Physician', 'Person'],
-        '@id': `${SITE_URL}/#physician-jeon`,
-        name: '전두희',
-        jobTitle: '오브한의원 대표원장',
-        worksFor: {
-          '@type': 'MedicalClinic',
-          name: '오브한의원 마곡점',
-          url: SITE_URL,
-        },
-      },
       publisher: {
         '@type': 'MedicalClinic',
         name: '오브한의원 마곡점',
@@ -362,7 +311,7 @@ export default async function ColumnDetailPage({
         telephone: '02-6959-5982',
         logo: {
           '@type': 'ImageObject',
-          url: `${SITE_URL}/favicon.svg`,
+          url: `${SITE_URL}/logo.png`,
         },
         address: {
           '@type': 'PostalAddress',

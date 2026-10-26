@@ -125,9 +125,8 @@ if (fs.existsSync(routesSrc)) {
   safeCopy(routesSrc, path.join(clientDir, '_routes.json'));
 }
 
-// 7. Vinext does not emit app/sitemap.ts for static builds. Build a sitemap
-// from the canonical URLs in the pages that were actually prerendered.
-// Target origin strictly without 'www' as specified for SEO/AEO: https://orbmed.co.kr
+// 7. Vinext does not emit app/sitemap.ts for static builds. Build a comprehensive sitemap
+// from the canonical URLs in the pages that were actually prerendered, enriched with real lastmod, changefreq, and priority.
 const targetOrigin = 'https://orbmed.co.kr';
 const canonicalUrls = new Set();
 
@@ -163,17 +162,139 @@ collectCanonicalUrls(clientDir);
 if (canonicalUrls.size < 50) {
   throw new Error(`[postbuild-cloudflare] Only ${canonicalUrls.size} canonical URLs found; refusing to write an incomplete sitemap.`);
 }
+
+// Load real lastmod dates from content/columns/*.json
+const columnDatesBySlug = new Map();
+if (fs.existsSync(contentColumnsDir)) {
+  for (const f of fs.readdirSync(contentColumnsDir)) {
+    if (f.endsWith('.json')) {
+      try {
+        const rawJson = fs.readFileSync(path.join(contentColumnsDir, f), 'utf8');
+        const colData = JSON.parse(rawJson);
+        if (colData.slug) {
+          const rawDate = colData.updatedAt || colData.date || '';
+          const match = rawDate.match(/^\d{4}-\d{2}-\d{2}/);
+          const dateStr = match ? match[0] : new Date().toISOString().slice(0, 10);
+          columnDatesBySlug.set(colData.slug, dateStr);
+        }
+      } catch {}
+    }
+  }
+}
+
+const latestColumnDate = Array.from(columnDatesBySlug.values()).sort().reverse()[0] || new Date().toISOString().slice(0, 10);
+
+function getUrlMetadata(urlStr) {
+  const url = new URL(urlStr);
+  const pathname = url.pathname;
+
+  // 1. Column detail pages (/columns/[slug])
+  const colMatch = pathname.match(/^\/columns\/([^/]+)$/);
+  if (colMatch) {
+    const slug = decodeURIComponent(colMatch[1]);
+    const lastmod = columnDatesBySlug.get(slug) || latestColumnDate;
+    const isQeegGuide = slug === 'qeeg-guide';
+    return {
+      loc: urlStr,
+      lastmod,
+      changefreq: isQeegGuide ? 'weekly' : 'monthly',
+      priority: isQeegGuide ? '0.9' : '0.8',
+    };
+  }
+
+  // 2. Home page
+  if (pathname === '/') {
+    return {
+      loc: urlStr,
+      lastmod: latestColumnDate,
+      changefreq: 'daily',
+      priority: '1.0',
+    };
+  }
+
+  // 3. Columns archive listing (/columns)
+  if (pathname === '/columns') {
+    return {
+      loc: urlStr,
+      lastmod: latestColumnDate,
+      changefreq: 'daily',
+      priority: '0.95',
+    };
+  }
+
+  // 4. Location page (/location)
+  if (pathname === '/location') {
+    return {
+      loc: urlStr,
+      lastmod: latestColumnDate,
+      changefreq: 'monthly',
+      priority: '0.9',
+    };
+  }
+
+  // 5. English main page (/en)
+  if (pathname === '/en') {
+    return {
+      loc: urlStr,
+      lastmod: latestColumnDate,
+      changefreq: 'weekly',
+      priority: '0.8',
+    };
+  }
+
+  // 6. Treatment pages (/diet, /qeeg, /pain, /treatments/*)
+  if (
+    pathname === '/diet' || pathname === '/qeeg' || pathname === '/pain' ||
+    /^\/(?:en\/)?treatments\/[^/]+$/.test(pathname)
+  ) {
+    return {
+      loc: urlStr,
+      lastmod: latestColumnDate,
+      changefreq: 'monthly',
+      priority: '0.8',
+    };
+  }
+
+  // 7. Privacy policy
+  if (pathname === '/privacy' || pathname === '/en/privacy') {
+    return {
+      loc: urlStr,
+      lastmod: '2026-01-01',
+      changefreq: 'yearly',
+      priority: '0.2',
+    };
+  }
+
+  return {
+    loc: urlStr,
+    lastmod: latestColumnDate,
+    changefreq: 'monthly',
+    priority: '0.7',
+  };
+}
+
 const xmlEscape = (value) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const sitemapXml = [
   '<?xml version="1.0" encoding="UTF-8"?>',
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-  ...[...canonicalUrls].sort().map((url) => `  <url><loc>${xmlEscape(url)}</loc></url>`),
+  ...[...canonicalUrls].sort().map((url) => {
+    const meta = getUrlMetadata(url);
+    return [
+      '  <url>',
+      `    <loc>${xmlEscape(meta.loc)}</loc>`,
+      `    <lastmod>${meta.lastmod}</lastmod>`,
+      `    <changefreq>${meta.changefreq}</changefreq>`,
+      `    <priority>${meta.priority}</priority>`,
+      '  </url>',
+    ].join('\n');
+  }),
   '</urlset>',
   '',
 ].join('\n');
+
 fs.writeFileSync(path.join(clientDir, 'sitemap.xml'), sitemapXml);
 fs.writeFileSync(path.join(rootDir, 'public', 'sitemap.xml'), sitemapXml);
-console.log(`[postbuild-cloudflare] Wrote ${canonicalUrls.size} canonical URLs to sitemap.xml and public/sitemap.xml`);
+console.log(`[postbuild-cloudflare] Wrote ${canonicalUrls.size} canonical URLs with lastmod/priority/changefreq to sitemap.xml and public/sitemap.xml`);
 
 // Ensure functions/ does NOT intercept static assets (robots.txt, sitemap.xml)
 const functionsDir = path.join(rootDir, 'functions');
