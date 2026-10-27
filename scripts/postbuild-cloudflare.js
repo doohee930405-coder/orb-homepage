@@ -316,25 +316,14 @@ if (fs.existsSync(indexPath)) {
     "@context": "https://schema.org",
     "@type": "MedicalClinic",
     "name": "오브한의원 마곡점",
-    "alternateName": "ORBMED CLINIC",
+    "alternateName": ["오브한의원", "마곡 오브한의원"],
     "url": "https://orbmed.co.kr",
-    "telephone": "02-6959-5982",
-    "description": "습식 정량화 뇌파(qEEG) 및 자율신경 검사 기반 뇌신경·자율신경·통증 중점 한의원",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "마곡중앙로 111 롯데캐슬 르웨스트 104동 2층 238호·239호",
+      "streetAddress": "마곡 롯데캐슬 르웨스트 104동",
       "addressLocality": "강서구",
       "addressRegion": "서울특별시",
       "addressCountry": "KR"
-    },
-    "medicalSpecialty": [
-      "TraditionalChineseMedicine",
-      "Neurology"
-    ],
-    "physician": {
-      "@type": "Physician",
-      "name": "전두희",
-      "jobTitle": "대표원장"
     }
   };
   const jsonLdTag = `<script type="application/ld+json">\n${JSON.stringify(exactClinicJsonLd, null, 2)}\n</script>`;

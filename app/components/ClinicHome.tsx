@@ -20,8 +20,8 @@ import {
 const copy = {
   ko: {
     kicker: 'ORBMED CLINIC',
-    title: '오브한의원',
-    branch: '마곡점',
+    title: '마곡 오브한의원',
+    branch: '',
     heroBody: '자율신경 · 뇌신경 · 통증 중점 의료기관, 오브한의원입니다',
     booking: '네이버 예약',
     call: '전화 문의',
@@ -80,7 +80,7 @@ const copy = {
       },
     ],
     treatmentEyebrow: 'SPECIALIZED CLINIC DEPARTMENTS',
-    treatmentTitle: '원인을 규명하고 근본을 바로잡는\n오브한의원 4대 중점 진료 분야',
+    treatmentTitle: '원인을 규명하고 근본을 바로잡는\n자율신경·추나요법 중점 진료 분야',
     treatmentBody: '단편적인 증상 완화에 그치지 않고 발생 시점, 생활 흐름, 뇌신경계와 자율신경, 척추 체형의 유기적 상관관계를 함께 살핍니다.',
     detail: '자세히 보기',
     philosophyEyebrow: 'OUR APPROACH',
