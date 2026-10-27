@@ -55,15 +55,17 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
 
   return (
     <main className={`site-shell detail-page locale-${locale}`} lang={locale}>
-      <MedicalJsonLd
-        pageUrl={canonicalUrl}
-        pageTitle={`${treatment.title[locale]} | ${isEnglish ? clinic.nameEn : clinic.nameKo}`}
-        pageDescription={treatment.summary[locale]}
-        condition={treatment.medical?.condition[locale]}
-        therapy={treatment.medical?.therapy[locale]}
-        breadcrumbs={breadcrumbs}
-        locale={locale}
-      />
+      {treatment.slug === 'autonomic-qeeg' && locale === 'ko' ? null : (
+        <MedicalJsonLd
+          pageUrl={canonicalUrl}
+          pageTitle={`${treatment.title[locale]} | ${isEnglish ? clinic.nameEn : clinic.nameKo}`}
+          pageDescription={treatment.summary[locale]}
+          condition={treatment.medical?.condition[locale]}
+          therapy={treatment.medical?.therapy[locale]}
+          breadcrumbs={breadcrumbs}
+          locale={locale}
+        />
+      )}
       <SiteHeader locale={locale} compact />
       <section className="detail-hero">
         <div className="detail-hero-copy">
@@ -71,7 +73,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
             <a href={home}>{text.home}</a><span>/</span><a href={`${home}#treatments`}>{text.treatments}</a>
           </nav>
           <p className="eyebrow">TREATMENT {treatment.number}</p>
-          <h1>{treatment.title[locale]}</h1>
+          <h1>{treatment.slug === 'autonomic-qeeg' && locale === 'ko' ? '자율신경실조증 · QEEG 뇌파검사' : treatment.title[locale]}</h1>
           <p>{treatment.summary[locale]}</p>
         </div>
         {treatment.slug === 'diet' ? (

@@ -3,14 +3,18 @@ import TreatmentDetail from '../components/TreatmentDetail';
 import { SITE_URL, getTreatment } from '../lib/clinic';
 
 export const metadata: Metadata = {
-  title: '자율신경 · 정량화 뇌파검사(QEEG) | 오브한의원 마곡점',
-  description: '각종 검사상 이상 없음에도 지속되는 만성 피로와 브레인포그. 다채널 습식 정량화 뇌파(QEEG) 및 자율신경 검사 기반 1:1 맞춤 근원 치료.',
+  title: {
+    absolute: '마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원',
+  },
+  description:
+    '오브한의원의 정량화뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.',
   alternates: {
     canonical: `${SITE_URL}/treatments/autonomic-qeeg`,
   },
   openGraph: {
-    title: '자율신경 · 정량화 뇌파검사(QEEG) | 오브한의원 마곡점',
-    description: '각종 검사상 이상 없음에도 지속되는 만성 피로와 브레인포그. 다채널 습식 정량화 뇌파(QEEG) 기반 근원 치료.',
+    title: '마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원',
+    description:
+      '오브한의원의 정량화뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.',
     url: `${SITE_URL}/treatments/autonomic-qeeg`,
     siteName: '오브한의원 마곡점',
     locale: 'ko_KR',

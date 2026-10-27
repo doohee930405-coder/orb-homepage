@@ -345,6 +345,72 @@ if (fs.existsSync(indexPath)) {
   }
 }
 
+// 7.9 Enforce Title, Description, and Schema.org JSON-LD in autonomic-qeeg & qeeg pages
+const autonomicQeegFiles = [
+  path.join(clientDir, 'treatments', 'autonomic-qeeg.html'),
+  path.join(clientDir, 'treatments', 'autonomic-qeeg', 'index.html'),
+  path.join(clientDir, 'qeeg.html'),
+  path.join(clientDir, 'qeeg', 'index.html'),
+];
+
+const exactAutonomicJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "MedicalWebPage",
+  "name": "오브한의원 자율신경실조증 및 뇌파검사 클리닉",
+  "url": "https://www.orbmed.co.kr/treatments/autonomic-qeeg",
+  "about": {
+    "@type": "MedicalCondition",
+    "name": "자율신경실조증 (Dysautonomia)",
+    "associatedAnatomy": {
+      "@type": "AnatomicalStructure",
+      "name": "자율신경계"
+    }
+  },
+  "provider": {
+    "@type": "MedicalClinic",
+    "name": "오브한의원 마곡점"
+  }
+};
+const autonomicJsonLdTag = `<script type="application/ld+json">\n${JSON.stringify(exactAutonomicJsonLd, null, 2)}\n</script>`;
+const expectedTitleTag = '<title>마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원</title>';
+const expectedDescContent = '오브한의원의 정량화뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.';
+
+for (const filePath of autonomicQeegFiles) {
+  if (fs.existsSync(filePath)) {
+    let fileHtml = fs.readFileSync(filePath, 'utf8');
+
+    // Remove any existing application/ld+json scripts to prevent duplicates
+    fileHtml = fileHtml.replace(/<script type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>\s*/gi, '');
+
+    const headEnd = fileHtml.indexOf('</head>');
+    if (headEnd !== -1) {
+      let head = fileHtml.slice(0, headEnd);
+      const rest = fileHtml.slice(headEnd);
+
+      // Title
+      if (/<title>[^<]*<\/title>/i.test(head)) {
+        head = head.replace(/<title>[^<]*<\/title>/i, expectedTitleTag);
+      } else {
+        head += '\n' + expectedTitleTag;
+      }
+
+      // Meta Description
+      if (/<meta[^>]*name=["']description["'][^>]*>/i.test(head)) {
+        head = head.replace(/<meta[^>]*name=["']description["'][^>]*>/i, `<meta name="description" content="${expectedDescContent}">`);
+      } else {
+        head += `\n<meta name="description" content="${expectedDescContent}">`;
+      }
+
+      // Insert exact single JSON-LD into <head>
+      head += '\n' + autonomicJsonLdTag;
+
+      fileHtml = head + rest;
+      fs.writeFileSync(filePath, fileHtml, 'utf8');
+      console.log(`[postbuild-cloudflare] Enforced title, description, and MedicalWebPage JSON-LD in: ${path.relative(rootDir, filePath)}`);
+    }
+  }
+}
+
 // 8. Copy entire public/ directory directly into dist/client/
 function copyDirRecursive(src, dest) {
   if (!fs.existsSync(src)) return;

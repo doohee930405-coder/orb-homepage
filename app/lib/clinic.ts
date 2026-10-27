@@ -152,7 +152,7 @@ export const treatments: Treatment[] = [
     number: '02',
     image: 'naver-qeeg',
     imagePosition: 'center 38%',
-    title: { ko: '자율신경 · 뇌파검사', en: 'Autonomic System · QEEG' },
+    title: { ko: '자율신경실조증 · QEEG 뇌파검사', en: 'Autonomic System · QEEG' },
     shortTitle: { ko: '자율신경과 뇌파', en: 'Autonomic system & QEEG' },
     summary: {
       ko: '문진과 진찰에 자율신경 검사와 정량뇌파 정보를 더해 현재의 피로와 긴장 상태를 진단합니다.',
