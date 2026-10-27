@@ -1,3 +1,8 @@
+function sanitizeSurrogates(str) {
+  if (!str) return '';
+  return str.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '');
+}
+
 import fs from 'fs';
 import path from 'path';
 import {
@@ -1045,7 +1050,7 @@ export async function convertNaverHtmlToMasterMarkdown(
     let rawQuote = stripHtml(quoteMatch[1]).trim();
     rawQuote = rawQuote
       .replace(/^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i, '')
-      .replace(/^[>\s💡]+/g, '')
+      .replace(/^[>\s💡📌🔗]+/gu, '')
       .trim();
     if (rawQuote.length >= 10) {
       summary = rawQuote;
@@ -1687,7 +1692,7 @@ export async function convertNaverHtmlToMasterMarkdown(
 
   return {
     content: markdown,
-    summary,
+    summary: sanitizeSurrogates(summary),
     thumbnail,
     faqs,
     tags: Array.from(tagsSet).slice(0, 8),

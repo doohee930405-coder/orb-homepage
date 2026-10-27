@@ -10,6 +10,11 @@ const CORS_HEADERS = {
 const MOBILE_USER_AGENT =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1';
 
+function sanitizeSurrogates(str) {
+  if (!str) return '';
+  return str.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '');
+}
+
 function toBase64(str) {
   const bytes = new TextEncoder().encode(str);
   let bin = '';
@@ -528,7 +533,7 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
     let rawQuote = decodeHtml(stripHtmlPreservingEntities(quoteMatch[1])).trim();
     rawQuote = rawQuote
       .replace(/^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i, '')
-      .replace(/^[>\s💡]+/g, '')
+      .replace(/^[>\s💡📌🔗]+/gu, '')
       .trim();
     if (rawQuote.length >= 10) {
       summary = rawQuote;
@@ -718,7 +723,7 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
 
   if (!summary && markdown.length > 50) {
     const p1 = markdown.split('\n\n').find(p => p.trim() && !p.startsWith('#') && !p.startsWith('!') && !p.startsWith('---'));
-    summary = (p1 || markdown.slice(0, 150)).replace(/\n+/g, ' ').replace(/^[>\s💡]+/g, '').trim();
+    summary = (p1 || markdown.slice(0, 150)).replace(/\n+/g, ' ').replace(/^[>\s💡📌🔗]+/gu, '').trim();
   }
 
   // References formatting
@@ -758,7 +763,7 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
     id: `col-${slug}`,
     slug,
     title,
-    summary,
+    summary: sanitizeSurrogates(summary),
     content: markdown.replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n').replace(/\u200B/g, '').trim(),
     category,
     author: '전두희 원장',
