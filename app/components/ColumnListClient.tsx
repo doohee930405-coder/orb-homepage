@@ -173,7 +173,12 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
       const tag = params.get('tag');
       const q = params.get('q');
       if (cat) {
-        setSelectedCategory(cat);
+        const decodedCat = decodeURIComponent(cat).trim();
+        if (decodedCat === 'dysautonomia' || decodedCat === 'autonomic' || decodedCat === '자율신경') {
+          setSelectedCategory('자율신경실조증');
+        } else {
+          setSelectedCategory(decodedCat);
+        }
       }
       if (tag) {
         setSearchQuery(tag);

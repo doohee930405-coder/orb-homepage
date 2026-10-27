@@ -298,6 +298,31 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
         <p>{text.note}</p>
       </aside>
 
+      {treatment.slug === 'autonomic-qeeg' && (
+        <section className="autonomic-hub-section" aria-label="자율신경 임상 칼럼 아카이브">
+          <div className="autonomic-hub-card">
+            <div className="autonomic-hub-text">
+              <p className="eyebrow">CLINICAL COLUMNS · 25 ARTICLES</p>
+              <h3 className="autonomic-hub-title">
+                원장님이 직접 집필한 자율신경 치료 임상 칼럼들을 확인해 보세요.
+              </h3>
+              <p className="autonomic-hub-desc">
+                만성피로, 어지럼증, 브레인포그, 가슴 두근거림 등 뇌신경-자율신경 불균형의 기전과 한의학적 치료 사례 25편이 수록되어 있습니다.
+              </p>
+            </div>
+            <div className="autonomic-hub-action">
+              <a
+                href="/columns?category=자율신경실조증"
+                className="autonomic-hub-btn"
+              >
+                <span>자율신경실조증 칼럼 모아보기</span>
+                <i aria-hidden="true">→</i>
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="related-section">
         <div className="section-heading">
           <p className="eyebrow">RELATED</p>

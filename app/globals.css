@@ -6288,3 +6288,97 @@ p {
 
 
 
+
+/* AUTONOMIC QEEG PILLAR PAGE - COLUMNS HUB BANNER */
+.autonomic-hub-section {
+  margin: -40px auto 100px;
+  max-width: 1016px;
+}
+
+.autonomic-hub-card {
+  align-items: center;
+  background: var(--ivory-deep);
+  border: 1px solid var(--line);
+  display: grid;
+  gap: 32px;
+  grid-template-columns: 1fr auto;
+  padding: 34px 38px;
+  transition: all 200ms ease;
+}
+
+.autonomic-hub-card:hover {
+  border-color: rgba(52, 38, 31, 0.28);
+}
+
+.autonomic-hub-text .eyebrow {
+  color: var(--taupe);
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  margin-bottom: 8px;
+}
+
+.autonomic-hub-title {
+  color: var(--cocoa);
+  font-size: clamp(1.18rem, 2vw, 1.4rem);
+  font-weight: 650;
+  line-height: 1.45;
+  margin: 0 0 8px;
+}
+
+.autonomic-hub-desc {
+  color: var(--cocoa-soft);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.autonomic-hub-btn {
+  align-items: center;
+  background: var(--cocoa);
+  border: 1px solid var(--cocoa);
+  border-radius: 4px;
+  color: #ffffff;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 0.94rem;
+  font-weight: 600;
+  gap: 10px;
+  padding: 15px 24px;
+  text-decoration: none;
+  transition: all 180ms ease;
+  white-space: nowrap;
+}
+
+.autonomic-hub-btn i {
+  font-style: normal;
+  font-size: 1.1rem;
+  transition: transform 180ms ease;
+}
+
+.autonomic-hub-btn:hover {
+  background: var(--charcoal);
+  border-color: var(--charcoal);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.autonomic-hub-btn:hover i {
+  transform: translateX(4px);
+}
+
+@media (max-width: 900px) {
+  .autonomic-hub-section {
+    margin: -30px 20px 80px;
+  }
+  .autonomic-hub-card {
+    gap: 22px;
+    grid-template-columns: 1fr;
+    padding: 26px 22px;
+  }
+  .autonomic-hub-btn {
+    justify-content: center;
+    width: 100%;
+  }
+}
