@@ -6382,3 +6382,217 @@ p {
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   HSP (초민감자) 자율신경실조증 자가진단 - Semantic Web & Checklist UI
+   Brand Colors: Dark Brown (#2C1A14) & Ivory (#FAF8F5 / #F7F4F0)
+   ========================================================================== */
+.hsp-self-check-card {
+  background: #FAF8F5;
+  border: 1px solid #E5DFD8;
+  border-left: 4px solid #2C1A14;
+  border-radius: 8px;
+  padding: 26px 30px;
+  margin: 32px 0;
+  box-shadow: 0 4px 16px rgba(44, 26, 20, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.hsp-self-check-card.is-archive-view {
+  margin: 20px 0 28px;
+  background: #FCFBF9;
+}
+
+.hsp-check-header {
+  margin-bottom: 20px;
+}
+
+.hsp-check-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.hsp-check-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #FAF8F5;
+  background: #2C1A14;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.hsp-check-counter {
+  font-size: 12px;
+  color: #5D4A3E;
+  background: #EFE9E0;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.hsp-check-counter strong {
+  color: #2C1A14;
+  font-weight: 700;
+}
+
+.hsp-check-title {
+  font-size: 1.28rem;
+  font-weight: 700;
+  color: #2C1A14;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
+.hsp-check-desc {
+  font-size: 0.94rem;
+  color: #5D4A3E;
+  margin: 0;
+  line-height: 1.65;
+}
+
+.hsp-check-list {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hsp-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 16px;
+  background: #FFFFFF;
+  border: 1px solid rgba(44, 26, 20, 0.1);
+  border-radius: 6px;
+  font-size: 0.96rem;
+  color: #2C1A14;
+  line-height: 1.6;
+  cursor: pointer;
+  transition: all 180ms ease;
+  user-select: none;
+}
+
+.hsp-check-item:hover {
+  background: #FDFCFB;
+  border-color: rgba(44, 26, 20, 0.25);
+  transform: translateX(2px);
+}
+
+.hsp-check-item.is-checked {
+  background: #F4EFEB;
+  border-color: #2C1A14;
+}
+
+.hsp-check-item.is-checked .hsp-check-bullet {
+  background: #2C1A14;
+  color: #FAF8F5;
+  border-color: #2C1A14;
+}
+
+.hsp-check-item.is-checked .hsp-check-text {
+  font-weight: 600;
+  color: #2C1A14;
+}
+
+.hsp-check-bullet {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 1.5px solid #2C1A14;
+  color: transparent;
+  background: #FAF8F5;
+  transition: all 150ms ease;
+}
+
+.hsp-check-bullet svg {
+  transition: transform 150ms ease;
+}
+
+.hsp-check-text {
+  flex: 1;
+}
+
+.hsp-check-footer {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(44, 26, 20, 0.15);
+  font-size: 0.88rem;
+  color: #6E5C50;
+  line-height: 1.6;
+}
+
+.hsp-check-footer p {
+  margin: 0;
+}
+
+.hsp-check-footer strong {
+  color: #2C1A14;
+  font-weight: 700;
+}
+
+.hsp-check-alert {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #EFE9E0;
+  border: 1px solid rgba(44, 26, 20, 0.15);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: #2C1A14;
+  animation: fadeInCheck 200ms ease;
+}
+
+.hsp-check-alert-icon {
+  font-size: 1.1rem;
+}
+
+@keyframes fadeInCheck {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .hsp-self-check-card {
+    padding: 20px 16px;
+    margin: 24px 0;
+  }
+  .hsp-check-title {
+    font-size: 1.15rem;
+  }
+  .hsp-check-item {
+    padding: 10px 12px;
+    font-size: 0.91rem;
+    gap: 10px;
+  }
+  .hsp-check-desc {
+    font-size: 0.88rem;
+  }
+  .hsp-check-footer {
+    font-size: 0.84rem;
+  }
+}
+

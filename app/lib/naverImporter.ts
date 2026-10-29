@@ -1941,6 +1941,13 @@ export async function importSingleNaverPost(input: {
   // Determine Category (must be one of the 8 official clinic categories)
   const finalCategory =
     input.forceCategory || matchCategory(categoryName, title, content);
+  if (finalCategory === '초민감자(HSP)' || /초민감|hsp|감각처리/i.test(title)) {
+    if (!tags.includes('초민감자(HSP)')) tags.push('초민감자(HSP)');
+    if (!tags.includes('HSP')) tags.push('HSP');
+    if (!tags.includes('초민감자')) tags.push('초민감자');
+    if (!tags.includes('감각처리민감성')) tags.push('감각처리민감성');
+    if (!tags.includes('자가진단')) tags.push('자가진단');
+  }
 
   const finalThumbnail = thumbnail || '';
 

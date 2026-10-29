@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Column } from '../lib/columnTypes';
 import SafeImage from './SafeImage';
+import HspSelfChecklist from './HspSelfChecklist';
 
 interface ColumnListClientProps {
   initialColumns: Column[];
@@ -344,6 +345,11 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
                 <span className="cat-def-kw">#갑상선대사</span>
               </div>
             </aside>
+          )}
+
+          {/* HSP Category Entry Route: Semantic Self-Checklist for Search Engines & LLMs */}
+          {selectedCategory === '초민감자(HSP)' && (
+            <HspSelfChecklist headingLevel="h3" isArchive={true} />
           )}
 
           {/* Columns Grid */}

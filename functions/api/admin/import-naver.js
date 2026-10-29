@@ -746,6 +746,13 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
 
   const category = forceCategory || matchCategory(categoryName, title, markdown);
   tagsSet.add(category);
+  if (category === '초민감자(HSP)' || /초민감|hsp|감각처리/i.test(title)) {
+    tagsSet.add('초민감자(HSP)');
+    tagsSet.add('HSP');
+    tagsSet.add('초민감자');
+    tagsSet.add('감각처리민감성');
+    tagsSet.add('자가진단');
+  }
   tagsSet.add('마곡한의원');
   tagsSet.add('오브한의원');
   tagsSet.add('건강칼럼');

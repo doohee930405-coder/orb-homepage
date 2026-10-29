@@ -6,6 +6,7 @@ import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
 import TrackedLink from '../../components/TrackedLink';
 import ColumnViewTracker from '../../components/ColumnViewTracker';
+import HspSelfChecklist from '../../components/HspSelfChecklist';
 import { clinic, SITE_URL } from '../../lib/clinic';
 import { getAllColumns, getColumnBySlug } from '../../lib/columns';
 
@@ -384,6 +385,10 @@ export default async function ColumnDetailPage({
   };
 
   const isQeegGuide = column.slug === 'qeeg-guide';
+  const isHspColumn =
+    column.category === '초민감자(HSP)' ||
+    column.tags?.some((t) => /hsp|초민감|감각처리|고감각|예민/i.test(t)) ||
+    /초민감|hsp|감각처리민감성/i.test(column.title);
 
   return (
     <main className="site-shell column-detail-page">
@@ -444,6 +449,9 @@ export default async function ColumnDetailPage({
             <p>{column.summary}</p>
           </section>
         )}
+
+        {/* Semantic Web & LLM Extraction: HSP Autonomic Dysregulation Self-Check */}
+        {isHspColumn && <HspSelfChecklist headingLevel="h3" />}
 
         {/* Article Cover Image: Only displayed if the markdown body does not already contain inline images */}
         {column.thumbnail && !column.content.includes('![') && (
