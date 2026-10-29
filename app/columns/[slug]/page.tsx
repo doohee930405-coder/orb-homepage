@@ -199,6 +199,63 @@ function getMedicalSpecialty(category: string): string[] {
 
 
 
+// Helper: Smart recommendation algorithm for high-relevance internal linking & topic clustering
+function getRecommendedColumns(current: any, all: any[], count: number = 3): any[] {
+  const candidates = all.filter((c) => c.slug !== current.slug);
+  if (candidates.length === 0) return [];
+
+  // Extract keywords (length >= 2) from current title to match topical focus
+  const currentTitleWords = (current.title || '')
+    .replace(/[\[\]\(\)\·\-\,\?\!\:\;\"\'\/\~]/g, ' ')
+    .split(/\s+/)
+    .map((w: string) => w.trim())
+    .filter((w: string) => w.length >= 2);
+
+  const currentTags = new Set(
+    (current.tags || []).map((t: string) => t.toLowerCase().trim())
+  );
+
+  const scored = candidates.map((cand) => {
+    let score = 0;
+
+    // 1. Same category match (+12 points)
+    if (cand.category === current.category) {
+      score += 12;
+    }
+
+    // 2. Shared tags (+4 points each)
+    if (cand.tags && Array.isArray(cand.tags)) {
+      for (const t of cand.tags) {
+        if (currentTags.has(t.toLowerCase().trim())) {
+          score += 4;
+        }
+      }
+    }
+
+    // 3. Shared title keywords (+3 points each match)
+    for (const kw of currentTitleWords) {
+      if (cand.title && cand.title.includes(kw)) {
+        score += 3;
+      }
+    }
+
+    // 4. Clinical affinity: 자율신경실조증, 브레인포그, 초민감자(HSP), 정량화뇌파검사 share high clinical synergy
+    const neuroCluster = ['자율신경실조증', '브레인포그', '초민감자(HSP)', '정량화뇌파검사'];
+    if (neuroCluster.includes(current.category) && neuroCluster.includes(cand.category)) {
+      score += 5;
+    }
+
+    return { col: cand, score };
+  });
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return (b.col.date || '').localeCompare(a.col.date || '');
+  });
+
+  return scored.slice(0, count).map((s) => s.col);
+}
+
 function cleanDisplayText(text: string): string {
   if (!text) return '';
   return text
@@ -241,14 +298,8 @@ export default async function ColumnDetailPage({
 
   const allColumns = getAllColumns();
 
-  // Related columns: prioritize the same category, fill with remaining to always show 3
-  const categoryRelated = allColumns.filter(
-    (c) => c.category === column.category && c.slug !== column.slug
-  );
-  const otherRelated = allColumns.filter(
-    (c) => c.category !== column.category && c.slug !== column.slug
-  );
-  const relatedColumns = [...categoryRelated, ...otherRelated].slice(0, 3);
+  // Related columns: Smart recommendation based on category, shared tags, and clinical keywords
+  const relatedColumns = getRecommendedColumns(column, allColumns, 3);
 
   const pageUrl = `${SITE_URL}/columns/${column.slug}`;
   const imageUrl = column.thumbnail.startsWith('http')
@@ -284,6 +335,7 @@ export default async function ColumnDetailPage({
       articleSection: column.category,
       medicalSpecialty: medicalSpecialties,
       citation: citations.length > 0 ? citations : undefined,
+      relatedLink: relatedColumns.map((c) => `${SITE_URL}/columns/${c.slug}`),
       author: {
         '@type': 'Physician',
         '@id': `${SITE_URL}/#physician-jeon`,
@@ -463,10 +515,113 @@ export default async function ColumnDetailPage({
           </figure>
         )}
 
-        {/* Article Body (Markdown with Table, Callouts & Action Links) */}
+                {/* Article Body (Markdown with Table, Callouts & Action Links) */}
         <section className="article-content-wrapper">
           <MarkdownView content={column.content} summary={column.summary} />
         </section>
+
+        {/* 함께 읽어보면 좋은 자율신경 칼럼 (Internal Link & Recommendation Component) */}
+        {relatedColumns.length > 0 && (
+          <nav
+            className="recommended-columns-box"
+            aria-labelledby="recommended-columns-heading"
+          >
+            <div className="recommended-columns-header">
+              <div className="recommended-header-top">
+                <span className="recommended-badge" aria-hidden="true">
+                  <span className="recommended-dot" />
+                  CLINICAL RECOMMENDATION
+                </span>
+                <span className="recommended-count">연관 칼럼 {relatedColumns.length}선</span>
+              </div>
+              <h3 id="recommended-columns-heading" className="recommended-title">
+                함께 읽어보면 좋은 자율신경 칼럼
+              </h3>
+              <p className="recommended-desc">
+                오브한의원 전두희 대표원장이 직접 집필한 연관 증상 및 질환별 심층 임상 칼럼입니다. 증상이 겹치거나 원인이 연결되는 의학 정보를 이어서 확인해 보세요.
+              </p>
+            </div>
+
+            <ul className="recommended-articles-list">
+              {relatedColumns.map((col, idx) => (
+                <li key={col.slug} className="recommended-article-item">
+                  <a
+                    href={`/columns/${col.slug}`}
+                    className="recommended-article-anchor"
+                    title={`${cleanDisplayText(col.title)} - 칼럼 전문 읽기`}
+                  >
+                    <div className="recommended-item-lead">
+                      <span className="recommended-index" aria-hidden="true">
+                        0{idx + 1}
+                      </span>
+                      <div className="recommended-text-group">
+                        <div className="recommended-tag-row">
+                          <span className="recommended-cat-label">[{col.category}]</span>
+                          {col.tags.slice(0, 2).map((t: string) => (
+                            <span key={t} className="recommended-subtag">
+                              #{t}
+                            </span>
+                          ))}
+                        </div>
+                        <strong className="recommended-item-title">
+                          {cleanDisplayText(col.title)}
+                        </strong>
+                        {col.summary && (
+                          <p className="recommended-item-summary">
+                            {cleanDisplayText(col.summary)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <span className="recommended-item-cta" aria-hidden="true">
+                      <span>칼럼 읽기</span>
+                      <span className="recommended-arrow">→</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            {/* 크롤링 루프 및 사이트 내부 순환 네비게이션 */}
+            <div className="crawling-loop-bar" aria-label="오브한의원 주요 탐색 순환 경로">
+              <div className="crawling-loop-inner">
+                <span className="crawling-loop-label">
+                  <span className="crawling-loop-icon" aria-hidden="true">🔁</span>
+                  사이트 순환 경로:
+                </span>
+                <div className="crawling-loop-links">
+                  <a href="/" className="crawling-anchor" title="오브한의원 마곡점 메인 홈페이지">
+                    🏠 마곡 오브한의원 홈
+                  </a>
+                  <span className="crawling-sep" aria-hidden="true">›</span>
+                  <a
+                    href="/treatments/autonomic-qeeg"
+                    className="crawling-anchor"
+                    title="마곡 자율신경실조증 치료·뇌파검사 클리닉 피지컬 허브"
+                  >
+                    🩺 자율신경·뇌파검사 클리닉
+                  </a>
+                  <span className="crawling-sep" aria-hidden="true">›</span>
+                  <a
+                    href={`/columns?category=${encodeURIComponent(column.category)}`}
+                    className="crawling-anchor"
+                    title={`오브한의원 ${column.category} 칼럼 전체 모아보기`}
+                  >
+                    📚 {column.category} 칼럼 아카이브
+                  </a>
+                  <span className="crawling-sep" aria-hidden="true">›</span>
+                  <a
+                    href="/columns"
+                    className="crawling-anchor"
+                    title="오브한의원 전체 의학 칼럼 아카이브"
+                  >
+                    전체 칼럼 목록
+                  </a>
+                </div>
+              </div>
+            </div>
+          </nav>
+        )}
 
         {/* Topic Cluster: Fixed QEEG Diagnostic Guide Internal Link Banner */}
         {!isQeegGuide && (
