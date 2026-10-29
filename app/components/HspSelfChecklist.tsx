@@ -94,8 +94,8 @@ export default function HspSelfChecklist({
       <div className="hsp-check-footer">
         <p>
           ※ 위 항목 중 <strong>3개 이상</strong>에 해당한다면 단순 심리적 피로가 아닌{' '}
-          <strong>뇌 감각 게이팅 결손 및 자율신경실조증</strong> 상태일 가능성이 높습니다.
-          오브한의원 마곡점에서는 8채널 정량화뇌파(QEEG) 및 자율신경 검사를 통해 신경계 과흥분 원인을 정밀 분석합니다.
+          <strong>외부 자극을 걸러내는 뇌의 필터 기능 저하 및 자율신경실조증</strong> 상태일 가능성이 높습니다.
+          오브한의원 마곡점에서는 정량화뇌파(QEEG) 및 자율신경 검사를 통해 신경계 과흥분 원인을 정밀 분석합니다.
         </p>
         {checkedIndices.length >= 3 && (
           <div className="hsp-check-alert">

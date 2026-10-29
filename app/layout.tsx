@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: '%s | 오브한의원 마곡점',
   },
   description:
-    '마곡 롯데캐슬 르웨스트 104동 오브한의원입니다. 8채널 정량화뇌파(QEEG) 검사, 자율신경실조증, 통증 추나, 맞춤 다이어트 진료 안내.',
+    '마곡 롯데캐슬 르웨스트 104동 오브한의원입니다. 정량화뇌파(QEEG) 검사, 자율신경실조증, 통증 추나, 맞춤 다이어트 진료 안내.',
   robots: {
     index: true,
     follow: true,
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '오브한의원 마곡점 - 자율신경계·정량화뇌파·통증·다이어트',
     description:
-      '마곡 롯데캐슬 르웨스트 104동 오브한의원입니다. 8채널 정량화뇌파(QEEG) 검사, 자율신경실조증, 통증 추나, 맞춤 다이어트 진료 안내.',
+      '마곡 롯데캐슬 르웨스트 104동 오브한의원입니다. 정량화뇌파(QEEG) 검사, 자율신경실조증, 통증 추나, 맞춤 다이어트 진료 안내.',
     url: '/',
     siteName: '오브한의원 마곡점',
     locale: 'ko_KR',

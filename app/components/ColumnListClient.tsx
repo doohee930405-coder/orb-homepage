@@ -34,7 +34,7 @@ const CATEGORY_DEFINITIONS: Record<string, CategoryDefinition> = {
   },
   '초민감자(HSP)': {
     title: '초민감자 / 감각처리민감성 (Highly Sensitive Person, SPS)',
-    subtitle: '감각 게이팅 결손 및 신경계 중추 과흥분성 완화',
+    subtitle: '외부 자극을 걸러내는 뇌 필터 기능 저하 및 신경계 과흥분 완화',
     description:
       '빛, 소리, 주변 분위기, 스트레스 등 외부 자극에 뇌신경계가 과민하게 반응하는 감각처리민감성(SPS)을 뇌파 분석을 통해 안정화하는 오브한의원 특화 진료입니다.',
     keywords: ['감각처리민감성', 'SPS', '알로스타틱부하', '경계억제', '신경과민완화'],
