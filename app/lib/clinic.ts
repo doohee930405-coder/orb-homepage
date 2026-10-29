@@ -167,7 +167,12 @@ export const treatments: Treatment[] = [
       en: 'Quantitative EEG assessment at ORB Korean Medicine Clinic',
     },
     concerns: {
-      ko: ['쉽게 가라앉지 않는 긴장감', '만성피로와 브레인포그', '수면 리듬의 불편', '두근거림·열감·냉감 등 자율신경 관련 불편'],
+      ko: [
+        '정신과 약을 먹어도 해결되지 않는 머리 멍함(브레인포그)',
+        '이유 없이 가슴이 두근거리고 잠들기 힘든 수면장애',
+        '원인 모를 만성피로와 집중력·기억력 저하',
+        '가슴 두근거림·상열감·어지럼증 등 자율신경실조증 증상',
+      ],
       en: ['Persistent tension', 'Chronic fatigue and brain fog', 'Sleep rhythm concerns', 'Autonomic discomfort such as palpitations or temperature sensitivity'],
     },
     care: {
