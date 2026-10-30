@@ -66,7 +66,15 @@ export default function ColumnViewTracker({ slug }: ColumnViewTrackerProps) {
       sessionId = `sess_${Date.now()}`;
     }
 
-    const payload = JSON.stringify({ slug, visitorId, sessionId });
+    const payload = JSON.stringify({
+      slug,
+      path: `/columns/${slug}`,
+      title: document.title || '오브한의원 의학 칼럼',
+      referrer: document.referrer || '',
+      visitorId,
+      sessionId,
+      type: 'column',
+    });
 
     // Use fetch with keepalive for standard HTTP payload delivery
     fetch('/api/analytics/track', {

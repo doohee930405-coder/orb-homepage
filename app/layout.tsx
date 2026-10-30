@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import FloatingCtaBar from './components/FloatingCtaBar';
 import AdminShortcutListener from './components/AdminShortcutListener';
+import SitePageViewTracker from './components/SitePageViewTracker';
 import './globals.css';
 
 const googleAnalyticsId =
@@ -97,6 +98,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <SitePageViewTracker />
         {children}
         <FloatingCtaBar />
         <AdminShortcutListener />

@@ -26,7 +26,36 @@ interface TopColumnItem {
   uv: number;
 }
 
-interface AnalyticsData {
+interface PageStatItem {
+  path: string;
+  name: string;
+  totalViews: number;
+  rangeViews: number;
+  rangeUV: number;
+}
+
+interface TopPageItem {
+  path: string;
+  name: string;
+  views: number;
+  uv: number;
+}
+
+interface SiteAnalyticsData {
+  summary: {
+    totalPages: number;
+    totalViews: number;
+    totalUV: number;
+    topPages: TopPageItem[];
+  };
+  dailyTrends: DailyTrendItem[];
+  pagesStats: PageStatItem[];
+  startDate: string;
+  endDate: string;
+  range: string;
+}
+
+interface ColumnAnalyticsData {
   summary: {
     totalColumns: number;
     totalViews: number;
@@ -38,12 +67,25 @@ interface AnalyticsData {
   startDate: string;
   endDate: string;
   range: string;
-  d1Connected?: boolean;
+}
+
+interface FullAnalyticsResponse {
+  success: boolean;
+  column?: ColumnAnalyticsData;
+  site?: SiteAnalyticsData;
+  // Root fallbacks
+  summary?: any;
+  dailyTrends?: DailyTrendItem[];
+  columnsStats?: ColumnStatItem[];
+  startDate?: string;
+  endDate?: string;
+  range?: string;
 }
 
 export default function AdminAnalyticsDashboard() {
+  const [activeTab, setActiveTab] = useState<'site' | 'column'>('site');
   const [range, setRange] = useState<'7d' | '30d' | 'all'>('7d');
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [rawData, setRawData] = useState<FullAnalyticsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [chartType, setChartType] = useState<'line' | 'bar'>('line');
   const [chartMetric, setChartMetric] = useState<'both' | 'views' | 'uv'>('both');
@@ -91,7 +133,7 @@ export default function AdminAnalyticsDashboard() {
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
-          setAnalyticsData(data);
+          setRawData(data);
         }
       }
     } catch (err) {
@@ -153,10 +195,41 @@ export default function AdminAnalyticsDashboard() {
     setSelectedColumnTrend(null);
   };
 
+  // Resolved Site Data
+  const siteData: SiteAnalyticsData = useMemo(() => {
+    if (rawData?.site) return rawData.site;
+    return {
+      summary: { totalPages: 9, totalViews: 0, totalUV: 0, topPages: [] },
+      dailyTrends: [],
+      pagesStats: [],
+      startDate: rawData?.startDate || '',
+      endDate: rawData?.endDate || '',
+      range,
+    };
+  }, [rawData, range]);
+
+  // Resolved Column Data
+  const columnData: ColumnAnalyticsData = useMemo(() => {
+    if (rawData?.column) return rawData.column;
+    return {
+      summary: rawData?.summary || { totalColumns: 76, totalViews: 0, totalUV: 0, topColumns: [] },
+      dailyTrends: rawData?.dailyTrends || [],
+      columnsStats: rawData?.columnsStats || [],
+      startDate: rawData?.startDate || '',
+      endDate: rawData?.endDate || '',
+      range,
+    };
+  }, [rawData, range]);
+
+  // Active dataset depending on selected tab
+  const activeDailyTrends = useMemo(() => {
+    return activeTab === 'site' ? siteData.dailyTrends : columnData.dailyTrends;
+  }, [activeTab, siteData, columnData]);
+
   // Filter columns list by search & category
   const filteredColumns = useMemo(() => {
-    if (!analyticsData?.columnsStats) return [];
-    return analyticsData.columnsStats.filter((c) => {
+    if (!columnData.columnsStats) return [];
+    return columnData.columnsStats.filter((c) => {
       if (selectedCategory !== 'all' && c.category !== selectedCategory) {
         return false;
       }
@@ -170,24 +243,28 @@ export default function AdminAnalyticsDashboard() {
       }
       return true;
     });
-  }, [analyticsData, selectedCategory, searchQuery]);
+  }, [columnData, selectedCategory, searchQuery]);
+
+  // Filter site pages list by search
+  const filteredPages = useMemo(() => {
+    if (!siteData.pagesStats) return [];
+    if (!searchQuery.trim()) return siteData.pagesStats;
+    const q = searchQuery.toLowerCase();
+    return siteData.pagesStats.filter((p) => p.name.toLowerCase().includes(q) || p.path.toLowerCase().includes(q));
+  }, [siteData, searchQuery]);
 
   // Categories list with counts
   const categoriesList = useMemo(() => {
-    if (!analyticsData?.columnsStats) return [];
+    if (!columnData.columnsStats) return [];
     const counts: Record<string, number> = {};
-    analyticsData.columnsStats.forEach((c) => {
+    columnData.columnsStats.forEach((c) => {
       counts[c.category] = (counts[c.category] || 0) + 1;
     });
     return Object.entries(counts).map(([name, count]) => ({ name, count }));
-  }, [analyticsData]);
-
-  // Trends array for chart
-  const trends = useMemo(() => {
-    return analyticsData?.dailyTrends || [];
-  }, [analyticsData]);
+  }, [columnData]);
 
   // SVG Chart Calculations
+  const trends = activeDailyTrends;
   const maxViewVal = useMemo(() => {
     if (trends.length === 0) return 10;
     const maxVal = Math.max(...trends.map((t) => Math.max(t.views, t.uv)));
@@ -228,9 +305,95 @@ export default function AdminAnalyticsDashboard() {
     return `M ${getX(0)},${bottomY} L ${points} L ${getX(trends.length - 1)},${bottomY} Z`;
   }, [trends, maxViewVal]);
 
+  const startDate = activeTab === 'site' ? siteData.startDate : columnData.startDate;
+  const endDate = activeTab === 'site' ? siteData.endDate : columnData.endDate;
+
   return (
-    <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '24px 0' }}>
-      {/* Top Control Bar: Period Selection & Refresh */}
+    <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '20px 0' }}>
+      {/* 1. Main Scope Tab Bar: Site-wide vs Column-specific */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '12px',
+          marginBottom: '20px',
+          background: '#F3F4F6',
+          padding: '6px',
+          borderRadius: '14px',
+          width: 'fit-content',
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setActiveTab('site')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '10px 22px',
+            borderRadius: '10px',
+            fontSize: '14px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            border: 'none',
+            background: activeTab === 'site' ? '#FFFFFF' : 'transparent',
+            color: activeTab === 'site' ? '#1D4ED8' : '#4B5563',
+            boxShadow: activeTab === 'site' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          <span style={{ fontSize: '17px' }}>🌐</span>
+          <span>홈페이지 전체 방문자</span>
+          <span
+            style={{
+              background: activeTab === 'site' ? '#EFF6FF' : '#E5E7EB',
+              color: activeTab === 'site' ? '#1D4ED8' : '#6B7280',
+              fontSize: '11px',
+              padding: '2px 8px',
+              borderRadius: '6px',
+              fontWeight: 700,
+            }}
+          >
+            메인·진료·칼럼 통합
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('column')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '10px 22px',
+            borderRadius: '10px',
+            fontSize: '14px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            border: 'none',
+            background: activeTab === 'column' ? '#FFFFFF' : 'transparent',
+            color: activeTab === 'column' ? '#047857' : '#4B5563',
+            boxShadow: activeTab === 'column' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          <span style={{ fontSize: '17px' }}>📚</span>
+          <span>칼럼 전용 열람 통계</span>
+          <span
+            style={{
+              background: activeTab === 'column' ? '#ECFDF5' : '#E5E7EB',
+              color: activeTab === 'column' ? '#047857' : '#6B7280',
+              fontSize: '11px',
+              padding: '2px 8px',
+              borderRadius: '6px',
+              fontWeight: 700,
+            }}
+          >
+            76편 의학 칼럼 심층
+          </span>
+        </button>
+      </div>
+
+      {/* 2. Top Control Bar: Period Selection & Refresh */}
       <div
         style={{
           display: 'flex',
@@ -248,10 +411,20 @@ export default function AdminAnalyticsDashboard() {
       >
         <div>
           <h1 style={{ fontSize: '20px', fontWeight: 800, color: '#1F2937', marginBottom: '4px' }}>
-            칼럼 조회수 및 일자별 방문 추이 통계
+            {activeTab === 'site'
+              ? '오브한의원 전체 웹사이트 방문 및 유입 통계'
+              : '칼럼 조회수 및 일자별 방문 추이 통계'}
           </h1>
           <p style={{ fontSize: '13px', color: '#6B7280' }}>
-            조회 기간: <strong>{analyticsData?.startDate || '...'} ~ {analyticsData?.endDate || '...'}</strong> (동일인 30분 내 중복 새로고침 필터링)
+            {activeTab === 'site' ? (
+              <>
+                조회 기간: <strong>{startDate || '...'} ~ {endDate || '...'}</strong> (메인 홈, 진료 안내, 오시는 길, 칼럼을 포함한 전체 순방문자)
+              </>
+            ) : (
+              <>
+                조회 기간: <strong>{startDate || '...'} ~ {endDate || '...'}</strong> (동일인 30분 내 중복 새로고침 필터링)
+              </>
+            )}
           </p>
         </div>
 
@@ -322,7 +495,7 @@ export default function AdminAnalyticsDashboard() {
         </div>
       </div>
 
-      {/* 4 Summary KPI Cards */}
+      {/* 3. 4 Summary KPI Cards */}
       <div
         style={{
           display: 'grid',
@@ -331,7 +504,7 @@ export default function AdminAnalyticsDashboard() {
           marginBottom: '24px',
         }}
       >
-        {/* Card 1: Total Columns */}
+        {/* Card 1: Count of Pages or Columns */}
         <div
           style={{
             background: '#FFFFFF',
@@ -342,17 +515,21 @@ export default function AdminAnalyticsDashboard() {
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#6B7280' }}>총 발행 칼럼</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#6B7280' }}>
+              {activeTab === 'site' ? '모니터링 페이지 수' : '총 발행 칼럼'}
+            </span>
             <span style={{ background: '#F3F4F6', color: '#4B5563', padding: '2px 8px', borderRadius: '6px', fontSize: '12px' }}>
-              8개 분야
+              {activeTab === 'site' ? '주요 진료·안내' : '8개 분야'}
             </span>
           </div>
           <div style={{ fontSize: '28px', fontWeight: 800, color: '#111827' }}>
-            {analyticsData?.summary?.totalColumns || 0}
-            <span style={{ fontSize: '15px', fontWeight: 500, color: '#6B7280', marginLeft: '4px' }}>편</span>
+            {activeTab === 'site' ? siteData.summary.totalPages : columnData.summary.totalColumns}
+            <span style={{ fontSize: '15px', fontWeight: 500, color: '#6B7280', marginLeft: '4px' }}>
+              {activeTab === 'site' ? '개 페이지' : '편'}
+            </span>
           </div>
           <div style={{ fontSize: '12px', color: '#059669', marginTop: '6px' }}>
-            ✔ 습식 뇌파 및 자율신경 의학 기준
+            {activeTab === 'site' ? '✔ 메인 홈, 진료 안내, 오시는 길 통합' : '✔ 습식 뇌파 및 자율신경 의학 기준'}
           </div>
         </div>
 
@@ -373,11 +550,11 @@ export default function AdminAnalyticsDashboard() {
             </span>
           </div>
           <div style={{ fontSize: '28px', fontWeight: 800, color: '#2563EB' }}>
-            {(analyticsData?.summary?.totalViews || 0).toLocaleString()}
+            {(activeTab === 'site' ? siteData.summary.totalViews : columnData.summary.totalViews).toLocaleString()}
             <span style={{ fontSize: '15px', fontWeight: 500, color: '#6B7280', marginLeft: '4px' }}>회</span>
           </div>
           <div style={{ fontSize: '12px', color: '#6B7280', marginTop: '6px' }}>
-            선택 기간 동안의 총 열람 횟수
+            {activeTab === 'site' ? '웹사이트 전체 페이지 로딩/열람 수' : '선택 기간 동안의 총 칼럼 열람 횟수'}
           </div>
         </div>
 
@@ -398,21 +575,25 @@ export default function AdminAnalyticsDashboard() {
             </span>
           </div>
           <div style={{ fontSize: '28px', fontWeight: 800, color: '#059669' }}>
-            {(analyticsData?.summary?.totalUV || 0).toLocaleString()}
+            {(activeTab === 'site' ? siteData.summary.totalUV : columnData.summary.totalUV).toLocaleString()}
             <span style={{ fontSize: '15px', fontWeight: 500, color: '#6B7280', marginLeft: '4px' }}>명</span>
           </div>
           <div style={{ fontSize: '12px', color: '#6B7280', marginTop: '6px' }}>
             방문자당 평균{' '}
             <strong>
-              {analyticsData?.summary?.totalUV
-                ? (analyticsData.summary.totalViews / analyticsData.summary.totalUV).toFixed(1)
-                : '1.0'}
+              {activeTab === 'site'
+                ? siteData.summary.totalUV
+                  ? (siteData.summary.totalViews / siteData.summary.totalUV).toFixed(1)
+                  : '1.0'
+                : columnData.summary.totalUV
+                  ? (columnData.summary.totalViews / columnData.summary.totalUV).toFixed(1)
+                  : '1.0'}
             </strong>
-            편 열람
+            {activeTab === 'site' ? '페이지 탐색' : '편 열람'}
           </div>
         </div>
 
-        {/* Card 4: Top 3 Columns */}
+        {/* Card 4: Top 3 Destinations / Columns */}
         <div
           style={{
             background: '#FFFFFF',
@@ -423,17 +604,72 @@ export default function AdminAnalyticsDashboard() {
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#6B7280' }}>인기 칼럼 TOP 3</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#6B7280' }}>
+              {activeTab === 'site' ? '인기 방문 페이지 TOP 3' : '인기 칼럼 TOP 3'}
+            </span>
             <span style={{ fontSize: '12px', color: '#D97706', fontWeight: 700 }}>🏆 Best</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {(analyticsData?.summary?.topColumns || []).length === 0 ? (
+            {activeTab === 'site' ? (
+              siteData.summary.topPages.length === 0 ? (
+                <div style={{ fontSize: '12px', color: '#9CA3AF', padding: '10px 0', textAlign: 'center' }}>
+                  현재 집계된 방문 기록이 없습니다.<br />
+                  <span style={{ fontSize: '11px', color: '#B45309' }}>페이지 접속 시 실시간으로 순위가 집계됩니다.</span>
+                </div>
+              ) : (
+                siteData.summary.topPages.slice(0, 3).map((page, idx) => (
+                  <div
+                    key={page.path}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      fontSize: '12px',
+                      gap: '6px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                      <span
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '50%',
+                          background: idx === 0 ? '#FEF3C7' : '#F3F4F6',
+                          color: idx === 0 ? '#B45309' : '#4B5563',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 800,
+                          fontSize: '11px',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {idx + 1}
+                      </span>
+                      <span
+                        style={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          color: '#1F2937',
+                          fontWeight: 500,
+                          maxWidth: '160px',
+                        }}
+                        title={page.name}
+                      >
+                        {page.name}
+                      </span>
+                    </div>
+                    <strong style={{ color: '#2563EB', flexShrink: 0 }}>{page.views.toLocaleString()}회</strong>
+                  </div>
+                ))
+              )
+            ) : columnData.summary.topColumns.length === 0 ? (
               <div style={{ fontSize: '12px', color: '#9CA3AF', padding: '10px 0', textAlign: 'center' }}>
-                현재 집계된 방문 기록이 없습니다.<br />
-                <span style={{ fontSize: '11px', color: '#B45309' }}>칼럼 열람 시 실시간으로 순위가 집계됩니다.</span>
+                현재 집계된 방문 기록이 없습니다.
               </div>
             ) : (
-              (analyticsData?.summary?.topColumns || []).slice(0, 3).map((col, idx) => (
+              columnData.summary.topColumns.slice(0, 3).map((col, idx) => (
                 <div
                   key={col.slug}
                   style={{
@@ -484,7 +720,7 @@ export default function AdminAnalyticsDashboard() {
         </div>
       </div>
 
-      {/* Main Chart Section: Trends Visualization */}
+      {/* 4. Main Chart Section: Trends Visualization */}
       <section
         style={{
           background: '#FFFFFF',
@@ -507,10 +743,14 @@ export default function AdminAnalyticsDashboard() {
         >
           <div>
             <h2 style={{ fontSize: '17px', fontWeight: 700, color: '#1F2937' }}>
-              일자별 전체 조회수(PV) 및 순 방문자(UV) 추이
+              {activeTab === 'site'
+                ? '일자별 웹사이트 전체 조회수(PV) 및 순 방문자(UV) 추이'
+                : '일자별 칼럼 전체 조회수(PV) 및 순 방문자(UV) 추이'}
             </h2>
             <p style={{ fontSize: '13px', color: '#6B7280' }}>
-              날짜별 유입 패턴을 통해 어떤 요일에 칼럼 열람이 활발한지 파악할 수 있습니다.
+              {activeTab === 'site'
+                ? '전체 홈페이지 유입 패턴을 통해 어떤 요일에 병원 정보 탐색이 활발한지 파악할 수 있습니다.'
+                : '날짜별 유입 패턴을 통해 어떤 요일에 칼럼 열람이 활발한지 파악할 수 있습니다.'}
             </p>
           </div>
 
@@ -798,9 +1038,9 @@ export default function AdminAnalyticsDashboard() {
                   </text>
 
                   <rect
-                    x={x - plotWidth / (trends.length * 2)}
+                    x={x - plotWidth / (trends.length * 2 || 1)}
                     y={paddingY}
-                    width={plotWidth / trends.length}
+                    width={plotWidth / (trends.length || 1)}
                     height={plotHeight}
                     fill="transparent"
                     style={{ cursor: 'pointer' }}
@@ -857,7 +1097,7 @@ export default function AdminAnalyticsDashboard() {
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '16px', fontSize: '13px' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1F2937' }}>
             <span style={{ width: '12px', height: '12px', background: '#2563EB', borderRadius: '3px' }}></span>
-            페이지 조회수 (Page Views)
+            {activeTab === 'site' ? '페이지 전체 조회수 (Page Views)' : '칼럼 조회수 (Page Views)'}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1F2937' }}>
             <span style={{ width: '12px', height: '12px', background: '#059669', borderRadius: '3px' }}></span>
@@ -866,7 +1106,7 @@ export default function AdminAnalyticsDashboard() {
         </div>
       </section>
 
-      {/* Detailed Columns Table */}
+      {/* 5. Detailed Table Section */}
       <section
         style={{
           background: '#FFFFFF',
@@ -888,138 +1128,226 @@ export default function AdminAnalyticsDashboard() {
         >
           <div>
             <h2 style={{ fontSize: '17px', fontWeight: 700, color: '#1F2937' }}>
-              칼럼별 상세 조회수 및 분석 목록
+              {activeTab === 'site' ? '페이지별 상세 조회수 및 유입 목록' : '칼럼별 상세 조회수 및 분석 목록'}
             </h2>
             <p style={{ fontSize: '13px', color: '#6B7280' }}>
-              행을 클릭하거나 &lsquo;추이 보기&rsquo; 버튼을 누르면 해당 칼럼만의 일자별 상세 그래프를 조회할 수 있습니다.
+              {activeTab === 'site'
+                ? '홈페이지 메인 및 각 진료별 랜딩 페이지의 유입 현황을 확인합니다.'
+                : '행을 클릭하거나 &lsquo;추이 보기&rsquo; 버튼을 누르면 해당 칼럼만의 일자별 상세 그래프를 조회할 수 있습니다.'}
             </p>
           </div>
 
           {/* Search Input & Category Filter */}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="admin-select"
-              style={{ padding: '8px 12px', fontSize: '13px', borderRadius: '6px' }}
-            >
-              <option value="all">전체 분야 ({analyticsData?.columnsStats?.length || 0})</option>
-              {categoriesList.map((c) => (
-                <option key={c.name} value={c.name}>
-                  {c.name} ({c.count})
-                </option>
-              ))}
-            </select>
+            {activeTab === 'column' && (
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="admin-select"
+                style={{ padding: '8px 12px', fontSize: '13px', borderRadius: '6px' }}
+              >
+                <option value="all">전체 분야 ({columnData.columnsStats?.length || 0})</option>
+                {categoriesList.map((c) => (
+                  <option key={c.name} value={c.name}>
+                    {c.name} ({c.count})
+                  </option>
+                ))}
+              </select>
+            )}
 
             <input
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="칼럼 제목 검색..."
+              placeholder={activeTab === 'site' ? '페이지 경로/이름 검색...' : '칼럼 제목 검색...'}
               className="admin-input"
               style={{ padding: '8px 12px', fontSize: '13px', borderRadius: '6px', width: '220px' }}
             />
           </div>
         </div>
 
-        {/* Table */}
+        {/* Table Rendering */}
         <div className="admin-table-wrapper" style={{ overflowX: 'auto' }}>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th style={{ width: '45%' }}>칼럼 제목 및 분야</th>
-                <th style={{ width: '120px' }}>카테고리</th>
-                <th style={{ width: '100px' }}>발행일</th>
-                <th style={{ width: '110px', textAlign: 'right' }}>총 누적 PV</th>
-                <th style={{ width: '120px', textAlign: 'right' }}>기간 내 PV</th>
-                <th style={{ width: '110px', textAlign: 'right' }}>순 방문 UV</th>
-                <th style={{ width: '120px', textAlign: 'center' }}>방문 추이</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredColumns.length === 0 ? (
+          {activeTab === 'site' ? (
+            <table className="admin-table">
+              <thead>
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: '#9CA3AF' }}>
-                    조건에 일치하는 칼럼이 없습니다.
-                  </td>
+                  <th style={{ width: '45%' }}>페이지 명칭 및 경로</th>
+                  <th style={{ width: '130px', textAlign: 'right' }}>총 누적 PV</th>
+                  <th style={{ width: '130px', textAlign: 'right' }}>기간 내 PV</th>
+                  <th style={{ width: '130px', textAlign: 'right' }}>순 방문 UV</th>
+                  <th style={{ width: '120px', textAlign: 'center' }}>페이지 바로가기</th>
                 </tr>
-              ) : (
-                filteredColumns.map((col, index) => (
-                  <tr
-                    key={col.slug}
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => openColumnTrendModal(col)}
-                  >
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span
-                          style={{
-                            fontSize: '11px',
-                            fontWeight: 700,
-                            color: index < 3 ? '#B45309' : '#9CA3AF',
-                            background: index < 3 ? '#FEF3C7' : '#F3F4F6',
-                            width: '20px',
-                            height: '20px',
-                            borderRadius: '4px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {index + 1}
-                        </span>
-                        <strong className="admin-col-title" style={{ fontSize: '14px', color: '#1F2937' }}>
-                          {col.title}
-                        </strong>
-                      </div>
-                      <span className="admin-col-slug" style={{ fontSize: '11px', color: '#9CA3AF', marginLeft: '28px' }}>
-                        /columns/{col.slug}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="column-badge" style={{ fontSize: '11px' }}>
-                        {col.category}
-                      </span>
-                    </td>
-                    <td>
-                      <time style={{ fontSize: '12px', color: '#6B7280' }}>{col.date}</time>
-                    </td>
-                    <td style={{ textAlign: 'right', fontWeight: 600, color: '#4B5563' }}>
-                      {col.totalViews.toLocaleString()}회
-                    </td>
-                    <td style={{ textAlign: 'right', fontWeight: 800, color: '#2563EB' }}>
-                      {col.rangeViews.toLocaleString()}회
-                    </td>
-                    <td style={{ textAlign: 'right', fontWeight: 700, color: '#059669' }}>
-                      {col.rangeUV.toLocaleString()}명
-                    </td>
-                    <td style={{ textAlign: 'center' }}>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openColumnTrendModal(col);
-                        }}
-                        className="button button-sm button-ghost"
-                        style={{
-                          padding: '4px 10px',
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          color: '#4B5563',
-                          border: '1px solid #D1D5DB',
-                          borderRadius: '6px',
-                          background: '#FFFFFF',
-                        }}
-                      >
-                        추이 보기 📈
-                      </button>
+              </thead>
+              <tbody>
+                {filteredPages.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: '#9CA3AF' }}>
+                      집계된 페이지 데이터가 없습니다.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  filteredPages.map((page, index) => (
+                    <tr key={page.path}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              color: index < 3 ? '#B45309' : '#9CA3AF',
+                              background: index < 3 ? '#FEF3C7' : '#F3F4F6',
+                              width: '20px',
+                              height: '20px',
+                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {index + 1}
+                          </span>
+                          <strong className="admin-col-title" style={{ fontSize: '14px', color: '#1F2937' }}>
+                            {page.name}
+                          </strong>
+                        </div>
+                        <span className="admin-col-slug" style={{ fontSize: '11px', color: '#9CA3AF', marginLeft: '28px' }}>
+                          {page.path}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 600, color: '#4B5563' }}>
+                        {page.totalViews.toLocaleString()}회
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 800, color: '#2563EB' }}>
+                        {page.rangeViews.toLocaleString()}회
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 700, color: '#059669' }}>
+                        {page.rangeUV.toLocaleString()}명
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <a
+                          href={page.path}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="button button-sm button-ghost"
+                          style={{
+                            padding: '4px 10px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            color: '#4B5563',
+                            border: '1px solid #D1D5DB',
+                            borderRadius: '6px',
+                            background: '#FFFFFF',
+                            textDecoration: 'none',
+                          }}
+                        >
+                          페이지 열기 ↗
+                        </a>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          ) : (
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '45%' }}>칼럼 제목 및 분야</th>
+                  <th style={{ width: '120px' }}>카테고리</th>
+                  <th style={{ width: '100px' }}>발행일</th>
+                  <th style={{ width: '110px', textAlign: 'right' }}>총 누적 PV</th>
+                  <th style={{ width: '120px', textAlign: 'right' }}>기간 내 PV</th>
+                  <th style={{ width: '110px', textAlign: 'right' }}>순 방문 UV</th>
+                  <th style={{ width: '120px', textAlign: 'center' }}>방문 추이</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredColumns.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: '#9CA3AF' }}>
+                      조건에 일치하는 칼럼이 없습니다.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredColumns.map((col, index) => (
+                    <tr
+                      key={col.slug}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => openColumnTrendModal(col)}
+                    >
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              color: index < 3 ? '#B45309' : '#9CA3AF',
+                              background: index < 3 ? '#FEF3C7' : '#F3F4F6',
+                              width: '20px',
+                              height: '20px',
+                              borderRadius: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {index + 1}
+                          </span>
+                          <strong className="admin-col-title" style={{ fontSize: '14px', color: '#1F2937' }}>
+                            {col.title}
+                          </strong>
+                        </div>
+                        <span className="admin-col-slug" style={{ fontSize: '11px', color: '#9CA3AF', marginLeft: '28px' }}>
+                          /columns/{col.slug}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="column-badge" style={{ fontSize: '11px' }}>
+                          {col.category}
+                        </span>
+                      </td>
+                      <td>
+                        <time style={{ fontSize: '12px', color: '#6B7280' }}>{col.date}</time>
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 600, color: '#4B5563' }}>
+                        {col.totalViews.toLocaleString()}회
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 800, color: '#2563EB' }}>
+                        {col.rangeViews.toLocaleString()}회
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 700, color: '#059669' }}>
+                        {col.rangeUV.toLocaleString()}명
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openColumnTrendModal(col);
+                          }}
+                          className="button button-sm button-ghost"
+                          style={{
+                            padding: '4px 10px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            color: '#4B5563',
+                            border: '1px solid #D1D5DB',
+                            borderRadius: '6px',
+                            background: '#FFFFFF',
+                          }}
+                        >
+                          추이 보기 📈
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </section>
 

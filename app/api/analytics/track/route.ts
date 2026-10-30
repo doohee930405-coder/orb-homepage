@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { recordColumnView } from '../../../lib/analyticsDb';
+import { recordPageView } from '../../../lib/analyticsDb';
 
 export async function OPTIONS() {
   return new NextResponse(null, {
@@ -15,10 +15,11 @@ export async function OPTIONS() {
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { slug, visitorId, sessionId } = body;
+    const { slug, path, title, visitorId, sessionId, referrer, type } = body;
 
-    if (!slug || typeof slug !== 'string') {
-      return NextResponse.json({ error: '유효한 slug가 필요합니다.' }, { status: 400 });
+    // Validate: Either path or slug must be provided
+    if (!slug && !path) {
+      return NextResponse.json({ error: '유효한 path 또는 slug가 필요합니다.' }, { status: 400 });
     }
 
     // Extract Client IP
@@ -29,13 +30,17 @@ export async function POST(req: Request) {
 
     const userAgent = req.headers.get('user-agent') || '';
 
-    // Record view with anti-spam deduplication and unique visitor tracking
-    const result = recordColumnView({
-      slug,
-      visitorId: visitorId || '',
-      sessionId: sessionId || 'default-session',
+    // Record view for site and/or column with anti-spam deduplication and UV tracking
+    const result = recordPageView({
+      path: typeof path === 'string' ? path : undefined,
+      slug: typeof slug === 'string' ? slug : undefined,
+      title: typeof title === 'string' ? title : undefined,
+      visitorId: typeof visitorId === 'string' ? visitorId : '',
+      sessionId: typeof sessionId === 'string' ? sessionId : 'default-session',
       ip,
       userAgent,
+      referrer: typeof referrer === 'string' ? referrer : '',
+      type: type === 'column' ? 'column' : 'site',
     });
 
     return NextResponse.json(

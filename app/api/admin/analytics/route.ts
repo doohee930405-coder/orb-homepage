@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getColumnAnalytics, getSingleColumnDailyTrend } from '../../../lib/analyticsDb';
+import { getColumnAnalytics, getSiteAnalytics, getSingleColumnDailyTrend } from '../../../lib/analyticsDb';
 import { isAdminAuthenticated, verifyAdminPassword, verifyAdminToken } from '../../../lib/auth';
 
 function checkAdminAuth(req: Request): boolean {
@@ -78,12 +78,18 @@ export async function GET(req: Request) {
       );
     }
 
-    // Case B: Full Dashboard Analytics
+    // Case B: Full Dashboard Analytics (Both Site-wide and Column-specific)
     const range = (url.searchParams.get('range') || '7d') as '7d' | '30d' | 'all' | 'custom';
     const startDate = url.searchParams.get('startDate') || undefined;
     const endDate = url.searchParams.get('endDate') || undefined;
 
-    const data = getColumnAnalytics({
+    const columnData = getColumnAnalytics({
+      range,
+      startDate,
+      endDate,
+    });
+
+    const siteData = getSiteAnalytics({
       range,
       startDate,
       endDate,
@@ -92,7 +98,10 @@ export async function GET(req: Request) {
     return NextResponse.json(
       {
         success: true,
-        ...data,
+        // Default backward-compatible root fields for existing clients
+        ...columnData,
+        column: columnData,
+        site: siteData,
       },
       {
         status: 200,
