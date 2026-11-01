@@ -14,7 +14,8 @@
 # next.js
 /.next/
 /.vinext/
-/out/
+/out/*
+!/out/index.html
 
 # misc
 .DS_Store

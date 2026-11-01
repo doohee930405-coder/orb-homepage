@@ -329,6 +329,8 @@ if (fs.existsSync(indexPath)) {
   const jsonLdTag = `<script type="application/ld+json">\n${JSON.stringify(exactClinicJsonLd, null, 2)}\n</script>`;
   const exactIndexTitle = '<title>오브한의원 마곡점 | 자율신경실조증·브레인포그·QEEG뇌파정밀검사 중점클리닉</title>';
   const exactIndexDesc = '<meta name="description" content="서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 브레인포그, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료.">';
+  const exactOgTitle = '<meta property="og:title" content="오브한의원 마곡점 | 자율신경실조증·브레인포그·QEEG뇌파정밀검사 중점클리닉"/>';
+  const exactOgDesc = '<meta property="og:description" content="서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 브레인포그, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료."/>';
 
   const exactFaqJsonLd = {
     "@context": "https://schema.org",
@@ -386,6 +388,18 @@ if (fs.existsSync(indexPath)) {
       headPart = headPart.replace(/<meta[^>]*name=["']description["'][^>]*>/i, exactIndexDesc);
     } else {
       headPart += '\n' + exactIndexDesc;
+    }
+
+    if (/<meta[^>]*property=["']og:title["'][^>]*>/i.test(headPart)) {
+      headPart = headPart.replace(/<meta[^>]*property=["']og:title["'][^>]*>/i, exactOgTitle);
+    } else {
+      headPart += '\n' + exactOgTitle;
+    }
+
+    if (/<meta[^>]*property=["']og:description["'][^>]*>/i.test(headPart)) {
+      headPart = headPart.replace(/<meta[^>]*property=["']og:description["'][^>]*>/i, exactOgDesc);
+    } else {
+      headPart += '\n' + exactOgDesc;
     }
 
     if (/<script type="application\/ld\+json"[^>]*>[\s\S]*?MedicalClinic[\s\S]*?<\/script>/i.test(headPart)) {
@@ -517,6 +531,24 @@ for (const entry of clientEntries) {
     fs.copyFileSync(srcPath, destPath);
   }
 }
+
+// 9.5 Mirror dist/client directly into out/ directory as well so Cloudflare Pages configured with 'out' works seamlessly
+const outDir = path.join(rootDir, 'out');
+if (!fs.existsSync(outDir)) {
+  fs.mkdirSync(outDir, { recursive: true });
+}
+for (const entry of clientEntries) {
+  const srcPath = path.join(clientDir, entry.name);
+  const destPath = path.join(outDir, entry.name);
+  if (entry.name === 'server' || entry.name === '.openai' || entry.name === 'client') continue;
+
+  if (entry.isDirectory()) {
+    copyDirRecursive(srcPath, destPath);
+  } else {
+    fs.copyFileSync(srcPath, destPath);
+  }
+}
+console.log('[postbuild-cloudflare] Mirrored build output to out/ directory');
 
 // 10. Verify that critical static files exist in dist/client
 const requiredFiles = ['robots.txt', 'sitemap.xml', '_headers', '_routes.json', '_redirects'];
