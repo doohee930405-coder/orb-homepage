@@ -781,6 +781,122 @@ p {
   }
 }
 
+/* FAQ Accordion Styling inside Clinical Section */
+.clinical-faq-block {
+  margin-top: clamp(48px, 6vw, 76px);
+  padding-top: clamp(36px, 5vw, 56px);
+  border-top: 1px solid var(--line);
+}
+
+.clinical-faq-header {
+  margin-bottom: clamp(24px, 3.5vw, 36px);
+}
+
+.clinical-faq-block .faq-accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.clinical-faq-block .faq-accordion-item {
+  background: #ffffff;
+  border: 1px solid #eceae5;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(44, 26, 20, 0.02);
+}
+
+.clinical-faq-block .faq-accordion-item[open] {
+  border-color: #d8d2c7;
+  box-shadow: 0 8px 24px rgba(44, 26, 20, 0.06);
+}
+
+.clinical-faq-block .faq-accordion-summary {
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  list-style: none;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.clinical-faq-block .faq-accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+.clinical-faq-block .faq-accordion-summary:hover {
+  background: #faf8f5;
+}
+
+.clinical-faq-block .faq-q-mark {
+  color: var(--bronze);
+  font-weight: 800;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.clinical-faq-block .faq-question-text {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--cocoa);
+  line-height: 1.45;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.clinical-faq-block .faq-arrow {
+  color: var(--taupe);
+  font-size: 0.95rem;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.clinical-faq-block .faq-accordion-item[open] .faq-arrow {
+  transform: rotate(180deg);
+  color: var(--cocoa);
+}
+
+.clinical-faq-block .faq-accordion-content {
+  padding: 0 24px 22px 52px;
+  border-top: 1px dashed rgba(52, 38, 31, 0.08);
+  margin-top: -2px;
+  padding-top: 16px;
+}
+
+.clinical-faq-block .faq-accordion-content p {
+  color: var(--cocoa-soft);
+  font-size: 0.98rem;
+  line-height: 1.82;
+  margin: 0;
+  word-break: keep-all;
+}
+
+@media (max-width: 860px) {
+  .clinical-faq-block .faq-accordion-summary {
+    padding: 16px 18px;
+    gap: 10px;
+  }
+
+  .clinical-faq-block .faq-question-text {
+    font-size: 0.96rem;
+    line-height: 1.5;
+  }
+
+  .clinical-faq-block .faq-accordion-content {
+    padding: 0 18px 18px 40px;
+  }
+
+  .clinical-faq-block .faq-accordion-content p {
+    font-size: 0.92rem;
+    line-height: 1.75;
+  }
+}
+
 .philosophy-section {
   background: var(--cocoa);
   color: var(--ivory);
