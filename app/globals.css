@@ -244,6 +244,7 @@ p {
 }
 
 .hero-lede {
+  white-space: pre-line;
   color: var(--cocoa-soft);
   font-size: clamp(1.35rem, 1.6vw, 1.68rem);
   line-height: 1.65;
