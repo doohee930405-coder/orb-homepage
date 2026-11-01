@@ -93,7 +93,7 @@ export const treatments: Treatment[] = [
     title: { ko: '자율신경실조증 · QEEG 뇌파검사', en: 'Autonomic System · QEEG' },
     shortTitle: { ko: '자율신경과 뇌파', en: 'Autonomic system & QEEG' },
     summary: {
-      ko: "대학병원 검사상 '이상 없음'에도 지속되는 머리 멍함(브레인포그), 만성피로, 수면장애, 가슴 두근거림의 실체를 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV)로 정밀 진단합니다. 뇌 신경망 과열과 교감신경 과항진을 3차원 입체 지도로 시각화하여, 약물 부작용이나 내성 걱정 없이 뇌-자율신경 균형을 회복하는 1:1 맞춤 한약과 상부경추 뇌신경 추나요법을 집중 처방합니다.",
+      ko: "대학병원 검사상 '이상 없음'에도 지속되는 각종 자율신경실조증 증상들의 실체를 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV)로 정밀 진단합니다. 뇌 신경망 과열과 교감신경 과항진을 3차원 입체 지도로 시각화하여, 약물 부작용이나 내성 걱정 없이 뇌-자율신경 균형을 회복하는 1:1 맞춤 한약과 상부경추 뇌신경 추나요법을 집중 처방합니다.",
       en: 'We accurately diagnose brain fog, chronic fatigue, sleep disorders, and palpitations through multichannel wet QEEG and HRV autonomic testing. By visualizing neural hyperactivity on 3D brain maps, we prescribe individualized herbal formulas and upper-cervical Chuna therapy to restore neuro-autonomic balance without drug dependency.',
     },
     intro: {
