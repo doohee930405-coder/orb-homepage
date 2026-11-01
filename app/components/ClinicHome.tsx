@@ -20,7 +20,7 @@ import {
 const copy = {
   ko: {
     kicker: 'ORBMED CLINIC',
-    title: '마곡 오브한의원',
+    title: '오브한의원 마곡',
     branch: '',
     heroBody:
       "병원 검사상 '이상 없음' 판정을 받은 원인 모를 가슴 두근거림, 브레인포그 및 수많은 증세들\nHRV 검사와 정량화 뇌파검사(qEEG)를 통해 자율신경실조증의 실체를 데이터로 규명합니다.",
@@ -423,15 +423,11 @@ export default function ClinicHome({
       <section className="hero-section" id="top">
         <div className="hero-content" data-inview>
           <p className="eyebrow">{text.kicker}</p>
-          <h1 className="sr-only">
-            {isEnglish
-              ? 'ORB Korean Medicine Clinic | Autonomic & QEEG Clinic'
-              : '마곡 자율신경실조증 및 뇌파검사 특화 클리닉, 오브한의원'}
-          </h1>
-          <div className="hero-title" aria-hidden="true">
+          <h1 className="hero-title">
+            <span className="sr-only">마곡 자율신경실조증 및 뇌파검사 특화 클리닉, 오브한의원</span>
             <span>{text.title}</span>
             {text.branch ? <span className="hero-branch">{text.branch}</span> : null}
-          </div>
+          </h1>
           <h2 className="hero-lede">
             {text.heroBody.split('\n').map((line, idx) => (
               <span key={idx} className="hero-lede-line">

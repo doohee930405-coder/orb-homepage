@@ -327,10 +327,10 @@ if (fs.existsSync(indexPath)) {
     }
   };
   const jsonLdTag = `<script type="application/ld+json">\n${JSON.stringify(exactClinicJsonLd, null, 2)}\n</script>`;
-  const exactIndexTitle = '<title>오브한의원 마곡점 | 자율신경실조증·브레인포그·QEEG뇌파정밀검사 중점클리닉</title>';
-  const exactIndexDesc = '<meta name="description" content="서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 브레인포그, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료.">';
-  const exactOgTitle = '<meta property="og:title" content="오브한의원 마곡점 | 자율신경실조증·브레인포그·QEEG뇌파정밀검사 중점클리닉"/>';
-  const exactOgDesc = '<meta property="og:description" content="서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 브레인포그, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료."/>';
+  const exactIndexTitle = '<title>오브한의원 마곡점 | 자율신경실조증·신경정신·QEEG 뇌파정밀검사 중점한의원</title>';
+  const exactIndexDesc = '<meta name="description" content="서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 신경정신 질환, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료.">';
+  const exactOgTitle = '<meta property="og:title" content="오브한의원 마곡점 | 자율신경실조증·신경정신·QEEG 뇌파정밀검사 중점한의원"/>';
+  const exactOgDesc = '<meta property="og:description" content="서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 신경정신 질환, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료."/>';
 
   const exactFaqJsonLd = {
     "@context": "https://schema.org",
