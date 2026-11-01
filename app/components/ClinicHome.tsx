@@ -23,7 +23,7 @@ const copy = {
     title: '마곡 오브한의원',
     branch: '',
     heroBody:
-      "병원 검사상 '이상 없음' 판정을 받은 원인 모를 만성피로, 가슴 두근거림, 브레인포그 등 수많은 증세들.\n오브한의원은 HRV 검사와 정량화 뇌파검사(qEEG)를 통해 자율신경실조증의 실체를 데이터로 규명합니다.",
+      "병원 검사상 '이상 없음' 판정을 받은 원인 모를 가슴 두근거림, 브레인포그 및 수많은 증세들\nHRV 검사와 정량화 뇌파검사(qEEG)를 통해 자율신경실조증의 실체를 데이터로 규명합니다.",
     booking: '네이버 예약',
     call: '전화 문의',
     station: '마곡나루역 5번 출구에서 136m',
@@ -316,7 +316,13 @@ export default function ClinicHome({
             <span>{text.title}</span>
             {text.branch ? <span className="hero-branch">{text.branch}</span> : null}
           </h1>
-          <h2 className="hero-lede">{text.heroBody}</h2>
+          <h2 className="hero-lede">
+            {text.heroBody.split('\n').map((line, idx) => (
+              <span key={idx} className="hero-lede-line">
+                {line}
+              </span>
+            ))}
+          </h2>
         </div>
         <div className="hero-visual hero-visual-brand" aria-label="ORB ARCHIVE">
           <div className="hero-brand-card">
