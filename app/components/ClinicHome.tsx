@@ -84,6 +84,36 @@ const copy = {
     treatmentTitle: '원인을 규명하고 근본을 바로잡는\n자율신경·뇌파검사·추나요법 중점 진료 분야',
     treatmentBody: '머리 멍함(브레인포그), 만성피로, 수면장애, 어깨·목 결림 등 단편적 증상에 그치지 않고 뇌신경계와 자율신경, 척추 체형의 유기적 상관관계를 입체적으로 치료합니다.',
     detail: '자세히 보기',
+    guideEyebrow: 'CLINICAL GUIDE & RESEARCH',
+    guideTitle: '자율신경실조증 & 뇌신경 임상 핵심 가이드',
+    guideLead:
+      '원인 모를 신체화 증상과 만성피로는 신경계의 기능적 불균형에서 시작됩니다. 오브한의원은 임상 현장에서 축적한 정량화 데이터를 바탕으로 질환의 기전과 치료 방향을 칼럼으로 연재하고 있습니다.',
+    guideItems: [
+      {
+        tag: '머리에 안개가 낀 듯 집중이 어렵다면',
+        title: '"머리에 돌덩이를 얹은 것 같아요" 자율신경실조증 두중감, 맞춤 한약과 뇌혈류 개선 방향',
+        href: '/columns/머리에-돌덩이를-얹은-것-같아요-자율신경실조증-두중감-맞춤-한약-756183',
+      },
+      {
+        tag: '자율신경 검사를 해도 이상이 없다면',
+        title: '낫지 않는 자율신경실조증, 자율신경 검사(HRV) 정상이면 끝일까요?',
+        href: '/columns/낫지-않는-자율신경실조증-자율신경-검사hrv-정상이면-끝일까요-735604',
+      },
+      {
+        tag: '일어설 때 느껴지는 이상감각',
+        title: '일어설 때 아찔함과 구름 위를 걷는 듯한 어지럼증, 검사상 이상 없다면 자율신경계 기능 불균형을 살펴봐야 하는 이유',
+        href: '/columns/일어설-때-아찔함과-구름-위를-걷는-듯한-어지럼증-검사상-이상-006634',
+      },
+      {
+        tag: '약을 먹어도 증세가 계속된다면',
+        title: '약을 먹어도 호전되지 않는 불안장애와 감각과민, 통계로 증명된 뇌신경계 염증을 의심하세요',
+        href: '/columns/약을-먹어도-호전되지-않는-불안장애와-감각과민-통계로-증명된-뇌-974570',
+      },
+    ],
+    guideFooterNote:
+      '오브한의원은 이 외에도 수많은 임상 연구를 지속하며 원장 칼럼을 꾸준히 연재하고 있습니다.',
+    guideArchiveBtn: '전체 의학 칼럼 아카이브 보기',
+    guideArchiveHref: '/columns',
     philosophyEyebrow: 'OUR APPROACH',
     philosophyTitle: '정확하게 진단하고\n바르게 치료하겠습니다',
     philosophyBody: 'ORB한의원의 접근',
@@ -217,6 +247,36 @@ const copy = {
     treatmentTitle: 'Specialized Clinical Focus at\nORB Korean Medicine Clinic',
     treatmentBody: 'We address not merely isolated symptoms, but the onset, lifestyle rhythms, and interrelated neuro-autonomic and structural factors.',
     detail: 'Learn more',
+    guideEyebrow: 'CLINICAL GUIDE & RESEARCH',
+    guideTitle: 'Autonomic Dysfunction & Neuro-Clinical Guide',
+    guideLead:
+      'Unexplained somatic symptoms and chronic fatigue stem from functional imbalances in the nervous system. ORB Clinic serializes clinical columns explaining mechanisms and therapeutic directions based on empirical data.',
+    guideItems: [
+      {
+        tag: 'Brain fog and difficulty concentrating',
+        title: '"Heavy pressure in the head": Autonomic heavy head sensation, personalized herbal care, and cerebral perfusion',
+        href: '/columns/머리에-돌덩이를-얹은-것-같아요-자율신경실조증-두중감-맞춤-한약-756183',
+      },
+      {
+        tag: 'When autonomic tests return normal',
+        title: 'Refractory autonomic dysfunction: Is a "normal" HRV test truly the end of the story?',
+        href: '/columns/낫지-않는-자율신경실조증-자율신경-검사hrv-정상이면-끝일까요-735604',
+      },
+      {
+        tag: 'Peculiar sensations upon standing',
+        title: 'Dizziness and lightheadedness when rising: Why functional autonomic imbalance must be examined when tests show normal',
+        href: '/columns/일어설-때-아찔함과-구름-위를-걷는-듯한-어지럼증-검사상-이상-006634',
+      },
+      {
+        tag: 'Persistent symptoms despite medications',
+        title: 'Unresolved anxiety disorders and sensory hypersensitivity despite pharmaceuticals: Examine evidence-based neuroinflammation',
+        href: '/columns/약을-먹어도-호전되지-않는-불안장애와-감각과민-통계로-증명된-뇌-974570',
+      },
+    ],
+    guideFooterNote:
+      'ORB Clinic continues clinical research and publishes regular medical columns authored by our medical director.',
+    guideArchiveBtn: 'View All Clinical Columns Archive',
+    guideArchiveHref: '/columns',
     philosophyEyebrow: 'OUR APPROACH',
     philosophyTitle: 'Accurate Diagnosis,\nProper Treatment',
     philosophyBody: 'ORB Clinic’s Approach',
@@ -477,6 +537,46 @@ export default function ClinicHome({
               </a>
             );
           })}
+        </div>
+      </section>
+
+      {/* 3.5 CLINICAL GUIDE & RESEARCH SECTION */}
+      <section className="content-section clinical-guide-section reveal" id="clinical-guide">
+        <div className="clinical-guide-header">
+          <p className="clinical-guide-eyebrow">{text.guideEyebrow}</p>
+          <h2 className="clinical-guide-title">{text.guideTitle}</h2>
+          <p className="clinical-guide-lead">{text.guideLead}</p>
+        </div>
+
+        <div className="clinical-guide-list" role="list">
+          {text.guideItems.map((item, idx) => (
+            <a
+              key={idx}
+              href={item.href}
+              className="clinical-guide-card"
+              role="listitem"
+            >
+              <div className="clinical-guide-badge-wrap">
+                <span className="clinical-guide-badge">{item.tag}</span>
+              </div>
+              <div className="clinical-guide-content">
+                <h3 className="clinical-guide-card-title">{item.title}</h3>
+                <span className="clinical-guide-arrow" aria-hidden="true">
+                  →
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <div className="clinical-guide-footer">
+          <p className="clinical-guide-footer-note">{text.guideFooterNote}</p>
+          <a href={text.guideArchiveHref} className="clinical-guide-footer-btn">
+            <span>{text.guideArchiveBtn}</span>
+            <span className="arrow-icon" aria-hidden="true">
+              →
+            </span>
+          </a>
         </div>
       </section>
 
