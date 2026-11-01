@@ -7292,8 +7292,8 @@ p {
     display: grid;
     grid-template-columns: 1fr 1.15fr;
     grid-template-rows: 1fr;
-    height: 385px;
-    max-height: 395px;
+    min-height: 440px;
+    height: auto;
     background: linear-gradient(135deg, #FDFBF8 0%, #F8F4EE 100%);
     border: 1.5px solid rgba(44, 26, 20, 0.3);
     box-shadow: 0 16px 40px rgba(44, 26, 20, 0.07);
@@ -7302,7 +7302,7 @@ p {
 
   .treatment-card-primary picture {
     height: 100%;
-    min-height: 0;
+    min-height: 100%;
     overflow: hidden;
   }
 
@@ -7314,7 +7314,7 @@ p {
   }
 
   .treatment-card-primary .treatment-card-copy {
-    padding: 24px 34px 24px;
+    padding: 28px 36px 28px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -7328,16 +7328,17 @@ p {
   }
 
   .treatment-card-primary .treatment-card-copy p {
-    font-size: 0.91rem;
-    line-height: 1.68;
-    max-width: 580px;
+    font-size: 0.905rem;
+    line-height: 1.7;
+    max-width: 610px;
     margin-top: 10px;
     color: var(--cocoa);
+    word-break: keep-all;
   }
 
   .treatment-card-primary .treatment-card-copy b {
-    margin-top: 16px;
-    padding-top: 14px;
+    margin-top: 14px;
+    padding-top: 12px;
   }
 
   .treatment-card-primary .treatment-primary-badge {

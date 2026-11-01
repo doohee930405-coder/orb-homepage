@@ -73,7 +73,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
             <a href={home}>{text.home}</a><span>/</span><a href={`${home}#treatments`}>{text.treatments}</a>
           </nav>
           <p className="eyebrow">TREATMENT {treatment.number}</p>
-          <h1>{treatment.slug === 'autonomic-qeeg' && locale === 'ko' ? '자율신경실조증 · QEEG 뇌파검사' : treatment.title[locale]}</h1>
+          <h1>{treatment.slug === 'autonomic-qeeg' && locale === 'ko' ? '자율신경실조증 : HRV, QEEG 정량뇌파검사' : treatment.title[locale]}</h1>
           <p>{treatment.summary[locale]}</p>
         </div>
         {treatment.slug === 'diet' ? (
