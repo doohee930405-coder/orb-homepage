@@ -13,11 +13,11 @@ const hasGoogleAnalyticsId = Boolean(
 export const metadata: Metadata = {
   metadataBase: new URL('https://orbmed.co.kr'),
   title: {
-    default: '오브한의원 마곡점 - 자율신경계·정량화뇌파·통증·다이어트',
+    default: '오브한의원 마곡점 | 자율신경실조증·브레인포그·QEEG뇌파정밀검사 중점클리닉',
     template: '%s | 오브한의원 마곡점',
   },
   description:
-    '마곡 롯데캐슬 르웨스트 104동 오브한의원입니다. 정량화뇌파(QEEG) 검사, 자율신경실조증, 통증 추나, 맞춤 다이어트 진료 안내.',
+    '서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 브레인포그, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료.',
   robots: {
     index: true,
     follow: true,
@@ -37,9 +37,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: '오브한의원 마곡점 - 자율신경계·정량화뇌파·통증·다이어트',
+    title: '오브한의원 마곡점 | 자율신경실조증·브레인포그·QEEG뇌파정밀검사 중점클리닉',
     description:
-      '마곡 롯데캐슬 르웨스트 104동 오브한의원입니다. 정량화뇌파(QEEG) 검사, 자율신경실조증, 통증 추나, 맞춤 다이어트 진료 안내.',
+    '서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 브레인포그, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료.',
     url: '/',
     siteName: '오브한의원 마곡점',
     locale: 'ko_KR',

@@ -308,7 +308,7 @@ if (fs.existsSync(functionsDir)) {
   }
 }
 
-// 7.8 Enforce Schema.org JSON-LD in index.html head
+// 7.8 Enforce Title, Description, and Schema.org JSON-LD in index.html head
 const indexPath = path.join(clientDir, 'index.html');
 if (fs.existsSync(indexPath)) {
   let indexHtml = fs.readFileSync(indexPath, 'utf8');
@@ -327,21 +327,38 @@ if (fs.existsSync(indexPath)) {
     }
   };
   const jsonLdTag = `<script type="application/ld+json">\n${JSON.stringify(exactClinicJsonLd, null, 2)}\n</script>`;
+  const exactIndexTitle = '<title>오브한의원 마곡점 | 자율신경실조증·브레인포그·QEEG뇌파정밀검사 중점클리닉</title>';
+  const exactIndexDesc = '<meta name="description" content="서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 브레인포그, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료.">';
+
   const headEndIndex = indexHtml.indexOf('</head>');
   if (headEndIndex !== -1) {
-    const headPart = indexHtml.slice(0, headEndIndex);
+    let headPart = indexHtml.slice(0, headEndIndex);
     const restPart = indexHtml.slice(headEndIndex);
+
+    if (/<title>[^<]*<\/title>/i.test(headPart)) {
+      headPart = headPart.replace(/<title>[^<]*<\/title>/i, exactIndexTitle);
+    } else {
+      headPart += '\n' + exactIndexTitle;
+    }
+
+    if (/<meta[^>]*name=["']description["'][^>]*>/i.test(headPart)) {
+      headPart = headPart.replace(/<meta[^>]*name=["']description["'][^>]*>/i, exactIndexDesc);
+    } else {
+      headPart += '\n' + exactIndexDesc;
+    }
+
     if (/<script type="application\/ld\+json"[^>]*>[\s\S]*?MedicalClinic[\s\S]*?<\/script>/i.test(headPart)) {
-      const updatedHead = headPart.replace(
+      headPart = headPart.replace(
         /<script type="application\/ld\+json"[^>]*>[\s\S]*?MedicalClinic[\s\S]*?<\/script>/i,
         jsonLdTag
       );
-      indexHtml = updatedHead + restPart;
     } else {
-      indexHtml = headPart + '\n' + jsonLdTag + '\n' + restPart;
+      headPart += '\n' + jsonLdTag;
     }
+
+    indexHtml = headPart + '\n' + restPart;
     fs.writeFileSync(indexPath, indexHtml, 'utf8');
-    console.log('[postbuild-cloudflare] Injected and verified exact Schema.org MedicalClinic JSON-LD into index.html <head>');
+    console.log('[postbuild-cloudflare] Enforced title, description, and Schema.org MedicalClinic JSON-LD in index.html <head>');
   }
 }
 

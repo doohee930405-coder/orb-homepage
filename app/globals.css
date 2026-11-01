@@ -6877,3 +6877,102 @@ p {
     display: none;
   }
 }
+
+
+/* Screen reader only utility for SEO & accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Treatment Card Header Line & Primary Badge */
+.treatment-card-header-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.treatment-primary-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #2C1A14;
+  background: rgba(44, 26, 20, 0.08);
+  border: 1px solid rgba(44, 26, 20, 0.16);
+}
+
+.treatment-card-primary {
+  background: linear-gradient(180deg, #FDFBF8 0%, var(--paper) 100%);
+  border-color: rgba(44, 26, 20, 0.32);
+}
+
+@media (min-width: 960px) {
+  .treatment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 36px 24px;
+  }
+
+  .treatment-card-primary {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    grid-template-rows: 1fr;
+    min-height: 420px;
+    background: linear-gradient(135deg, #FDFBF8 0%, #F8F4EE 100%);
+    border: 1.5px solid rgba(44, 26, 20, 0.3);
+    box-shadow: 0 16px 40px rgba(44, 26, 20, 0.07);
+  }
+
+  .treatment-card-primary picture {
+    height: 100%;
+    min-height: 400px;
+  }
+
+  .treatment-card-primary picture img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .treatment-card-primary .treatment-card-copy {
+    padding: 44px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .treatment-card-primary .treatment-card-copy h3 {
+    font-size: clamp(1.85rem, 2.5vw, 2.25rem);
+    margin-top: 14px;
+    letter-spacing: -0.02em;
+  }
+
+  .treatment-card-primary .treatment-card-copy p {
+    font-size: 1.02rem;
+    line-height: 1.85;
+    max-width: 580px;
+    margin-top: 18px;
+    color: var(--cocoa);
+  }
+
+  .treatment-card-primary .treatment-primary-badge {
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    background: #2C1A14;
+    color: #F8F4EE;
+    border: none;
+  }
+}

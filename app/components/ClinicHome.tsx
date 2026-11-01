@@ -22,7 +22,8 @@ const copy = {
     kicker: 'ORBMED CLINIC',
     title: '마곡 오브한의원',
     branch: '',
-    heroBody: '자율신경 · 뇌신경 · 통증 중점 의료기관, 오브한의원입니다',
+    heroBody:
+      "병원 검사상 '이상 없음' 판정을 받은 원인 모를 만성피로, 가슴 두근거림, 브레인포그. 오브한의원은 다채널 습식 정량화 뇌파검사(qEEG)와 HRV 검사를 통해 자율신경실조증의 실체를 데이터로 규명합니다.",
     booking: '네이버 예약',
     call: '전화 문의',
     station: '마곡나루역 5번 출구에서 136m',
@@ -310,11 +311,12 @@ export default function ClinicHome({
       <section className="hero-section" id="top">
         <div className="hero-content" data-inview>
           <p className="eyebrow">{text.kicker}</p>
-          <h1>
+          <h1 className="hero-title">
+            <span className="sr-only">마곡 자율신경실조증 및 뇌파검사 특화 클리닉, 오브한의원</span>
             <span>{text.title}</span>
             {text.branch ? <span className="hero-branch">{text.branch}</span> : null}
           </h1>
-          <p className="hero-lede">{text.heroBody}</p>
+          <h2 className="hero-lede">{text.heroBody}</h2>
         </div>
         <div className="hero-visual hero-visual-brand" aria-label="ORB ARCHIVE">
           <div className="hero-brand-card">
@@ -436,29 +438,39 @@ export default function ClinicHome({
           <p>{text.treatmentBody}</p>
         </div>
         <div className="treatment-grid">
-          {treatments.map((treatment) => (
-            <a
-              className="treatment-card"
-              href={treatmentPath(locale, treatment.slug)}
-              key={treatment.slug}
-            >
-              <ResponsivePicture
-                image={treatment.image}
-                alt={treatment.imageAlt[locale]}
-                position={treatment.imagePosition}
-                fit={treatment.imageFit}
-              />
-              <div className="treatment-card-copy">
-                <span>{treatment.number}</span>
-                <h3>{treatment.title[locale]}</h3>
-                <p>{treatment.summary[locale]}</p>
-                <b>
-                  {text.detail}
-                  <i aria-hidden="true">→</i>
-                </b>
-              </div>
-            </a>
-          ))}
+          {treatments.map((treatment, idx) => {
+            const isPrimary = idx === 0;
+            return (
+              <a
+                className={'treatment-card' + (isPrimary ? ' treatment-card-primary' : '')}
+                href={treatmentPath(locale, treatment.slug)}
+                key={treatment.slug}
+              >
+                <ResponsivePicture
+                  image={treatment.image}
+                  alt={treatment.imageAlt[locale]}
+                  position={treatment.imagePosition}
+                  fit={treatment.imageFit}
+                />
+                <div className="treatment-card-copy">
+                  <div className="treatment-card-header-line">
+                    <span className="treatment-card-num">{treatment.number}</span>
+                    {isPrimary && (
+                      <span className="treatment-primary-badge">
+                        {isEnglish ? 'PRIMARY FOCUS' : '특화 중점 진료'}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="treatment-card-title">{treatment.title[locale]}</h3>
+                  <p className="treatment-card-desc">{treatment.summary[locale]}</p>
+                  <b className="treatment-card-link">
+                    {text.detail}
+                    <i aria-hidden="true">→</i>
+                  </b>
+                </div>
+              </a>
+            );
+          })}
         </div>
       </section>
 
