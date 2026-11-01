@@ -32,6 +32,8 @@ export interface Column {
   faqs?: ColumnFaq[];
   skipped?: boolean;
   skipReason?: string;
+  views?: number;
+  uv?: number;
 }
 
 export type ColumnInput = Omit<Column, 'id'> & { id?: string };

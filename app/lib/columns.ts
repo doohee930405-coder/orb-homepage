@@ -665,6 +665,12 @@ export function normalizeColumn(parsed: any): Column {
     thumbnail = firstLocal && !firstLocal.includes('static.map') && !firstLocal.includes('staticmap') ? firstLocal : '';
   }
 
+  const viewsMap = getColumnViews();
+  const slug = parsed.slug || '';
+  const viewStat = viewsMap[slug] || {};
+  const views = typeof parsed.views === 'number' ? parsed.views : (viewStat.views || 0);
+  const uv = typeof parsed.uv === 'number' ? parsed.uv : (viewStat.uv || 0);
+
   return {
     id: parsed.id || `col-${parsed.slug}`,
     slug: parsed.slug,
@@ -678,6 +684,8 @@ export function normalizeColumn(parsed: any): Column {
     thumbnail,
     updatedAt: parsed.updatedAt,
     faqs: Array.isArray(parsed.faqs) ? parsed.faqs : [],
+    views,
+    uv,
   };
 }
 
@@ -695,6 +703,26 @@ export function getProjectRoot(): string {
     return 'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage';
   }
   return cwd || process.cwd() || '.';
+}
+
+let cachedColumnViews: Record<string, { views: number; uv: number }> | null = null;
+export function getColumnViews(): Record<string, { views: number; uv: number }> {
+  if (cachedColumnViews) return cachedColumnViews;
+  const candidatePaths = [
+    path.join(process.cwd(), 'content', 'column_views.json'),
+    path.join(getProjectRoot(), 'content', 'column_views.json'),
+    'C:/Users/doohe/Downloads/orb-homepage-main/orb-homepage/content/column_views.json',
+  ];
+  for (const p of candidatePaths) {
+    try {
+      if (fs.existsSync(p)) {
+        cachedColumnViews = JSON.parse(fs.readFileSync(p, 'utf8'));
+        return cachedColumnViews!;
+      }
+    } catch {}
+  }
+  cachedColumnViews = {};
+  return cachedColumnViews;
 }
 
 export function getColumnsDir(): string {

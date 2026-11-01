@@ -33,6 +33,8 @@ export default function Home() {
     date: col.date,
     tags: col.tags || [],
     thumbnail: col.thumbnail,
+    views: col.views || 0,
+    uv: col.uv || 0,
   }));
   return <ClinicHome locale="ko" latestColumns={allColumns} />;
 }

@@ -21,7 +21,8 @@ export default function HomeColumnsArchive({
   readMoreText,
   viewAllText,
 }: HomeColumnsArchiveProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  // 메인페이지 기본 노출: '전체'의 최신 3개가 아닌 '자율신경실조증' 카테고리의 조회수 최다 3개 칼럼을 기본 노출
+  const [selectedCategory, setSelectedCategory] = useState<string>('자율신경실조증');
 
   // Extract available categories from the columns in order
   const categories = useMemo(() => {
@@ -36,7 +37,20 @@ export default function HomeColumnsArchive({
   }, [columns]);
 
   // Filter columns based on selected category (display up to 3)
+  // '자율신경실조증' 카테고리는 조회수(views)가 가장 많은 칼럼 순으로 정렬하여 상위 3개 배치
   const displayedColumns = useMemo(() => {
+    if (selectedCategory === '자율신경실조증') {
+      const autonomicList = columns
+        .filter((c) => c.category === '자율신경실조증')
+        .slice()
+        .sort(
+          (a, b) =>
+            (b.views || 0) - (a.views || 0) ||
+            (b.uv || 0) - (a.uv || 0) ||
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+      return autonomicList.slice(0, 3);
+    }
     const list =
       selectedCategory === 'all'
         ? columns
