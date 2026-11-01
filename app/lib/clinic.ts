@@ -89,7 +89,7 @@ export const treatments: Treatment[] = [
     slug: 'autonomic-qeeg',
     number: '01',
     image: 'naver-qeeg',
-    imagePosition: 'center 38%',
+    imagePosition: 'center center',
     title: { ko: '자율신경실조증 · QEEG 뇌파검사', en: 'Autonomic System · QEEG' },
     shortTitle: { ko: '자율신경과 뇌파', en: 'Autonomic system & QEEG' },
     summary: {

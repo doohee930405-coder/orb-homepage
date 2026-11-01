@@ -6929,9 +6929,9 @@ p {
   .treatment-card-primary {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: 1.15fr 1fr;
+    grid-template-columns: 1fr 1.12fr;
     grid-template-rows: 1fr;
-    min-height: 420px;
+    min-height: 340px;
     background: linear-gradient(135deg, #FDFBF8 0%, #F8F4EE 100%);
     border: 1.5px solid rgba(44, 26, 20, 0.3);
     box-shadow: 0 16px 40px rgba(44, 26, 20, 0.07);
@@ -6939,34 +6939,42 @@ p {
 
   .treatment-card-primary picture {
     height: 100%;
-    min-height: 400px;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .treatment-card-primary picture img {
     height: 100%;
     width: 100%;
     object-fit: cover;
+    object-position: center;
   }
 
   .treatment-card-primary .treatment-card-copy {
-    padding: 44px 44px;
+    padding: 30px 36px 32px;
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
 
   .treatment-card-primary .treatment-card-copy h3 {
-    font-size: clamp(1.85rem, 2.5vw, 2.25rem);
-    margin-top: 14px;
+    font-size: clamp(1.45rem, 2vw, 1.8rem);
+    margin-top: 10px;
     letter-spacing: -0.02em;
+    line-height: 1.35;
   }
 
   .treatment-card-primary .treatment-card-copy p {
-    font-size: 1.02rem;
-    line-height: 1.85;
+    font-size: 0.94rem;
+    line-height: 1.72;
     max-width: 580px;
-    margin-top: 18px;
+    margin-top: 12px;
     color: var(--cocoa);
+  }
+
+  .treatment-card-primary .treatment-card-copy b {
+    margin-top: 20px;
+    padding-top: 16px;
   }
 
   .treatment-card-primary .treatment-primary-badge {
