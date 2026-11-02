@@ -7160,11 +7160,9 @@ p {
   transform: translateX(3px);
 }
 
-/* Crawling Loop Navigation */
+/* Crawling Loop Navigation (Hidden from visual UI, kept for SEO fallback) */
 .crawling-loop-bar {
-  margin-top: 22px;
-  padding-top: 18px;
-  border-top: 1px dashed #e4d7ca;
+  display: none !important;
 }
 
 .crawling-loop-inner {

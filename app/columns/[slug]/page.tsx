@@ -582,43 +582,14 @@ export default async function ColumnDetailPage({
               ))}
             </ul>
 
-            {/* 크롤링 루프 및 사이트 내부 순환 네비게이션 */}
-            <div className="crawling-loop-bar" aria-label="오브한의원 주요 탐색 순환 경로">
-              <div className="crawling-loop-inner">
-                <span className="crawling-loop-label">
-                  <span className="crawling-loop-icon" aria-hidden="true">🔁</span>
-                  사이트 순환 경로:
-                </span>
-                <div className="crawling-loop-links">
-                  <a href="/" className="crawling-anchor" title="오브한의원 마곡점 메인 홈페이지">
-                    🏠 마곡 오브한의원 홈
-                  </a>
-                  <span className="crawling-sep" aria-hidden="true">›</span>
-                  <a
-                    href="/treatments/autonomic-qeeg"
-                    className="crawling-anchor"
-                    title="마곡 자율신경실조증 치료·뇌파검사 클리닉 피지컬 허브"
-                  >
-                    🩺 자율신경·뇌파검사 클리닉
-                  </a>
-                  <span className="crawling-sep" aria-hidden="true">›</span>
-                  <a
-                    href={`/columns?category=${encodeURIComponent(column.category)}`}
-                    className="crawling-anchor"
-                    title={`오브한의원 ${column.category} 칼럼 전체 모아보기`}
-                  >
-                    📚 {column.category} 칼럼 아카이브
-                  </a>
-                  <span className="crawling-sep" aria-hidden="true">›</span>
-                  <a
-                    href="/columns"
-                    className="crawling-anchor"
-                    title="오브한의원 전체 의학 칼럼 아카이브"
-                  >
-                    전체 칼럼 목록
-                  </a>
-                </div>
-              </div>
+            {/* 검색엔진 크롤러 & AI 로봇을 위한 내부 순환 링크 (화면 UI 비노출, HTML/DOM 검색 로봇 수집 전용) */}
+            <div className="sr-only" aria-label="오브한의원 내부 순환 탐색 링크">
+              <a href="/" title="오브한의원 마곡점 메인 홈페이지">마곡 오브한의원 홈</a>
+              <a href="/treatments/autonomic-qeeg" title="마곡 자율신경실조증 치료·뇌파검사 클리닉">자율신경·뇌파검사 클리닉</a>
+              <a href={`/columns?category=${encodeURIComponent(column.category)}`} title={`오브한의원 ${column.category} 칼럼 전체 모아보기`}>
+                ${column.category} 칼럼 아카이브
+              </a>
+              <a href="/columns" title="오브한의원 전체 의학 칼럼 아카이브">전체 칼럼 목록</a>
             </div>
           </nav>
         )}
