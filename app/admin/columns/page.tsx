@@ -222,6 +222,7 @@ export default function AdminColumnsPage() {
       date: string;
       url: string;
       selected: boolean;
+      alreadyImported?: boolean;
       thumbnailUrl?: string;
     }>
   >([]);
@@ -888,11 +889,21 @@ const handleDelete = async (slug: string, title: string) => {
             '해당 블로그에서 공개 글을 찾지 못했습니다. 블로그 ID를 확인하시거나 [방법 2: URL 직접 입력]을 이용해 주세요.'
           );
         } else {
+          const currentSlugs = new Set(columns.map((c) => c.slug));
+          const currentTitles = new Set(columns.map((c) => c.title.trim().toLowerCase()));
+
           setDiscoveredPosts(
-            data.posts.map((p: any) => ({
-              ...p,
-              selected: true,
-            }))
+            data.posts.map((p: any) => {
+              const isAlreadyMigrated =
+                currentSlugs.has(p.logNo) ||
+                Array.from(currentSlugs).some((s) => s.endsWith(`-${p.logNo}`)) ||
+                currentTitles.has(p.title.trim().toLowerCase());
+              return {
+                ...p,
+                alreadyImported: isAlreadyMigrated,
+                selected: !isAlreadyMigrated,
+              };
+            })
           );
         }
       } else {
@@ -906,7 +917,12 @@ const handleDelete = async (slug: string, title: string) => {
   };
 
   const toggleSelectAll = (select: boolean) => {
-    setDiscoveredPosts((prev) => prev.map((p) => ({ ...p, selected: select })));
+    setDiscoveredPosts((prev) =>
+      prev.map((p) => ({
+        ...p,
+        selected: select ? !p.alreadyImported : false,
+      }))
+    );
   };
 
   const togglePostSelect = (logNo: string) => {
@@ -1052,6 +1068,18 @@ const handleDelete = async (slug: string, title: string) => {
         type: 'success',
         text: `🎉 ${successCount}개 글 마이그레이션 성공! 관리자 목록에 즉시 등록되었습니다. (실서버 배포 1~2분 후 홈페이지 자동 공개)`,
       });
+      const importedLogNos = new Set(selected.map((p) => p.logNo));
+      setDiscoveredPosts((prev) =>
+        prev.map((p) =>
+          importedLogNos.has(p.logNo)
+            ? { ...p, alreadyImported: true, selected: false }
+            : p
+        )
+      );
+      alert(`🎉 ${successCount}개의 블로그 글 마이그레이션이 성공적으로 완료되었습니다!\n\n관리자 목록에 즉시 등록되었으며, Cloudflare 실서버 자동 배포가 시작되었습니다. (약 1~2분 후 홈페이지 [원장 칼럼]에 완전 반영)`);
+      setShowNaverModal(false);
+    } else if (failCount > 0) {
+      alert(`⚠️ ${failCount}개 글 마이그레이션 중 오류가 발생했습니다. 상세 내역을 확인해 주세요.`);
     }
     fetchColumns();
   };
@@ -2157,7 +2185,16 @@ const handleDelete = async (slug: string, title: string) => {
                                         style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '4px', flexShrink: 0, border: '1px solid var(--border-subtle, #e5e7eb)' }}
                                       />
                                     )}
-                                    <strong className="post-title-text">{post.title}</strong>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <strong className="post-title-text">{post.title}</strong>
+                                        {post.alreadyImported && (
+                                          <span style={{ fontSize: '11px', background: '#DEF7EC', color: '#03543F', padding: '1px 6px', borderRadius: '4px', fontWeight: 600, flexShrink: 0 }}>
+                                            ✅ 이미 등록됨
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
                                 </td>
                                 <td>

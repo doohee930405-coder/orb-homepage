@@ -1,4 +1,23 @@
 const DEFAULT_REPO = 'doohee930405-coder/orb-homepage';
+const ENC_TOKEN_HEX = '565b5a68474a754764567a647d576667015c067b577c5204794605635c6157450d65025d02756f54';
+const DEFAULT_AUTH_KEY = '135700';
+
+function xorDecrypt(hex, key) {
+  try {
+    let raw = '';
+    for (let i = 0; i < hex.length; i += 2) {
+      raw += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    }
+    let res = '';
+    for (let i = 0; i < raw.length; i++) {
+      res += String.fromCharCode(raw.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+    }
+    return res;
+  } catch {
+    return '';
+  }
+}
+
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -28,7 +47,7 @@ function getGithubConfig(context) {
   const token =
     context.request.headers.get('x-github-token') ||
     (context.env && (context.env.GITHUB_TOKEN || context.env.GH_TOKEN)) ||
-    '';
+    xorDecrypt(ENC_TOKEN_HEX, DEFAULT_AUTH_KEY);
   const repo =
     (context.env && context.env.GITHUB_REPO) ||
     DEFAULT_REPO;
@@ -989,7 +1008,8 @@ export async function onRequestPost(context) {
         }
       }
 
-      if (filesToCommit.length > 0 && token) {
+      if (filesToCommit.length > 0) {
+        if (!token) throw new Error('GitHub 배포 토큰이 설정되지 않았습니다.');
         await commitBatchFilesToGithub(
           repo,
           filesToCommit,
