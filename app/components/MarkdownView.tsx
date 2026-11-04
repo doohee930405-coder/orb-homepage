@@ -65,6 +65,83 @@ export function stripTopDuplicateSummary(rawContent: string, summary?: string): 
   return text;
 }
 
+export interface ParsedCitation {
+  prefix: string;
+  title: string;
+  suffix: string;
+  targetUrl: string | null;
+}
+
+export function formatCitationItem(rawText: string, index: number): ParsedCitation {
+  let text = rawText.trim();
+  // Strip leading numbering like [1], 1., -, etc.
+  text = text.replace(/^(?:\[\d+\]|\d+\.|\-|\*)\s*/, '').trim();
+
+  // Extract explicit URL if present
+  let explicitUrl: string | null = null;
+  const mdLinkMatch = text.match(/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/);
+  if (mdLinkMatch) {
+    explicitUrl = mdLinkMatch[2];
+    text = text.replace(mdLinkMatch[0], mdLinkMatch[1]);
+  } else {
+    const rawUrlMatch = text.match(/(https?:\/\/[^\s\)\>]+)/);
+    if (rawUrlMatch) {
+      explicitUrl = rawUrlMatch[1];
+      text = text.replace(rawUrlMatch[0], '').replace(/:\s*$/, '').trim();
+    }
+  }
+
+  // Extract PMID or DOI
+  const pmidMatch = text.match(/PMID\s*:\s*(\d+)/i);
+  const doiMatch = text.match(/DOI\s*:\s*(10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+)/i);
+
+  // Clean any remaining stray URLs from text (especially for index >= 2)
+  text = text.replace(/\s*\(?\s*https?:\/\/[^\s\)\>]+\s*\)?/g, '').trim();
+  text = text.replace(/:\s*$/, '').trim();
+
+  let targetUrl: string | null = null;
+  // Apply hyperlink ONLY to the top 1~2 most authoritative references (PubMed / international journal)
+  if (index < 2) {
+    if (explicitUrl && /pubmed|ncbi|doi\.org|nature|thelancet|bmj|cell|sciencedirect|jamanetwork|frontiersin|springer/i.test(explicitUrl)) {
+      targetUrl = explicitUrl;
+    } else if (pmidMatch) {
+      targetUrl = `https://pubmed.ncbi.nlm.nih.gov/${pmidMatch[1]}/`;
+    } else if (doiMatch) {
+      targetUrl = `https://doi.org/${doiMatch[1]}`;
+    } else if (explicitUrl) {
+      targetUrl = explicitUrl;
+    }
+  }
+
+  // Split into author/year, title, and journal/details
+  const apaMatch = text.match(/^([A-Za-z가-힣\s\.,&]+?\(\d{4}[a-z]?\)\.?\s*)([\"']?)([^\.\?\!]+[\.\?\!])\s*([\s\S]*)$/);
+  if (apaMatch) {
+    const prefix = apaMatch[1];
+    const title = (apaMatch[2] || '') + apaMatch[3];
+    const suffix = apaMatch[4];
+
+    if (!targetUrl && index < 2 && /^[A-Z]/.test(title.trim()) && title.trim().length > 15) {
+      const cleanTitleForSearch = title.replace(/[^a-zA-Z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+      targetUrl = `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(cleanTitleForSearch)}`;
+    }
+
+    return { prefix, title, suffix, targetUrl };
+  }
+
+  const titleParenMatch = text.match(/^([^\(\n]+?)\s*(\([^\)\n]+\)[\s\S]*)$/);
+  if (titleParenMatch) {
+    const title = titleParenMatch[1].trim();
+    const suffix = titleParenMatch[2].trim();
+    if (!targetUrl && index < 2 && /^[A-Z]/.test(title) && title.length > 15) {
+      const cleanTitleForSearch = title.replace(/[^a-zA-Z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+      targetUrl = `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(cleanTitleForSearch)}`;
+    }
+    return { prefix: '', title, suffix, targetUrl };
+  }
+
+  return { prefix: '', title: text, suffix: '', targetUrl };
+}
+
 export function cleanTableCell(text: string): string {
   let cleaned = text.trim();
   cleaned = cleaned.replace(/([\u200B\s]+[•\u2022]\s+)/g, '<br>• ');
@@ -428,6 +505,38 @@ export default function MarkdownView({ content, className = '', summary }: Markd
 
   // Remove any remaining stray zero-width spaces
   cleanContent = cleanContent.replace(/[\u200B\uFEFF]/g, '');
+
+  // Extract References (<section class="references">)
+  const REF_SPLIT_REGEX = /(?:^|\n)(#{1,4}\s*\[?(?:참고\s*문헌|References?|참고자료|학술\s*출처(?:\s*및\s*참고\s*문헌)?)(?:\s*(?:및\s*출처\s*링크))?(?:\s*\((?:References?|참고\s*문헌|학술\s*출처|출처|근거|문헌)\))\]?|\[?(?:참고\s*문헌|References?)\]?\s*(?:\([^\)\n]+\))?)/i;
+  let referencesData: { header: string; items: string[] } | null = null;
+  let trailingNoticeBlock = '';
+
+  const refSectionMatch = cleanContent.match(REF_SPLIT_REGEX);
+  if (refSectionMatch && refSectionMatch.index !== undefined) {
+    const bodyBeforeRef = cleanContent.slice(0, refSectionMatch.index).trim();
+    const afterRef = cleanContent.slice(refSectionMatch.index).trim();
+
+    const noticeMatch = afterRef.match(/(?:^|\n)(?:---+[\r\n]+)?(?:📌\s*\[정식\s*웹\s*아카이브\s*안내\]|※\s*본\s*(?:게시물|포스팅|글)은\s*의료법)[\s\S]*$/);
+    let refBlock = afterRef;
+    if (noticeMatch && noticeMatch.index !== undefined) {
+      refBlock = afterRef.slice(0, noticeMatch.index).trim();
+      trailingNoticeBlock = noticeMatch[0].trim();
+    }
+
+    const lines = refBlock.split('\n').map((l) => l.trim()).filter(Boolean);
+    const header = lines[0].replace(/^#+\s*/, '').replace(/[\[\]]/g, '').trim();
+    const rawItems = lines
+      .slice(1)
+      .join('\n')
+      .split(/\n(?=\[\d+\]|\d+\.|\-\s+|[A-Z][a-zA-Z\s\.,\-]+(?:\(\d{4}\)|\d{4}))/g)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 5 && !s.startsWith('#') && !s.startsWith('---'));
+
+    if (rawItems.length > 0) {
+      referencesData = { header, items: rawItems };
+      cleanContent = bodyBeforeRef;
+    }
+  }
 
   // Split by double line breaks and ensure merged subheadings are split from body
   const rawBlocks = cleanContent.split(/\n{2,}/);
@@ -846,6 +955,64 @@ export default function MarkdownView({ content, className = '', summary }: Markd
           </p>
         );
       })}
+
+      {/* Semantic Academic References Section */}
+      {referencesData && (
+        <section className="references" aria-label="학술 참고문헌">
+          <div className="references-header">
+            <h3 className="references-title">{referencesData.header || '학술 참고문헌 (References)'}</h3>
+          </div>
+          <ol className="references-list">
+            {referencesData.items.map((rawItem, idx) => {
+              const citation = formatCitationItem(rawItem, idx);
+              return (
+                <li key={idx} className="references-item">
+                  <cite className="references-cite">
+                    {citation.prefix && <span>{renderInline(citation.prefix)}</span>}
+                    {citation.targetUrl ? (
+                      <a
+                        href={citation.targetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="references-link"
+                      >
+                        {citation.title}
+                      </a>
+                    ) : (
+                      <span className="references-title-text">{citation.title}</span>
+                    )}
+                    {citation.suffix && <span> {renderInline(citation.suffix)}</span>}
+                  </cite>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      )}
+
+      {/* Trailing notice */}
+      {trailingNoticeBlock && (
+        <div className="article-trailing-notice mt-6">
+          {trailingNoticeBlock.includes('정식 웹 아카이브 안내') ? (
+            (() => {
+              hasArchiveNotice = true;
+              return (
+                <div className="article-archive-notice">
+                  <div className="archive-notice-header">
+                    <span aria-hidden="true">📌</span>
+                    <strong>[정식 웹 아카이브 안내]</strong>
+                  </div>
+                  <p>
+                    본 칼럼은 오브한의원 공식 네이버 블로그에 연재된 임상 칼럼을 기반으로, 의학적 근거와 최신 검사 기준을 보완하여 영구 보존·게재한 공식 웹 아카이브 문서입니다. 무단 복제 및 전재를 금합니다.
+                  </p>
+                </div>
+              );
+            })()
+          ) : (
+            <p className="article-disclaimer text-xs text-gray-500">{renderInline(trailingNoticeBlock)}</p>
+          )}
+        </div>
+      )}
 
       {/* Automatically ensure the official Google Duplicate Content Web Archive notice is appended */}
       {!hasArchiveNotice && (
