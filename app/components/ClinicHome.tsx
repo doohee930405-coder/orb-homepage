@@ -142,7 +142,7 @@ const copy = {
         question: "자율신경실조증 치료 기간과 내원 주기는 보통 어떻게 되나요?",
         answerLead: "초기 집중 치료기 4~8주 동안은 주 1~2회 내원을 권장하며, 이후 점진적으로 주기를 넓혀갑니다.",
         answerLeadRest: "두근거림, 불면, 두중감, 감각과민 등 급성 신체화 증상이 심한 초기 4~8주 동안은 주 1~2회 내원하여 뇌신경 추나요법과 약침 치료를 병행하고 1:1 맞춤 한약을 복용합니다.",
-        answerDetail: "신경계 항상성이 안정권에 접어들면 내원 주기를 격주 또는 월 1회로 점진적으로 넓혀, 일상생활 속에서 스스로 활력을 유지하고 재발하지 않도록 돕습니다.",
+        answerDetail: "신경계 항상성이 안정권에 접어들면 내원 주기를 격주 또는 월 1회로 점진적으로 넓혀, 일상생활 속에서 스스로 활력을 유지하고 재발하지 않도록 돕습니다. 단, 이는 표준적인 가이드이며 환자분의 상태에 따라 처방되는 치료의 종류와 내원 빈도는 달라질 수 있습니다. 가령 원거리에서 방문시, 주기적인 내원이 어려우신만큼 한약 치료 단독으로 진행하며, 생활관리를 비대면으로 도와드릴 수 있습니다.",
       },
       {
         question: "검사 및 치료 비용은 어떻게 되나요?",
@@ -341,7 +341,7 @@ const copy = {
         question: "What is the expected treatment duration and visit frequency?",
         answerLead: "An initial intensive stabilization phase of 4 to 8 weeks typically requires 1 to 2 visits weekly, transitioning to maintenance.",
         answerLeadRest: "During acute symptoms (palpitations, insomnia, heavy head sensations, sensory overload), targeted neuro-structural Chuna, pharmacopuncture, and tailored herbal medicine rebuild core homeostasis.",
-        answerDetail: "Once biometric indicators and brainwave patterns normalize, visit intervals are expanded to biweekly or monthly to ensure long-term neural resilience.",
+        answerDetail: "Once biometric indicators and brainwave patterns normalize, visit intervals are expanded to biweekly or monthly to ensure long-term neural resilience. Note that this is a general guideline; for long-distance patients who cannot visit regularly, customized herbal medicine monotherapy can be administered alongside remote lifestyle management support.",
       },
       {
         question: "What are the examination and treatment costs?",
