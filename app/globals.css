@@ -450,6 +450,7 @@ p {
 }
 
 .section-heading h2,
+.treatment-section-heading,
 .visit-intro h2,
 .philosophy-lead h2 {
   color: var(--cocoa);
@@ -457,6 +458,7 @@ p {
 }
 
 .section-heading h2 span,
+.treatment-section-heading span,
 .visit-intro h2 span,
 .philosophy-lead h2 span {
   display: block;
@@ -519,6 +521,7 @@ p {
   font-weight: 600;
 }
 
+.treatment-card-copy h2,
 .treatment-card-copy h3 {
   color: var(--cocoa);
   font-size: clamp(1.55rem, 2.4vw, 1.9rem);
@@ -813,6 +816,16 @@ p {
 .clinical-faq-block .faq-accordion-item[data-open="true"] {
   border-color: #d8d2c7;
   box-shadow: 0 8px 24px rgba(44, 26, 20, 0.06);
+}
+
+.clinical-faq-block .faq-accordion-heading,
+h3.faq-accordion-heading {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  display: block;
 }
 
 .clinical-faq-block .faq-accordion-summary {
@@ -2045,6 +2058,7 @@ p {
   }
 
   .section-heading h2,
+  .treatment-section-heading,
   .visit-intro h2,
   .philosophy-lead h2 {
     font-size: clamp(1.75rem, 8vw, 2rem);
@@ -2069,6 +2083,7 @@ p {
     padding: 25px 24px 27px;
   }
 
+  .treatment-card-copy h2,
   .treatment-card-copy h3 {
     font-size: 1.55rem;
   }
@@ -7403,6 +7418,7 @@ p {
     justify-content: center;
   }
 
+  .treatment-card-primary .treatment-card-copy h2,
   .treatment-card-primary .treatment-card-copy h3 {
     font-size: clamp(1.35rem, 1.8vw, 1.65rem);
     margin-top: 8px;

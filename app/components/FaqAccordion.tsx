@@ -38,21 +38,23 @@ export default function FaqAccordion({
             className={`faq-accordion-item ${isOpen ? 'is-open' : 'is-collapsed'}`}
             data-open={isOpen ? 'true' : 'false'}
           >
-            <button
-              type="button"
-              className="faq-accordion-summary"
-              onClick={() => toggle(idx)}
-              aria-expanded={isOpen}
-              aria-controls={aId}
-              id={`faq-btn-${idx}`}
-            >
-              <h2 className="faq-question-text" id={qId}>
-                Q. {faq.question.replace(/^Q\.\s*/i, '')}
-              </h2>
-              <span className="faq-arrow" aria-hidden="true">
-                ▼
-              </span>
-            </button>
+            <h3 className="faq-accordion-heading">
+              <button
+                type="button"
+                className="faq-accordion-summary"
+                onClick={() => toggle(idx)}
+                aria-expanded={isOpen}
+                aria-controls={aId}
+                id={`faq-btn-${idx}`}
+              >
+                <span className="faq-question-text" id={qId}>
+                  Q. {faq.question.replace(/^Q\.\s*/i, '')}
+                </span>
+                <span className="faq-arrow" aria-hidden="true">
+                  ▼
+                </span>
+              </button>
+            </h3>
             <div
               id={aId}
               className={`faq-accordion-content ${isOpen ? 'is-expanded' : 'is-collapsed'}`}

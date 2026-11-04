@@ -445,17 +445,21 @@ export default function ClinicHome({
         <div className="hero-content" data-inview>
           <p className="eyebrow">{text.kicker}</p>
           <h1 className="hero-title">
-            <span className="sr-only">마곡 자율신경실조증 및 뇌파검사 특화 클리닉, 오브한의원</span>
-            <span>{text.title}</span>
-            {text.branch ? <span className="hero-branch">{text.branch}</span> : null}
+            <span className="sr-only">
+              {isEnglish
+                ? 'Magok Autonomic Dysregulation & QEEG Clinic, ORB'
+                : '마곡 자율신경실조증 및 뇌파검사 특화 클리닉, 오브한의원'}
+            </span>
+            <span aria-hidden="true">{text.title}</span>
+            {text.branch ? <span className="hero-branch" aria-hidden="true">{text.branch}</span> : null}
           </h1>
-          <h2 className="hero-lede">
+          <p className="hero-lede">
             {text.heroBody.split('\n').map((line, idx) => (
               <span key={idx} className="hero-lede-line">
                 {line}
               </span>
             ))}
-          </h2>
+          </p>
         </div>
         <div className="hero-visual hero-visual-brand" aria-label="ORB ARCHIVE">
           <div className="hero-brand-card">
@@ -568,11 +572,11 @@ export default function ClinicHome({
         <div className="section-heading split-heading">
           <div>
             <p className="eyebrow">{text.treatmentEyebrow}</p>
-            <h2>
+            <div className="treatment-section-heading">
               {text.treatmentTitle.split('\n').map((line) => (
                 <span key={line}>{line}</span>
               ))}
-            </h2>
+            </div>
           </div>
           <p>{text.treatmentBody}</p>
         </div>
@@ -600,7 +604,7 @@ export default function ClinicHome({
                       </span>
                     )}
                   </div>
-                  <h3 className="treatment-card-title">{treatment.title[locale]}</h3>
+                  <h2 className="treatment-card-title">{treatment.title[locale]}</h2>
                   <p className="treatment-card-desc">{treatment.summary[locale]}</p>
                   <b className="treatment-card-link">
                     {text.detail}
