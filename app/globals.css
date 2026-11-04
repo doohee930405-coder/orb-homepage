@@ -871,43 +871,52 @@ h3.faq-accordion-heading {
   color: var(--cocoa);
 }
 
+/* Direct Child Semantic Answer Paragraphs (Machine/AEO direct inheritance) */
+.clinical-faq-block .faq-accordion-item p.faq-answer-lead,
+.clinical-faq-block .faq-accordion-item p.faq-answer-detail,
 .clinical-faq-block .faq-accordion-content {
   padding: 0 24px 0 24px;
   max-height: 0;
   opacity: 0;
   overflow: hidden;
+  margin: 0;
+  word-break: keep-all;
   border-top: 1px dashed transparent;
-  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, padding 0.35s ease, border-color 0.25s ease;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, padding 0.35s ease, margin 0.25s ease, border-color 0.25s ease;
   /* CRITICAL: Never display: none - keeps content 100% accessible to SEO/AEO crawlers in the DOM */
 }
 
-.clinical-faq-block .faq-accordion-content.is-expanded {
-  max-height: 800px;
+.clinical-faq-block .faq-accordion-item.is-open p.faq-answer-lead,
+.clinical-faq-block .faq-accordion-item[data-open="true"] p.faq-answer-lead,
+.clinical-faq-block .faq-accordion-content.is-expanded p.faq-answer-lead {
+  max-height: 500px;
   opacity: 1;
-  padding: 16px 24px 22px 24px;
+  padding: 16px 24px 0 24px;
+  margin: 0 0 10px 0;
   border-top-color: rgba(52, 38, 31, 0.08);
-}
-
-.clinical-faq-block .faq-accordion-content p.faq-answer-lead {
   color: var(--cocoa);
   font-size: 0.98rem;
   line-height: 1.82;
-  margin: 0 0 10px 0;
-  word-break: keep-all;
 }
 
+.clinical-faq-block .faq-accordion-item.is-open p.faq-answer-lead strong,
+.clinical-faq-block .faq-accordion-item[data-open="true"] p.faq-answer-lead strong,
 .clinical-faq-block .faq-accordion-content p.faq-answer-lead strong {
   color: var(--cocoa);
   font-weight: 700;
   background: linear-gradient(180deg, transparent 62%, rgba(184, 151, 126, 0.25) 62%);
 }
 
-.clinical-faq-block .faq-accordion-content p.faq-answer-detail {
+.clinical-faq-block .faq-accordion-item.is-open p.faq-answer-detail,
+.clinical-faq-block .faq-accordion-item[data-open="true"] p.faq-answer-detail,
+.clinical-faq-block .faq-accordion-content.is-expanded p.faq-answer-detail {
+  max-height: 800px;
+  opacity: 1;
+  padding: 0 24px 22px 24px;
+  margin: 0;
   color: var(--cocoa-soft);
   font-size: 0.95rem;
   line-height: 1.82;
-  margin: 0;
-  word-break: keep-all;
   white-space: pre-line;
 }
 
@@ -922,17 +931,19 @@ h3.faq-accordion-heading {
     line-height: 1.5;
   }
 
-  .clinical-faq-block .faq-accordion-content.is-expanded {
-    padding: 14px 18px 18px 18px;
-  }
-
-  .clinical-faq-block .faq-accordion-content p.faq-answer-lead {
+  .clinical-faq-block .faq-accordion-item.is-open p.faq-answer-lead,
+  .clinical-faq-block .faq-accordion-item[data-open="true"] p.faq-answer-lead,
+  .clinical-faq-block .faq-accordion-content.is-expanded p.faq-answer-lead {
+    padding: 14px 18px 0 18px;
     font-size: 0.93rem;
     line-height: 1.75;
     margin-bottom: 8px;
   }
 
-  .clinical-faq-block .faq-accordion-content p.faq-answer-detail {
+  .clinical-faq-block .faq-accordion-item.is-open p.faq-answer-detail,
+  .clinical-faq-block .faq-accordion-item[data-open="true"] p.faq-answer-detail,
+  .clinical-faq-block .faq-accordion-content.is-expanded p.faq-answer-detail {
+    padding: 0 18px 18px 18px;
     font-size: 0.9rem;
     line-height: 1.75;
   }

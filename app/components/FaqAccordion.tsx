@@ -55,17 +55,16 @@ export default function FaqAccordion({
                 </span>
               </button>
             </h3>
-            <div
+            <p
               id={aId}
-              className={`faq-accordion-content ${isOpen ? 'is-expanded' : 'is-collapsed'}`}
-              role="region"
+              className={`faq-answer-lead ${isOpen ? 'is-expanded' : 'is-collapsed'}`}
               aria-labelledby={qId}
             >
-              <p className="faq-answer-lead">
-                <strong>{faq.answerLead}</strong> {faq.answerLeadRest}
-              </p>
-              <p className="faq-answer-detail">{faq.answerDetail}</p>
-            </div>
+              <strong>{faq.answerLead}</strong> {faq.answerLeadRest}
+            </p>
+            <p className={`faq-answer-detail ${isOpen ? 'is-expanded' : 'is-collapsed'}`}>
+              {faq.answerDetail}
+            </p>
           </div>
         );
       })}
