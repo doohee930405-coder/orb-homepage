@@ -8,6 +8,47 @@ interface MarkdownViewProps {
   summary?: string;
 }
 
+
+export interface InternalLinkRule {
+  key: string;
+  pattern: RegExp;
+  url: string;
+  title: string;
+}
+
+export const CLINICAL_INTERNAL_LINK_RULES: InternalLinkRule[] = [
+  {
+    key: 'qeeg',
+    pattern: /(?:다채널\s*습식\s*)?(?:정량화\s*뇌파\s*검사|정량뇌파\s*검사|정량화\s*뇌파|qEEG\s*뇌파검사|qEEG\s*검사|qEEG)/i,
+    url: '/#treatments',
+    title: '오브한의원 마곡점 다채널 습식 정량화 뇌파검사(qEEG) 진료 안내',
+  },
+  {
+    key: 'dysautonomia',
+    pattern: /(?:자율신경실조증|자율신경계\s*불균형|자율신경\s*기능이상|자율신경장애)/i,
+    url: '/#treatments',
+    title: '오브한의원 마곡점 자율신경실조증 특화 클리닉 안내',
+  },
+  {
+    key: 'brainfog',
+    pattern: /(?:브레인포그|두중감|머리\s*멍함)/i,
+    url: '/#treatments',
+    title: '오브한의원 브레인포그 및 만성피로 신경계 원인 치료 안내',
+  },
+  {
+    key: 'chuna',
+    pattern: /(?:뇌신경\s*추나요법|뇌신경\s*추나|상부경추\s*추나|추나요법|추나\s*치료)/i,
+    url: '/#treatments',
+    title: '오브한의원 마곡점 뇌신경·구조 정렬 추나요법 안내',
+  },
+  {
+    key: 'booking',
+    pattern: /(?:진료\s*예약|온라인\s*예약|상담\s*예약)/i,
+    url: '/#contact',
+    title: '오브한의원 마곡점 진료 예약 및 내원 안내',
+  },
+];
+
 const NAVER_PLACE_SEARCH_URL =
   'https://map.naver.com/p/search/%EC%98%A4%EB%B8%8C%ED%95%9C%EC%9D%98%EC%9B%90%20%EB%A7%88%EA%B3%A1%EC%A0%90';
 
@@ -551,10 +592,79 @@ export default function MarkdownView({ content, className = '', summary }: Markd
     }
   }
 
-  const renderInline = (text: string): React.ReactNode => {
+    const linkedKeywords = new Set<string>();
+
+  const renderTextWithInternalLinks = (
+    textChunk: string,
+    keyPrefix: string,
+    keyCounter: { count: number }
+  ): React.ReactNode[] => {
+    if (!textChunk) return [];
+
+    const result: React.ReactNode[] = [];
+    let current = textChunk;
+
+    while (current.length > 0) {
+      let earliestMatch: {
+        index: number;
+        matchedText: string;
+        rule: InternalLinkRule;
+      } | null = null;
+
+      for (const rule of CLINICAL_INTERNAL_LINK_RULES) {
+        if (linkedKeywords.has(rule.key)) continue;
+
+        const m = current.match(rule.pattern);
+        if (m && m.index !== undefined) {
+          if (!earliestMatch || m.index < earliestMatch.index) {
+            earliestMatch = {
+              index: m.index,
+              matchedText: m[0],
+              rule,
+            };
+          }
+        }
+      }
+
+      if (!earliestMatch) {
+        result.push(current);
+        break;
+      }
+
+      if (earliestMatch.index > 0) {
+        result.push(current.substring(0, earliestMatch.index));
+      }
+
+      linkedKeywords.add(earliestMatch.rule.key);
+      result.push(
+        <a
+          key={`${keyPrefix}-ilink-${keyCounter.count++}`}
+          href={earliestMatch.rule.url}
+          className="article-internal-keyword-link"
+          title={earliestMatch.rule.title}
+        >
+          {earliestMatch.matchedText}
+        </a>
+      );
+
+      current = current.substring(
+        earliestMatch.index + earliestMatch.matchedText.length
+      );
+    }
+
+    return result;
+  };
+
+  const renderInline = (text: string, allowInternalLinks: boolean = true): React.ReactNode => {
     const parts: React.ReactNode[] = [];
     let remaining = text;
     let key = 0;
+    const counter = { count: 0 };
+
+    const handleTextChunk = (chunk: string): React.ReactNode[] => {
+      if (!allowInternalLinks) return [chunk];
+      return renderTextWithInternalLinks(chunk, `chunk-${key++}`, counter);
+    };
 
     // Pattern for inline elements: match image first ![alt](url), then links [text](url), **bold**, *italic*, `code`, <br>
     const inlineRegex = /(!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|<u>[\s\S]*?<\/u>|<(?:b|strong)\b[^>]*>[\s\S]*?<\/(?:b|strong)>|<(?:i|em)\b[^>]*>[\s\S]*?<\/(?:i|em)>|\*[^*]+\*|`[^`]+`|<br\s*\/?>)/i;
@@ -562,12 +672,12 @@ export default function MarkdownView({ content, className = '', summary }: Markd
     while (remaining.length > 0) {
       const match = remaining.match(inlineRegex);
       if (!match || match.index === undefined) {
-        parts.push(remaining);
+        parts.push(...handleTextChunk(remaining));
         break;
       }
 
       if (match.index > 0) {
-        parts.push(remaining.substring(0, match.index));
+        parts.push(...handleTextChunk(remaining.substring(0, match.index)));
       }
 
       const token = match[0];
@@ -805,7 +915,7 @@ export default function MarkdownView({ content, className = '', summary }: Markd
                 <thead>
                   <tr>
                     {headerCells.map((h, hIdx) => (
-                      <th key={hIdx}>{renderInline(h)}</th>
+                      <th key={hIdx}>{renderInline(h, false)}</th>
                     ))}
                   </tr>
                 </thead>
@@ -831,7 +941,7 @@ export default function MarkdownView({ content, className = '', summary }: Markd
 
         // Headings
         if (trimmed.startsWith('## ')) {
-          return <h2 key={index} className="article-h2 text-xl font-bold mt-10 mb-4">{renderInline(trimmed.replace(/^##\s+/, ''))}</h2>;
+          return <h2 key={index} className="article-h2 text-xl font-bold mt-10 mb-4">{renderInline(trimmed.replace(/^##\s+/, ''), false)}</h2>;
         }
         if (trimmed.startsWith('### ')) {
           const headingText = trimmed.replace(/^###\s+/, '');
@@ -840,12 +950,12 @@ export default function MarkdownView({ content, className = '', summary }: Markd
               key={index}
               className={`article-h3 text-lg font-semibold mt-6 mb-3 ${inRoutineSection ? 'article-routine-heading' : ''}`}
             >
-              {renderInline(headingText)}
+              {renderInline(headingText, false)}
             </h3>
           );
         }
         if (trimmed.startsWith('#### ')) {
-          return <h4 key={index} className="article-h4">{renderInline(trimmed.replace(/^####\s+/, ''))}</h4>;
+          return <h4 key={index} className="article-h4">{renderInline(trimmed.replace(/^####\s+/, ''), false)}</h4>;
         }
 
         // Callout or Blockquote

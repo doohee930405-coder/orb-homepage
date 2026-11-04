@@ -59,6 +59,7 @@ const copy = {
         subtitle: '다채널 습식 뇌파(qEEG) & 심박변이도(HRV) 자율신경 동시 검사',
         desc: '두피 핵심 전극 부위에 전도성 겔을 주입하고 정밀 센서를 부착하여, 뇌 피질에서 방출되는 마이크로볼트(μV) 미세 신호와 심박변이도(HRV)를 왜곡 없이 수집합니다. 만성피로와 수면장애, 이유 없는 가슴 두근거림으로 이어지는 교감신경 과항진 상태를 객관적 수치로 포착합니다.',
         image: '/images/clinic/naver-qeeg-wide.webp',
+        imageAlt: '마곡 오브한의원 전두희 원장의 19채널 습식 정량화 뇌파검사(qEEG) 및 HRV 자율신경 검사 측정 모습',
         imagePosition: 'center 25%',
         tags: ['#습식_qEEG_뇌파검사', '#HRV_자율신경검사', '#가슴두근거림_수면장애'],
       },
@@ -69,6 +70,7 @@ const copy = {
         subtitle: '3차원 뇌기능 지형도(3D Brain Map) & Normative DB Z-Score 판독',
         desc: '수집된 뇌파 데이터를 주파수 대역(델타, 세타, 알파, 베타, 감마)별로 디지털 정량 분석합니다. 수만 건의 표준 데이터베이스와 대조하여, 정신과 약을 먹어도 해결되지 않던 머리 멍함(브레인포그)과 가슴 두근거림, 불안·초조의 실체를 뇌 신경망 과열(붉은색)과 기능 저하(푸른색)의 3차원 입체 지도로 시각화합니다.',
         image: '/images/clinic/qeeg-brainmap-3d.png',
+        imageAlt: '마곡 오브한의원 정량뇌파 3D 입체 뇌기능 지형도(3D Brain Map) 및 Normative DB Z-score 편차 분석 화면',
         tags: ['#머리멍함_브레인포그', '#Normative_DB_Zscore', '#3D_뇌기능지형도'],
       },
       {
@@ -78,6 +80,7 @@ const copy = {
         subtitle: '뇌신경-자율신경-체형 3축 연계 원인 치료',
         desc: '분석된 뇌파 및 자율신경 데이터를 바탕으로, 정신과 약 부작용 우려나 내성 걱정 없이 뇌 중추 과열을 식히고 머리 맑음을 되찾아주는 맞춤 한약, 상부 경추와 두개골 긴장을 풀어 뇌혈류와 뇌척수액 순환을 돕는 뇌신경 추나요법, 만성피로와 불면을 다스리는 자율신경 약침을 1:1 복합 처방합니다.',
         image: '/images/clinic/naver-decoction-wide.webp',
+        imageAlt: '마곡 오브한의원 전두희 원장의 뇌신경 안정 맞춤 치료한약 조제 및 뇌신경 추나요법 원인 치료',
         tags: ['#브레인포그_맞춤한약', '#뇌신경추나_상부경추', '#정신과약부작용_내성완화'],
       },
     ],
@@ -265,9 +268,10 @@ const copy = {
         step: '02',
         phase: 'STEP 02',
         title: 'Quantitative Brain Function Analysis',
-        subtitle: '3D Brain Mapping & Z-Score Analysis',
-        desc: 'Digitally decomposing raw signals into frequency bands (Delta, Theta, Alpha, Beta) and comparing against a vast normative database to visualize hyperexcitability (red) and slowing (blue).',
+        subtitle: '3D Brain Mapping & Normative DB Z-Score Interpretation',
+        desc: 'Digital decomposition across frequency bands compared against normative populations, localizing chronic fatigue and brain fog on 3D topographic maps.',
         image: '/images/clinic/qeeg-brainmap-3d.png',
+        imageAlt: '3D quantitative EEG brain mapping and Normative database Z-score analysis at ORB Clinic Magok',
         tags: ['#Normative_DB', '#3D_BrainMap', '#Z_score_Deviations'],
       },
       {
@@ -277,6 +281,7 @@ const copy = {
         subtitle: 'Trimodal Neuro-Autonomic-Structural Treatment',
         desc: 'Deploying individualized herbal formulas to cool down cortical overdrive, upper-cervical Chuna manual therapy to unblock CSF flow, and acupoint pharmacopuncture to stabilize autonomic ganglia.',
         image: '/images/clinic/naver-decoction-wide.webp',
+        imageAlt: 'Custom neuro-stabilizing herbal medicine preparation and cranial Chuna therapy by Director Doo-hee Jeon at ORB Clinic Magok',
         tags: ['#Neuro_Fatigue_Herbs', '#UpperCervical_Chuna', '#Autonomic_Homeostasis'],
       },
     ],
@@ -543,7 +548,7 @@ export default function ClinicHome({
               <div className="protocol-image-wrap">
                 <img
                   src={step.image}
-                  alt={step.title}
+                  alt={'imageAlt' in step && step.imageAlt ? (step.imageAlt as string) : step.title}
                   className="protocol-image"
                   style={'imagePosition' in step && step.imagePosition ? { objectPosition: step.imagePosition } : undefined}
                   loading="lazy"

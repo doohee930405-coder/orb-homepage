@@ -101,8 +101,8 @@ export const treatments: Treatment[] = [
       en: 'No single test result determines a diagnosis. Sleep, fatigue, concentration, physical symptoms, and test findings are reviewed together when discussing care.',
     },
     imageAlt: {
-      ko: '오브한의원 정량뇌파검사 장면',
-      en: 'Quantitative EEG assessment at ORB Korean Medicine Clinic',
+      ko: '마곡 오브한의원 전두희 대표원장의 다채널 습식 정량화 뇌파검사(qEEG) 및 자율신경계 정밀 진료 모습',
+      en: 'Medical Director Doo-hee Jeon performing multichannel wet QEEG and autonomic nervous system assessment at ORB Clinic Magok',
     },
     concerns: {
       ko: [
@@ -168,8 +168,8 @@ export const treatments: Treatment[] = [
       en: 'Care considers not only where pain is felt, but also onset, movement, daily posture, and recovery pattern. Acupuncture, pharmacopuncture, Chuna, and daily guidance may be discussed after assessment.',
     },
     imageAlt: {
-      ko: '오브한의원 통증·추나 진료 및 상담 장면',
-      en: 'Pain and Chuna consultation at ORB Korean Medicine Clinic',
+      ko: '마곡 오브한의원 전두희 대표원장의 상부경추 교정 및 뇌신경 추나요법 진료 모습',
+      en: 'Upper-cervical neuro-structural Chuna manual therapy by Medical Director Doo-hee Jeon at ORB Clinic Magok',
     },
     concerns: {
       ko: ['목·어깨·허리 통증', '디스크·협착증 관련 불편', '관절 가동 범위 제한', '교통사고 후 지속되는 불편감'],
@@ -230,8 +230,8 @@ export const treatments: Treatment[] = [
       en: 'Extreme calorie restriction disrupts autonomic homeostasis and triggers rebound weight gain. We integrate personalized metabolic herbs, Quantum Fit microwave lifting (sharing the same technology as ONDA lifting), and targeted Acurex Line pharmacopuncture to achieve sustainable, sculpted body contours.',
     },
     imageAlt: {
-      ko: '오브한의원 퀀텀핏(온다 리프팅 동일 기술) 및 아큐렉스 라인약침 끝내는 다이어트 솔루션',
-      en: 'Quantum Fit microwave lifting and Acurex Line pharmacopuncture at ORB Korean Medicine Clinic',
+      ko: '마곡 오브한의원 전두희 원장의 퀀텀핏 마이크로웨이브 리프팅 및 아큐렉스 감량 약침 다이어트 시술',
+      en: 'Quantum Fit microwave slimming lifting and Acurex herbal pharmacopuncture care at ORB Clinic Magok',
     },
     concerns: {
       ko: [
@@ -311,8 +311,8 @@ export const treatments: Treatment[] = [
       en: 'Body thermal distribution directly reflects the condition of the autonomic nervous system and neural circulation. We visualize imbalances such as facial flushing, cold extremities, and unexplained numbness with infrared thermography, guiding restorative herbal medicine and pharmacopuncture.',
     },
     imageAlt: {
-      ko: '오브한의원 적외선체열검사(DITI)를 통한 열대사장애 및 신경 분절 체열 진단',
-      en: 'DITI thermography diagnostic scan for heat metabolism and neural segment disorders at ORB Korean Medicine Clinic',
+      ko: '마곡 오브한의원 전두희 원장의 적외선 체열진단(DITI)을 통한 자율신경실조증 및 열대사장애 검사',
+      en: 'Infrared DITI thermography examination for autonomic dysregulation and heat metabolism at ORB Clinic Magok',
     },
     concerns: {
       ko: [
@@ -378,13 +378,13 @@ export const treatments: Treatment[] = [
 ];
 
 export const gallery = [
-  { image: 'reception', label: { ko: '안내 데스크', en: 'Reception' }, alt: { ko: '오브한의원 안내 데스크 전경', en: 'Reception desk at ORB Korean Medicine Clinic' } },
-  { image: 'hero-lobby', label: { ko: '로비와 대기 공간', en: 'Lobby & waiting' }, alt: { ko: '오브한의원 로비와 대기 공간', en: 'Lobby and waiting area at ORB Korean Medicine Clinic' } },
-  { image: 'media-wall', label: { ko: '대기 공간', en: 'Waiting area' }, alt: { ko: '오브한의원 대기 공간과 안내 화면', en: 'Waiting area and information display at ORB Korean Medicine Clinic' } },
-  { image: 'logo-reception', label: { ko: '브랜드 월', en: 'Brand wall' }, alt: { ko: '오브한의원 로고가 있는 접수 공간', en: 'ORB logo wall and reception area' } },
-  { image: 'corridor', label: { ko: '진료실 복도', en: 'Care corridor' }, alt: { ko: '오브한의원 독립 진료실로 이어지는 복도', en: 'Corridor leading to private care rooms' } },
-  { image: 'consult-room', label: { ko: '진료실', en: 'Consultation room' }, alt: { ko: '오브한의원 진료 및 검사실', en: 'Consultation and examination room' } },
-  { image: 'treatment-room', label: { ko: '치료 공간', en: 'Treatment rooms' }, alt: { ko: '오브한의원 독립 치료 공간', en: 'Private treatment rooms at ORB' } },
+  { image: 'reception', label: { ko: '안내 데스크', en: 'Reception' }, alt: { ko: '마곡 오브한의원 전두희 원장 진료실 및 쾌적한 2층 안내 데스크 전경', en: 'Reception desk and entrance at ORB Korean Medicine Clinic Magok' } },
+  { image: 'hero-lobby', label: { ko: '로비와 대기 공간', en: 'Lobby & waiting' }, alt: { ko: '마곡나루역 오브한의원 편안한 환자 전용 라운지 로비 및 대기 공간', en: 'Comfortable patient lounge and waiting area at ORB Clinic Magok' } },
+  { image: 'media-wall', label: { ko: '대기 공간', en: 'Waiting area' }, alt: { ko: '마곡 오브한의원 미디어 월 및 자율신경실조증·정량뇌파 임상 안내 디스플레이', en: 'Media display and clinical guide wall at ORB Clinic Magok' } },
+  { image: 'logo-reception', label: { ko: '브랜드 월', en: 'Brand wall' }, alt: { ko: '마곡 오브한의원(ORBMED) 공식 브랜드 로고 및 원내 접수 데스크', en: 'Official ORBMED brand wall and reception at ORB Clinic Magok' } },
+  { image: 'corridor', label: { ko: '진료실 복도', en: 'Care corridor' }, alt: { ko: '마곡 오브한의원 프라이빗 1:1 집중 치료실 및 뇌파검사실로 이어지는 회랑', en: 'Private care corridor leading to QEEG diagnostic rooms at ORB Clinic Magok' } },
+  { image: 'consult-room', label: { ko: '진료실', en: 'Consultation room' }, alt: { ko: '마곡 오브한의원 전두희 대표원장의 1:1 심층 진료 상담실 및 정밀 검진실', en: 'In-depth consultation and diagnostic room of Director Doo-hee Jeon at ORB Clinic Magok' } },
+  { image: 'treatment-room', label: { ko: '치료 공간', en: 'Treatment rooms' }, alt: { ko: '마곡 오브한의원 뇌신경추나 및 자율신경 약침 치료를 위한 독립 1인 치료실', en: 'Individual private treatment room for neuro-cervical Chuna and acupuncture at ORB Clinic Magok' } },
 ] as const;
 
 export function getTreatment(slug: string) {

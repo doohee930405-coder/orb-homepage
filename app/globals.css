@@ -6285,6 +6285,25 @@ h3.faq-accordion-heading {
   border-color: var(--cocoa);
 }
 
+/* Medical Column Semantic Keyword Internal Link (SEO & AEO Topic Clustering) */
+.article-internal-keyword-link {
+  color: var(--cocoa);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(169, 120, 74, 0.45);
+  text-underline-offset: 3.5px;
+  text-decoration-thickness: 1.5px;
+  border-radius: 2px;
+  padding: 0 1px;
+  transition: color 0.18s ease, text-decoration-color 0.18s ease, background-color 0.18s ease;
+}
+
+.article-internal-keyword-link:hover {
+  color: #a9784a;
+  text-decoration-color: #a9784a;
+  background-color: rgba(169, 120, 74, 0.08);
+}
+
 .article-btn-qeeg {
   background: var(--cocoa);
   color: var(--ivory) !important;
