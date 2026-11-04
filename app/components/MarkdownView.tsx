@@ -74,8 +74,8 @@ export interface ParsedCitation {
 
 export function formatCitationItem(rawText: string, index: number): ParsedCitation {
   let text = rawText.trim();
-  // Strip leading numbering like [1], 1., -, etc.
-  text = text.replace(/^(?:\[\d+\]|\d+\.|\-|\*)\s*/, '').trim();
+  // Strip leading numbering like [1], 1., -, *, •, etc.
+  text = text.replace(/^(?:\[\d+\]|\d+\.|\-|\*|•)\s*/, '').trim();
 
   // Extract explicit URL if present
   let explicitUrl: string | null = null;
@@ -102,7 +102,7 @@ export function formatCitationItem(rawText: string, index: number): ParsedCitati
   let targetUrl: string | null = null;
   // Apply hyperlink ONLY to the top 1~2 most authoritative references (PubMed / international journal)
   if (index < 2) {
-    if (explicitUrl && /pubmed|ncbi|doi\.org|nature|thelancet|bmj|cell|sciencedirect|jamanetwork|frontiersin|springer/i.test(explicitUrl)) {
+    if (explicitUrl && /pubmed|ncbi|doi\.org|nature|thelancet|bmj|cell|sciencedirect|jamanetwork|frontiersin|springer|tandfonline|elifesciences/i.test(explicitUrl)) {
       targetUrl = explicitUrl;
     } else if (pmidMatch) {
       targetUrl = `https://pubmed.ncbi.nlm.nih.gov/${pmidMatch[1]}/`;
@@ -507,11 +507,11 @@ export default function MarkdownView({ content, className = '', summary }: Markd
   cleanContent = cleanContent.replace(/[\u200B\uFEFF]/g, '');
 
   // Extract References (<section class="references">)
-  const REF_SPLIT_REGEX = /(?:^|\n)(#{1,4}\s*\[?(?:참고\s*문헌|References?|참고자료|학술\s*출처(?:\s*및\s*참고\s*문헌)?)(?:\s*(?:및\s*출처\s*링크))?(?:\s*\((?:References?|참고\s*문헌|학술\s*출처|출처|근거|문헌)\))\]?|\[?(?:참고\s*문헌|References?)\]?\s*(?:\([^\)\n]+\))?)/i;
+  const REF_HEADER_REGEX = /(?:^|\n)(#{1,4}\s*)?(?:\[?\s*(?:참고\s*문헌|References?|참고자료|학술\s*출처(?:\s*및\s*참고\s*문헌)?)(?:\s*(?:\r?\n\s*)?(?:및\s*출처\s*링크))?(?:\s*\((?:References?|참고\s*문헌|학술\s*출처|출처|근거|문헌)\))?\s*\]?)(?:\*{0,2}\s*(?:\r?\n|[*•\-]\s*|\s+))/i;
   let referencesData: { header: string; items: string[] } | null = null;
   let trailingNoticeBlock = '';
 
-  const refSectionMatch = cleanContent.match(REF_SPLIT_REGEX);
+  const refSectionMatch = cleanContent.match(REF_HEADER_REGEX);
   if (refSectionMatch && refSectionMatch.index !== undefined) {
     const bodyBeforeRef = cleanContent.slice(0, refSectionMatch.index).trim();
     const afterRef = cleanContent.slice(refSectionMatch.index).trim();
@@ -523,17 +523,14 @@ export default function MarkdownView({ content, className = '', summary }: Markd
       trailingNoticeBlock = noticeMatch[0].trim();
     }
 
-    const lines = refBlock.split('\n').map((l) => l.trim()).filter(Boolean);
-    const header = lines[0].replace(/^#+\s*/, '').replace(/[\[\]]/g, '').trim();
-    const rawItems = lines
-      .slice(1)
-      .join('\n')
-      .split(/\n(?=\[\d+\]|\d+\.|\-\s+|[A-Z][a-zA-Z\s\.,\-]+(?:\(\d{4}\)|\d{4}))/g)
-      .map((s) => s.trim())
+    const bodyText = refBlock.replace(REF_HEADER_REGEX, '').trim();
+    const rawItems = bodyText
+      .split(/\n{2,}|\n(?=\[\d+\]|\d+\.|\-\s+|\*\s+|•\s+|[A-Z][a-zA-Z\s\.,\-]+(?:\(\d{4}\)|\d{4}))/g)
+      .map((s) => s.trim().replace(/^[\*\-•]\s*/, '').trim())
       .filter((s) => s.length > 5 && !s.startsWith('#') && !s.startsWith('---'));
 
     if (rawItems.length > 0) {
-      referencesData = { header, items: rawItems };
+      referencesData = { header: '학술 참고문헌 (References)', items: rawItems };
       cleanContent = bodyBeforeRef;
     }
   }
