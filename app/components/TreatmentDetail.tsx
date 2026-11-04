@@ -92,7 +92,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
             <div className="diet-hero-duo-item diet-duo-line">
               <img
                 src="/images/clinic/diet-acurex-line.png"
-                alt={isEnglish ? 'Acurex Line Targeted Pharmacopuncture' : '오브한의원 아큐렉스 라인 약침'}
+                alt={isEnglish ? 'Acurex Line Targeted Pharmacopuncture at ORB Clinic Magok' : '마곡 오브한의원 전두희 원장의 부작용 없는 천연 생약 성분 아큐렉스 라인 감량 약침 시술'}
                 className="diet-duo-img"
               />
               <div className="diet-duo-overlay">
@@ -141,7 +141,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
               <div className="diet-tech-visual-wrap">
                 <img
                   src="/images/clinic/diet-quantum-fit.png"
-                  alt={isEnglish ? 'Quantum Fit Microwave Beauty Platform' : '오브한의원 퀀텀핏 극초단파 장비'}
+                  alt={isEnglish ? 'Quantum Fit Microwave Lifting Platform at ORB Clinic Magok' : '마곡 오브한의원 전두희 원장의 퀀텀핏 극초단파 바디 윤곽 리프팅 시술 장비'}
                   className="diet-tech-poster"
                 />
                 <span className="tech-badge-gold">
@@ -200,7 +200,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
               <div className="diet-tech-visual-wrap">
                 <img
                   src="/images/clinic/diet-acurex-line.png"
-                  alt={isEnglish ? 'Acurex Line Pharmacopuncture' : '오브한의원 아큐렉스 라인 약침'}
+                  alt={isEnglish ? 'Acurex Line Targeted Pharmacopuncture at ORB Clinic Magok' : '마곡 오브한의원 전두희 원장의 군살 집중 감량을 위한 아큐렉스 라인 약침 시술'}
                   className="diet-tech-poster"
                 />
                 <span className="tech-badge-bronze">
