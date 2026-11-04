@@ -507,7 +507,7 @@ export default function MarkdownView({ content, className = '', summary }: Markd
   cleanContent = cleanContent.replace(/[\u200B\uFEFF]/g, '');
 
   // Extract References (<section class="references">)
-  const REF_HEADER_REGEX = /(?:^|\n)(#{1,4}\s*)?(?:\[?\s*(?:참고\s*문헌|References?|참고자료|학술\s*출처(?:\s*및\s*참고\s*문헌)?)(?:\s*(?:\r?\n\s*)?(?:및\s*출처\s*링크))?(?:\s*\((?:References?|참고\s*문헌|학술\s*출처|출처|근거|문헌)\))?\s*\]?)(?:\*{0,2}\s*(?:\r?\n|[*•\-]\s*|\s+))/i;
+  const REF_HEADER_REGEX = /(?:^|\n)(#{0,4}\s*\*{0,2}\[?\s*(?:\d+편\s*)?(?:📚?\s*의학\s*학술\s*(?:레퍼런스|출처|참고\s*문헌)|참고\s*문헌|References?|학술\s*출처|참고자료)[^\n]*?(?:\]|\*{2}|>|\)|\:|\-|\n))/i;
   let referencesData: { header: string; items: string[] } | null = null;
   let trailingNoticeBlock = '';
 
@@ -525,7 +525,8 @@ export default function MarkdownView({ content, className = '', summary }: Markd
 
     const bodyText = refBlock.replace(REF_HEADER_REGEX, '').trim();
     const rawItems = bodyText
-      .split(/\n{2,}|\n(?=\[\d+\]|\d+\.|\-\s+|\*\s+|•\s+|[A-Z][a-zA-Z\s\.,\-]+(?:\(\d{4}\)|\d{4}))/g)
+      .split(/\n{2,}/g)
+      .flatMap((p) => p.split(/\n(?=\[\d+\]|\d+\.|\-\s+|\*\s+|•\s+|[A-Z][a-zA-Z\s\.,\-]+(?:\(\d{4}\)|\d{4}))/g))
       .map((s) => s.trim().replace(/^[\*\-•]\s*/, '').trim())
       .filter((s) => s.length > 5 && !s.startsWith('#') && !s.startsWith('---'));
 
