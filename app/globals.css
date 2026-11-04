@@ -895,6 +895,7 @@ p {
   line-height: 1.82;
   margin: 0;
   word-break: keep-all;
+  white-space: pre-line;
 }
 
 @media (max-width: 860px) {
