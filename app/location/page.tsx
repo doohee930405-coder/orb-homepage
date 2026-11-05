@@ -40,43 +40,48 @@ export default function LocationPage() {
       />
       <SiteHeader locale="ko" compact />
 
-      {/* Hero Header with Semantic H1 */}
-      <section className="detail-hero nationwide-hero">
-        <div className="detail-hero-copy">
-          <nav className="breadcrumbs" aria-label="현재 위치">
-            <a href="/">홈</a>
-            <span>/</span>
-            <span>전국에서 찾아오시는 길</span>
-          </nav>
-          <p className="eyebrow">NATIONWIDE ACCESSIBILITY & DIRECTIONS</p>
-          <h1>전국에서 찾아오시는 길 | 오브한의원 접근성 안내</h1>
-          <p className="nationwide-hero-lead">
-            오브한의원은 습식 정량화뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 공항철도 및 9호선 급행 환승역(마곡나루역)과 인접하여 KTX, 고속버스, 항공편을 통한 내원이 편리합니다.
-          </p>
-        </div>
+      {/* Hero Header with Semantic H1 within Container Boundaries */}
+      <section className="nationwide-hero-section">
+        <div className="nationwide-hero-container">
+          <div className="nationwide-hero-copy">
+            <nav className="breadcrumbs" aria-label="현재 위치">
+              <a href="/">홈</a>
+              <span>/</span>
+              <span>전국에서 찾아오시는 길</span>
+            </nav>
+            <p className="eyebrow">NATIONWIDE ACCESSIBILITY & DIRECTIONS</p>
+            <h1>
+              전국에서 찾아오시는 길
+              <span className="hero-h1-sub">오브한의원 접근성 안내</span>
+            </h1>
+            <p className="nationwide-hero-lead">
+              오브한의원은 습식 정량화뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 공항철도 및 9호선 급행 환승역(마곡나루역)과 인접하여 KTX, 고속버스, 항공편을 통한 내원이 편리합니다.
+            </p>
+          </div>
 
-        {/* Right Column: 2x2 Square 4-Quadrant Widget */}
-        <div className="nationwide-hero-visual">
-          <div className="access-quad-square" role="region" aria-label="전국 접근성 핵심 요약">
-            <div className="quad-item quad-top-left">
-              <span className="badge-sub">항공편 직결</span>
-              <strong className="badge-val">김포공항 5분</strong>
-              <span className="badge-desc">공항철도/9호선 단 1정거장</span>
-            </div>
-            <div className="quad-item quad-top-right">
-              <span className="badge-sub">KTX 열차</span>
-              <strong className="badge-val">서울역 15~20분</strong>
-              <span className="badge-desc">공항철도 다이렉트 연결</span>
-            </div>
-            <div className="quad-item quad-bottom-left">
-              <span className="badge-sub">지하철 초역세권</span>
-              <strong className="badge-val">마곡나루역 도보 1분</strong>
-              <span className="badge-desc">5번 출구 지하 연결통로</span>
-            </div>
-            <div className="quad-item quad-bottom-right">
-              <span className="badge-sub">운영 원칙</span>
-              <strong className="badge-val">100% 사전 예약제</strong>
-              <span className="badge-desc">원거리 맞춤 당일 정밀 검사</span>
+          {/* Right Column: 2x2 Square 4-Quadrant Widget */}
+          <div className="nationwide-hero-visual">
+            <div className="access-quad-square" role="region" aria-label="전국 접근성 핵심 요약">
+              <div className="quad-item quad-top-left">
+                <span className="badge-sub">항공편 직결</span>
+                <strong className="badge-val">김포공항 5분</strong>
+                <span className="badge-desc">공항철도/9호선 단 1정거장</span>
+              </div>
+              <div className="quad-item quad-top-right">
+                <span className="badge-sub">KTX 열차</span>
+                <strong className="badge-val">서울역 15~20분</strong>
+                <span className="badge-desc">공항철도 다이렉트 연결</span>
+              </div>
+              <div className="quad-item quad-bottom-left">
+                <span className="badge-sub">지하철 초역세권</span>
+                <strong className="badge-val">마곡나루역 도보 1분</strong>
+                <span className="badge-desc">5번 출구 지하 연결통로</span>
+              </div>
+              <div className="quad-item quad-bottom-right">
+                <span className="badge-sub">운영 원칙</span>
+                <strong className="badge-val">100% 사전 예약제</strong>
+                <span className="badge-desc">원거리 맞춤 당일 정밀 검사</span>
+              </div>
             </div>
           </div>
         </div>
