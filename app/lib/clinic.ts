@@ -303,8 +303,8 @@ export const treatments: Treatment[] = [
     title: { ko: '열대사장애', en: 'Heat Metabolism' },
     shortTitle: { ko: '열대사장애', en: 'Heat Metabolism' },
     summary: {
-      ko: '얼굴과 머리는 뜨겁고 손발과 하체는 차가운 상열하한(上熱下寒) 증상을 적외선 체열검사(DITI)로 정밀 시각화합니다. 자율신경계 실조로 인한 국소 체열 불균형과 미세 순환 장애를 객관적으로 측정하고, 수승화강(水昇火降) 맞춤 한약과 순환 약침으로 전신 체열 밸런스를 복원합니다.',
-      en: 'Through Digital Infrared Thermal Imaging (DITI), we objectively visualize upper-body flushing and lower-extremity cold imbalances. We pinpoint localized circulatory disruptions caused by autonomic dysregulation and restore whole-body thermal homeostasis with specialized circulatory herbal formulas.',
+      ko: '체온 조절 중추와 미세 순환의 불균형으로 발생하는 다양한 체열 이상 증상을 다룹니다. 가슴·안면의 열감과 등의 화끈거림, 사지 말단의 냉증을 적외선 체열검사(DITI)로 정밀 측정하여, 전신의 온열 균형을 맞추는 맞춤 한약과 순환 치료를 시행합니다.',
+      en: 'We address various thermal dysregulation symptoms arising from imbalances in thermoregulatory centers and microcirculation. By precisely measuring chest and facial heat, back burning sensations, and coldness in extremities with Digital Infrared Thermal Imaging (DITI), we administer personalized herbal medicine and circulatory treatments to restore whole-body thermal balance.',
     },
     intro: {
       ko: '인체의 체열 분포는 자율신경계와 신경 순환의 상태를 직접적으로 반영합니다. 얼굴이나 상체로 열이 치솟는 상열감, 손발과 복부의 냉증, 원인 모를 감각 이상과 저림 등 체열 불균형의 원인을 적외선체열검사로 시각화하고, 순환을 회복시키는 맞춤 한약과 약침 치료를 시행합니다.',
