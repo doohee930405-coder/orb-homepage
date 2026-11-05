@@ -5068,6 +5068,11 @@ h3.faq-accordion-heading {
   gap: 10px;
 }
 
+.qeeg-spec-item > div {
+  flex: 1;
+  min-width: 0;
+}
+
 .spec-check {
   color: var(--bronze);
   flex-shrink: 0;
@@ -5081,13 +5086,15 @@ h3.faq-accordion-heading {
   display: block;
   font-size: 0.92rem;
   font-weight: 700;
-  margin-bottom: 3px;
+  margin-bottom: 6px;
 }
 
 .qeeg-spec-item p {
   color: var(--taupe);
   font-size: 0.82rem;
   line-height: 1.5;
+  text-align: center;
+  word-break: keep-all;
 }
 
 .protocol-grid {
