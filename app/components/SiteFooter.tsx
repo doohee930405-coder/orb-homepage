@@ -17,26 +17,36 @@ export default function SiteFooter({ isEnglish = false }: SiteFooterProps) {
         <Link href="/admin/columns" title="관리자 페이지" style={{ color: 'inherit', textDecoration: 'none' }}>
           <strong>ORB</strong>
         </Link>
-        <span>{isEnglish ? 'ORB Korean Medicine Clinic' : '오브한의원 마곡점'}</span>
+        <span>{isEnglish ? 'ORB Korean Medicine Clinic' : '오브한의원'}</span>
       </div>
 
       {/* [중앙] */}
       <address className="footer-center-info">
         <p className="footer-info-row">
-          <span>대표자 : 전두희</span>
+          <span>상호 : {isEnglish ? 'ORB Korean Medicine Clinic' : '오브한의원'}</span>
+          <span className="footer-sep">|</span>
+          <span>대표원장 : 전두희 (한의사)</span>
           <span className="footer-sep">|</span>
           <span>사업자등록번호 : 733-11-03011</span>
           <span className="footer-sep">|</span>
           <span>개인정보관리책임자 : 전두희</span>
         </p>
         <p className="footer-info-row">
-          <span>서울 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 238호·239호</span>
+          <span>위치 : 서울특별시 강서구 마곡중앙로 161-1, 롯데캐슬 르웨스트 104동 2층 (238호·239호)</span>
+        </p>
+        <p className="footer-info-row">
+          <span>대중교통 : 지하철 9호선 급행·공항철도 마곡나루역 5번 출구 도보 1분 / 5호선 마곡역 2번 출구 도보 5분</span>
         </p>
         <p className="footer-info-row">
           <span>TEL : <a href="tel:02-6959-5982">02-6959-5982</a></span>
           <span className="footer-sep">|</span>
           <span>평일 10:30 ~ 20:20 · 토요일 13:00 ~ 18:00 (매주 일요일 휴진)</span>
         </p>
+        <div className="footer-access-action">
+          <Link href="/location" className="footer-access-btn">
+            {isEnglish ? 'Nationwide Directions & Access →' : '전국에서 찾아오시는 길 →'}
+          </Link>
+        </div>
       </address>
 
       {/* [우측] */}
@@ -98,7 +108,7 @@ export default function SiteFooter({ isEnglish = false }: SiteFooterProps) {
             <div className="non-covered-footer">
               <button
                 type="button"
-                className="button button-solid"
+                className="non-covered-confirm"
                 onClick={() => setNonCoveredOpen(false)}
               >
                 확인

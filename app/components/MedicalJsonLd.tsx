@@ -48,7 +48,7 @@ export default function MedicalJsonLd({
     '@type': 'MedicalClinic',
     '@id': `${SITE_URL}/#clinic`,
     name: isEn ? clinic.nameEn : clinic.nameKo,
-    alternateName: isEn ? clinic.nameKo : '오브한의원',
+    alternateName: isEn ? clinic.nameKo : ['오브한의원 마곡점', 'ORB Korean Medicine Clinic'],
     url: SITE_URL,
     logo: `${SITE_URL}/images/logo/orb-symbol-clean.png`,
     image: `${SITE_URL}/images/clinic/hero-lobby-wide.webp`,
@@ -63,10 +63,10 @@ export default function MedicalJsonLd({
     ],
     address: {
       '@type': 'PostalAddress',
-      streetAddress: isEn ? clinic.addressEn : '마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 238호·239호',
+      streetAddress: isEn ? clinic.addressEn : '마곡중앙로 161-1, 롯데캐슬 르웨스트 104동 2층 238호·239호',
       addressLocality: isEn ? 'Gangseo-gu' : '강서구',
       addressRegion: isEn ? 'Seoul' : '서울',
-      postalCode: '07593',
+      postalCode: '07789',
       addressCountry: 'KR',
     },
     geo: {

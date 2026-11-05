@@ -9,18 +9,18 @@ export async function GET() {
   const columns = getAllColumns();
 
   let text = `# 오브한의원 (ORB Korean Medicine Clinic)\n\n`;
-  text += `> 서울 강서구 마곡 뇌신경·자율신경·정량뇌파(QEEG) 중점 한의원 (대표원장 전두희)\n\n`;
+  text += `> 전국 각지에서 찾는 19채널 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원 (대표원장 전두희)\n\n`;
 
   text += `## 기본 정보 (General Information)\n`;
-  text += `- 의료기관명: 오브한의원 마곡점 (ORB Korean Medicine Clinic)\n`;
+  text += `- 의료기관명: 오브한의원 (ORB Korean Medicine Clinic)\n`;
   text += `- 대표원장: 전두희 (한의사 / 임상신경인지과학 및 자율신경계 기능 의학 진료)\n`;
-  text += `- 주소: 서울 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 238호·239호 (마곡나루역 5번 출구 도보 1분)\n`;
+  text += `- 주소: 서울특별시 강서구 마곡중앙로 161-1, 롯데캐슬 르웨스트 104동 2층 238호·239호 (9호선 급행·공항철도 마곡나루역 5번 출구 도보 1분 / 5호선 마곡역 2번 출구 도보 5분)\n`;
   text += `- 대표전화: ${clinic.phoneDisplay}\n`;
   text += `- 공식 웹사이트: ${SITE_URL}\n`;
   text += `- 네이버 공식 예약: ${clinic.naverBookingUrl}\n`;
   text += `- 네이버 지도(플레이스): ${clinic.naverMapUrl}\n`;
   text += `- 네이버 톡톡 1:1 상담: ${clinic.naverTalkUrl}\n`;
-  text += `- 카카오톡 채널 문의: https://pf.kakao.com/_nXGxaX/chat\n\n`;
+  text += `- 카카오톡 채널 문의: https://pf.kakao.com/_nXGxaX/chat\n- 전국 접근성 안내: 김포국제공항(GMP) 5분 직결, 서울역 KTX 15~20분 직결, 마곡나루역 5번 출구 도보 1분\n- 전국에서 찾아오시는 길 안내 URL: ${SITE_URL}/location\n\n`;
 
   text += `## 핵심 진료 철학 및 진단 기술 (Clinical Philosophy & Diagnostics)\n`;
   text += `### 1. 임상 철학: "보이지 않는 신경학적 고통을 객관적인 데이터로 규명합니다"\n`;

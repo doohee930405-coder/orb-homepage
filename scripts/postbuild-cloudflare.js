@@ -312,12 +312,52 @@ if (fs.existsSync(functionsDir)) {
 const indexPath = path.join(clientDir, 'index.html');
 if (fs.existsSync(indexPath)) {
   let indexHtml = fs.readFileSync(indexPath, 'utf8');
-    const exactUserProvidedJsonLdScript = "<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@graph\": [\n    {\n      \"@type\": \"MedicalOrganization\",\n      \"@id\": \"https://orbmed.co.kr/#organization\",\n      \"name\": \"오브한의원 마곡점\",\n      \"alternateName\": \"오브한의원\",\n      \"url\": \"https://orbmed.co.kr\",\n      \"telephone\": \"+82-2-6959-5982\",\n      \"address\": {\n        \"@type\": \"PostalAddress\",\n        \"streetAddress\": \"마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 238호·239호\",\n        \"addressLocality\": \"강서구\",\n        \"addressRegion\": \"서울특별시\",\n        \"postalCode\": \"07789\",\n        \"addressCountry\": \"KR\"\n      },\n      \"medicalSpecialty\": [\"자율신경실조증\", \"정량화뇌파검사(qEEG)\", \"뇌신경추나\"],\n      \"sameAs\": [\n        \"https://m.place.naver.com/hospital/2005324011\", \n        \"https://blog.naver.com/orbmed\"\n      ]\n    },\n    {\n      \"@type\": \"Physician\",\n      \"@id\": \"https://orbmed.co.kr/#physician\",\n      \"name\": \"전두희\",\n      \"jobTitle\": \"대표원장\",\n      \"worksFor\": {\"@id\": \"https://orbmed.co.kr/#organization\"},\n      \"memberOf\": [\n        {\"@type\": \"Organization\", \"name\": \"대한뇌파한의학회\"},\n        {\"@type\": \"Organization\", \"name\": \"척추신경추나의학회\"}\n      ]\n    }\n  ]\n}\n</script>";
+    const exactUserProvidedJsonLdScript = `<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": ["MedicalClinic", "MedicalOrganization"],
+      "@id": "https://orbmed.co.kr/#organization",
+      "name": "오브한의원",
+      "alternateName": ["오브한의원 마곡점", "ORB Korean Medicine Clinic"],
+      "description": "전국 각지에서 찾는 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 19채널 다채널 습식 정량화뇌파(Wet QEEG) 및 심박변이도(HRV) 정밀 진단과 개인별 맞춤 한의학 치료.",
+      "url": "https://orbmed.co.kr",
+      "telephone": "+82-2-6959-5982",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "마곡중앙로 161-1, 롯데캐슬 르웨스트 104동 2층 238호·239호",
+        "addressLocality": "강서구",
+        "addressRegion": "서울특별시",
+        "postalCode": "07789",
+        "addressCountry": "KR"
+      },
+      "medicalSpecialty": ["자율신경실조증", "신경정신", "정량화뇌파검사(qEEG)", "습식 뇌파검사(Wet QEEG)", "뇌신경추나"],
+      "sameAs": [
+        "https://m.place.naver.com/hospital/2005324011", 
+        "https://blog.naver.com/orbmed"
+      ]
+    },
+    {
+      "@type": "Physician",
+      "@id": "https://orbmed.co.kr/#physician",
+      "name": "전두희",
+      "jobTitle": "대표원장",
+      "medicalSpecialty": ["자율신경실조증", "신경정신", "습식 정량화뇌파(Wet QEEG)", "뇌신경추나"],
+      "worksFor": {"@id": "https://orbmed.co.kr/#organization"},
+      "memberOf": [
+        {"@type": "Organization", "name": "대한뇌파한의학회"},
+        {"@type": "Organization", "name": "척추신경추나의학회"}
+      ]
+    }
+  ]
+}
+</script>`;
   const unifiedJsonLdTag = exactUserProvidedJsonLdScript;
-  const exactIndexTitle = '<title>오브한의원 마곡점 | 자율신경실조증·신경정신·QEEG 뇌파정밀검사 중점한의원</title>';
-  const exactIndexDesc = '<meta name="description" content="서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 신경정신 질환, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료.">';
-  const exactOgTitle = '<meta property="og:title" content="오브한의원 마곡점 | 자율신경실조증·신경정신·QEEG 뇌파정밀검사 중점한의원"/>';
-  const exactOgDesc = '<meta property="og:description" content="서울 강서구 마곡역 롯데캐슬 르웨스트 위치. 자율신경실조증, 신경정신 질환, 만성피로 중점 진료. 다채널 습식 정량화뇌파(qEEG)와 심박변이도(HRV) 데이터를 기반으로 한 신경-구조 융합 근원 치료."/>';
+  const exactIndexTitle = '<title>오브한의원 | 습식 정량화뇌파 QEEG 기반 자율신경·신경정신 중점 진료</title>';
+  const exactIndexDesc = '<meta name="description" content="전국 각지에서 찾는 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 뇌 기능과 자율신경계 불균형을 정밀 분석하여 개인별 맞춤 한의학 치료를 제시합니다.">';
+  const exactOgTitle = '<meta property="og:title" content="오브한의원 | 습식 정량화뇌파 QEEG 기반 자율신경·신경정신 중점 진료"/>';
+  const exactOgDesc = '<meta property="og:description" content="습식 정량화뇌파(QEEG)로 뇌와 자율신경의 연결고리를 정밀 진단하는 오브한의원입니다.">';
 
   const headEndIndex = indexHtml.indexOf('</head>');
   if (headEndIndex !== -1) {
@@ -347,6 +387,13 @@ if (fs.existsSync(indexPath)) {
 
     if (/<meta[^>]*property=["']og:description["'][^>]*>/i.test(headPart)) {
       headPart = headPart.replace(/<meta[^>]*property=["']og:description["'][^>]*>/i, exactOgDesc);
+    const exactOgSiteName = '<meta property="og:site_name" content="오브한의원"/>';
+    if (/<meta[^>]*property=["']og:site_name["'][^>]*>/i.test(headPart)) {
+      headPart = headPart.replace(/<meta[^>]*property=["']og:site_name["'][^>]*>/i, exactOgSiteName);
+    } else {
+      headPart += '\n' + exactOgSiteName;
+    }
+
     } else {
       headPart += '\n' + exactOgDesc;
     }
