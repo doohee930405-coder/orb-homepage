@@ -51,21 +51,75 @@ const exactOfficialOrgAndPhysicianJsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "MedicalOrganization",
+      "@type": ["MedicalBusiness", "MedicalClinic"],
       "@id": "https://orbmed.co.kr/#organization",
       "name": "오브한의원 마곡점",
-      "alternateName": "오브한의원",
+      "alternateName": ["오브한의원", "ORBMED CLINIC", "오브한의원 마곡"],
       "url": "https://orbmed.co.kr",
       "telephone": "+82-2-6959-5982",
+      "priceRange": "₩₩",
+      "currenciesAccepted": "KRW",
+      "paymentAccepted": "Cash, Credit Card, Naver Pay",
+      "areaServed": ["마곡동", "강서구", "서울"],
+      "medicalSpecialty": [
+        "Neurology",
+        "Psychiatry",
+        "TraditionalChineseMedicine"
+      ],
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 238호·239호",
+        "streetAddress": "서울 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 238호·239호",
         "addressLocality": "강서구",
-        "addressRegion": "서울특별시",
-        "postalCode": "07789",
+        "addressRegion": "서울",
+        "postalCode": "07593",
         "addressCountry": "KR"
       },
-      "medicalSpecialty": ["자율신경실조증", "정량화뇌파검사(qEEG)", "뇌신경추나"],
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 37.5667,
+        "longitude": 126.8273
+      },
+      "hasMap": "https://maps.google.com/?cid=12644243679883584852",
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "10:30",
+          "closes": "20:20"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Saturday"],
+          "opens": "13:00",
+          "closes": "18:00"
+        }
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "오브한의원 마곡점 정밀 검사 및 비급여 진료 항목",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "MedicalTest",
+              "name": "다채널 습식 정량화 뇌파검사(qEEG) & 심박변이도(HRV) 자율신경 동시 검사"
+            },
+            "price": "50000-60000",
+            "priceCurrency": "KRW",
+            "description": "국제 10-20 표준 전극 시스템 기준 Normative DB Z-score 정밀 분석 (50,000 ~ 60,000 KRW)"
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "MedicalTherapy",
+              "name": "1:1 체질 맞춤 치료한약 (1개월)"
+            },
+            "price": "450000",
+            "priceCurrency": "KRW",
+            "description": "GABA 억제성 신경망 교란 완화 및 수승화강 1:1 맞춤 치료한약 (1개월 기준 450,000 KRW)"
+          }
+        ]
+      },
       "sameAs": [
         "https://m.place.naver.com/hospital/2005324011", 
         "https://blog.naver.com/orbmed"
@@ -106,7 +160,7 @@ const officialFaqJsonLd = {
       "name": "Q. 오브한의원의 '다채널 습식 정량화 뇌파검사(qEEG)'는 일반 밴드형 검사와 어떻게 다른가요?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "국제 10-20 표준 전극 시스템을 적용한 전뇌(Full-Head) 습식 검사로 측정 정밀도와 신뢰성이 압도적입니다. 시중의 간이 건식 밴드는 이마 부위 2~4개 채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 반면 의료용 전도성 겔(Gel)을 사용하는 습식 전극은 피부 저항(Impedance)을 극소화하여 미세 신경 신호까지 포착합니다.\n\n오브한의원의 다채널 습식 qEEG는 전두엽, 측두엽, 두정엽, 후두엽 전뇌를 커버하며, 수만 건의 건강인 표준 Normative DB와 비교 대조하여 뇌 피질 신경망 과열과 저하 상태를 3차원 입체 지도로 시각화합니다."
+        "text": "국제 10-20 표준 전극 시스템을 적용한 전뇌(Full-Head) 습식 검사로 측정 정밀도와 신뢰성이 압도적입니다. 시중의 간이 건식 밴드는 이마 부위 2~4개 채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 반면 의료용 전도성 겔(Gel)을 사용하는 습식 전극은 피부 저항(Impedance)을 극소화하여 미세 신경 신호까지 포착합니다.\n\n오브한의원의 다채널 습식 qEEG는 전두엽, 측두엽, 두정엽, 후두엽 전뇌를 커버하며, 국제 10-20 표준 전극 시스템 기준의 Normative Database(표준 건강 대조군 데이터베이스) Z-score 분석을 통해 뇌 피질 신경망 과열과 저하 상태를 3차원 입체 지도로 시각화합니다."
       }
     },
     {
@@ -114,7 +168,7 @@ const officialFaqJsonLd = {
       "name": "Q. 정신과 약(항불안제, 수면제, 항우울제)을 복용 중인데 한약이나 추나 치료를 함께 받을 수 있나요?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "네, 복용 중이신 신경정신과 약물을 안정적으로 유지하면서 안전하게 병행 치료가 가능합니다. 처방 약물을 임의로 갑자기 중단하면 반동 현상이나 금단 증상이 발생할 수 있으므로, 기존 약물을 유지하면서 뇌신경계의 자율 회복력을 단계적으로 높이는 병행 진료를 시작합니다.\n\n뇌 중추 과열을 식히는 1:1 맞춤 한약과 두경부 긴장을 완화하는 상부경추 뇌신경 추나요법을 통해 뇌의 자율 회복력을 높여가며, 호전 경과에 따라 안전하게 감량 및 단약(Tapering)을 돕습니다."
+        "text": "네, 복용 중이신 신경정신과 약물을 안정적으로 유지하면서 안전하게 병행 치료가 가능합니다. 처방 약물을 임의로 갑자기 중단하면 반동 현상이나 금단 증상이 발생할 수 있으므로, 기존 약물을 유지하면서 뇌신경계의 자율 회복력을 단계적으로 높이는 병행 진료를 시작합니다.\n\nGABA(gamma-aminobutyric acid) 억제성 신경망 교란 완화 및 편도체 진정을 유도하는 한약재(복령, 계지 등)의 다중 표적 약리학적 접근을 적용한 1:1 맞춤 한약과 두경부 긴장을 완화하는 상부경추 뇌신경 추나요법을 통해 뇌의 자율 회복력을 높여가며, 호전 경과에 따라 안전하게 감량 및 단약(Tapering)을 돕습니다."
       }
     },
     {

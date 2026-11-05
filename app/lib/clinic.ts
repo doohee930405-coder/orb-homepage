@@ -93,7 +93,7 @@ export const treatments: Treatment[] = [
     title: { ko: '자율신경실조증 : HRV, QEEG 정량뇌파검사', en: 'Autonomic System · QEEG' },
     shortTitle: { ko: '자율신경과 뇌파', en: 'Autonomic system & QEEG' },
     summary: {
-      ko: "오브한의원의 자율신경 항상성 재건 프로토콜은 단순한 증상 완화에 머무르지 않습니다. 교감신경의 과항진으로 인해 초래된 중추신경계의 만성 염증 상태와 과각성된 뇌파 신호를 정밀 제어하며, 하행성 억제계의 기능을 회복시킵니다. 특히 미주신경(Vagus Nerve)의 활성도를 높여 장-뇌 축(Brain-Gut Axis)의 신호 교란을 바로잡음으로써 심계항진, 기립성 두통 및 어지럼증, 브레인포그, 신경성 위장장애의 근본 원인을 차단합니다. 약물 부작용과 내성 걱정 없는 1:1 체질 맞춤 한약과 상부경추의 구조적 압박을 해소하여 뇌혈류 및 뇌척수액 순환을 촉진하는 뇌신경 추나요법을 결합하여, 무너진 신경계의 자체적인 항상성(Homeostasis)을 복원합니다.",
+      ko: "오브한의원의 자율신경 항상성 재건 프로토콜은 단순한 증상 완화에 머무르지 않습니다. 교감신경 과항진으로 인한 만성 신경염증(Neuroinflammation) 유발 경로와 미주신경(Vagus Nerve) 활성 저하에 따른 장-뇌 축(Brain-Gut Axis) 신호 교란을 객관적으로 입증하고 바로잡습니다. GABA(gamma-aminobutyric acid) 억제성 신경망 교란 완화 및 편도체 진정을 유도하는 한약재(복령, 계지 등)의 다중 표적 약리학적 접근을 적용한 1:1 체질 맞춤 한약과, 상부경추-두개골 정렬을 교정하여 뇌혈류 및 뇌척수액 순환을 촉진하는 뇌신경 추나요법을 결합하여 무너진 신경계의 자체적인 항상성(Homeostasis)을 복원합니다.",
       en: 'We accurately diagnose brain fog, chronic fatigue, sleep disorders, and palpitations through multichannel wet QEEG and HRV autonomic testing. By visualizing neural hyperactivity on 3D brain maps, we prescribe individualized herbal formulas and upper-cervical Chuna therapy to restore neuro-autonomic balance without drug dependency.',
     },
     intro: {

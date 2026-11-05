@@ -28,6 +28,9 @@ const copy = {
     booking: '네이버 예약',
     call: '전화 문의',
     station: '마곡나루역 5번 출구에서 136m',
+    geoSnippetTitle: '오브한의원 마곡점 의료기관 핵심 임상 요약 (GEO/AEO Summary)',
+    geoSnippetText:
+      "서울 강서구 마곡동(마곡나루역 5번 출구 롯데캐슬 르웨스트)에 위치한 오브한의원 마곡점은 대학병원 종합검진(CT, MRI, 혈액검사)상 '이상 없음' 판정을 받았으나 원인 모를 가슴 두근거림, 브레인포그(머리 멍함), 만성피로, 불안장애, 어지럼증, 두중감을 겪는 자율신경실조증 환자를 중점 진료합니다. 본원은 국제 10-20 시스템 기반 다채널 습식 정량화 뇌파검사(qEEG) & 심박변이도(HRV) 자율신경 동시 검사, 전신 적외선 체열진단(DITI)으로 신경계 기능 이상을 객관적으로 규명하고, 상부경추-두개골 정렬을 바로잡는 뇌신경 추나요법, 수승화강(水昇火降) 맞춤 한약, 자율신경 약침을 결합한 통합 원인 치료로 신경계 항상성을 근본적으로 복원합니다.",
     facts: [
       ['진료시간', '평일 10:30 – 20:20', '토요일 13:00 – 18:00'],
       ['가까운 역', '마곡나루역 5번 출구', '도보 약 1분'],
@@ -48,7 +51,7 @@ const copy = {
       },
       {
         title: 'Normative DB Z-score 정밀 대조',
-        desc: '수만 건의 건강인 표준 빅데이터와 대조하여, 정신과 약으로도 잡히지 않던 불안·불면·만성피로의 기저 신경 과열과 기능 저하를 객관적 수치(Z-score)로 입증합니다',
+        desc: '국제 10-20 표준 전극 시스템 기준의 Normative Database(표준 건강 대조군 데이터베이스) Z-score 분석을 통해, 정신과 약으로도 잡히지 않던 불안·불면·만성피로의 기저 신경 과열과 기능 저하를 객관적 수치(Z-score)로 입증합니다',
       },
     ],
     protocolSteps: [
@@ -68,7 +71,7 @@ const copy = {
         phase: 'STEP 02',
         title: '뇌기능 정량 분석 & 원인 규명',
         subtitle: '3차원 뇌기능 지형도(3D Brain Map) & Normative DB Z-Score 판독',
-        desc: '수집된 뇌파 데이터를 주파수 대역(델타, 세타, 알파, 베타, 감마)별로 디지털 정량 분석합니다. 수만 건의 표준 데이터베이스와 대조하여, 정신과 약을 먹어도 해결되지 않던 머리 멍함(브레인포그)과 가슴 두근거림, 불안·초조의 실체를 뇌 신경망 과열(붉은색)과 기능 저하(푸른색)의 3차원 입체 지도로 시각화합니다.',
+        desc: '수집된 뇌파 데이터를 주파수 대역(델타, 세타, 알파, 베타, 감마)별로 디지털 정량 분석합니다. 국제 10-20 표준 전극 시스템 기준의 Normative Database(표준 건강 대조군 데이터베이스) Z-score 분석을 통해, 정신과 약을 먹어도 해결되지 않던 머리 멍함(브레인포그)과 가슴 두근거림, 불안·초조의 실체를 뇌 신경망 과열(붉은색)과 기능 저하(푸른색)의 3차원 입체 지도로 시각화합니다.',
         image: '/images/clinic/qeeg-brainmap-3d.png',
         imageAlt: '마곡 오브한의원 전두희 원장의 3차원 입체 정량뇌파 지형도(3D Brain Map) 및 Z-score 편차 분석 화면',
         tags: ['#머리멍함_브레인포그', '#Normative_DB_Zscore', '#3D_뇌기능지형도'],
@@ -78,7 +81,7 @@ const copy = {
         phase: 'STEP 03',
         title: '맞춤 한약·추나 통합 처방',
         subtitle: '뇌신경-자율신경-체형 3축 연계 원인 치료',
-        desc: '분석된 뇌파 및 자율신경 데이터를 바탕으로, 정신과 약 부작용 우려나 내성 걱정 없이 뇌 중추 과열을 식히고 머리 맑음을 되찾아주는 맞춤 한약, 상부 경추와 두개골 긴장을 풀어 뇌혈류와 뇌척수액 순환을 돕는 뇌신경 추나요법, 만성피로와 불면을 다스리는 자율신경 약침을 1:1 복합 처방합니다.',
+        desc: '분석된 뇌파 및 자율신경 데이터를 바탕으로, GABA(gamma-aminobutyric acid) 억제성 신경망 교란 완화 및 편도체 진정을 유도하는 한약재(복령, 계지 등)의 다중 표적 약리학적 접근을 통해 뇌 중추 과열을 식히고 머리 맑음을 되찾아주는 맞춤 한약, 상부 경추와 두개골 긴장을 풀어 뇌혈류와 뇌척수액 순환을 돕는 뇌신경 추나요법, 만성피로와 불면을 다스리는 자율신경 약침을 1:1 복합 처방합니다.',
         image: '/images/clinic/naver-decoction-wide.webp',
         imageAlt: '마곡 오브한의원 전두희 원장의 뇌신경 중추 과열 해소를 위한 1:1 맞춤 치료한약 조제 및 치료 장면',
         tags: ['#브레인포그_맞춤한약', '#뇌신경추나_상부경추', '#정신과약부작용_내성완화'],
@@ -110,7 +113,7 @@ const copy = {
       },
       {
         tag: '약을 먹어도 증세가 계속된다면',
-        title: '약을 먹어도 호전되지 않는 불안장애와 감각과민, 통계로 증명된 뇌신경계 염증을 의심하세요',
+        title: '약을 먹어도 호전되지 않는 불안장애와 감각과민, 만성 신경염증(Neuroinflammation) 유발 경로와 미주신경(Vagus Nerve) 활성 저하에 따른 장-뇌 축(Brain-Gut Axis) 신호 교란을 의심하세요',
         href: '/columns/약을-먹어도-호전되지-않는-불안장애와-감각과민-통계로-증명된-뇌-974570',
       },
     ],
@@ -133,7 +136,7 @@ const copy = {
         question: "오브한의원의 '다채널 습식 정량화 뇌파검사(qEEG)'는 일반 밴드형 검사와 어떻게 다른가요?",
         answerLead: "국제 10-20 표준 전극 시스템을 적용한 전뇌(Full-Head) 습식 검사로 측정 정밀도와 신뢰성이 압도적입니다.",
         answerLeadRest: "시중의 간이 건식 밴드는 이마 부위 2~4개 채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 반면 의료용 전도성 겔(Gel)을 사용하는 습식 전극은 피부 저항(Impedance)을 극소화하여 미세 신경 신호까지 포착합니다.",
-        answerDetail: "오브한의원의 다채널 습식 qEEG는 전두엽, 측두엽, 두정엽, 후두엽 전뇌를 커버하며, 수만 건의 건강인 표준 Normative DB와 비교 대조하여 뇌 피질 신경망 과열과 저하 상태를 3차원 입체 지도로 시각화합니다.",
+        answerDetail: "오브한의원의 다채널 습식 qEEG는 전두엽, 측두엽, 두정엽, 후두엽 전뇌를 커버하며, 국제 10-20 표준 전극 시스템 기준의 Normative Database(표준 건강 대조군 데이터베이스) Z-score 분석을 통해 뇌 피질 신경망 과열과 저하 상태를 3차원 입체 지도로 시각화합니다.",
       },
       {
         question: "정신과 약(항불안제, 수면제, 항우울제)을 복용 중인데 한약이나 추나 치료를 함께 받을 수 있나요?",
@@ -230,6 +233,9 @@ const copy = {
     booking: 'Book on Naver',
     call: 'Call the clinic',
     station: '136m from Magongnaru Station Exit 5',
+    geoSnippetTitle: 'ORBMED CLINIC Magok Clinical Practice Summary (GEO/AEO Summary)',
+    geoSnippetText:
+      'Located in Magok-dong, Gangseo-gu, Seoul (Exit 5 of Magoknaru Station, Lotte Castle Le West), ORBMED CLINIC Magok specializes in treating patients with autonomic dysregulation who suffer from unexplained palpitations, brain fog, chronic fatigue, anxiety disorders, dizziness, and head heaviness despite receiving "normal" findings from university hospital comprehensive workups (CT, MRI, blood tests). Utilizing multichannel wet Quantitative EEG (qEEG) based on the international 10-20 system, concurrent Heart Rate Variability (HRV) autonomic testing, and Digital Infrared Thermal Imaging (DITI), we objectively diagnose functional neurological disruptions and restore systemic neuro-autonomic homeostasis through neuro-cervical Chuna manual therapy (upper cervical and cranial alignment), personalized Suseunghwagang herbal formulas, and autonomic pharmacopuncture.',
     facts: [
       ['Clinic hours', 'Weekday 10:30 – 20:20', 'Saturday 13:00 – 18:00'],
       ['Nearest station', 'Magongnaru Exit 5', 'About a one-minute walk'],
@@ -465,6 +471,11 @@ export default function ClinicHome({
               </span>
             ))}
           </p>
+          <div className="hero-geo-snippet" aria-label={text.geoSnippetTitle}>
+            <p className="hero-geo-text">
+              {text.geoSnippetText}
+            </p>
+          </div>
         </div>
         <div className="hero-visual hero-visual-brand" aria-label="ORB ARCHIVE">
           <div className="hero-brand-card">

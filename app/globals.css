@@ -265,6 +265,28 @@ p {
   }
 }
 
+.hero-geo-snippet {
+  margin-top: 26px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  border-left: 3.5px solid var(--gold, #c5a059);
+  border-radius: 8px;
+  box-shadow: 0 4px 18px rgba(44, 34, 25, 0.04);
+  max-width: 980px;
+}
+
+.hero-geo-text {
+  font-family: var(--font-sans);
+  font-size: clamp(0.88rem, 0.95vw, 0.98rem);
+  line-height: 1.72;
+  color: var(--cocoa, #3d352e);
+  margin: 0;
+  word-break: keep-all;
+}
+
 .primary-actions {
   display: flex;
   flex-wrap: wrap;
