@@ -851,6 +851,23 @@ export default function ClinicHome({
                 <dd>{text.parking}</dd>
               </div>
             </dl>
+
+            <div className="visit-access-box">
+              <a
+                href={isEnglish ? '/en/location' : '/location'}
+                className="visit-nationwide-btn"
+                role="button"
+                aria-label="전국에서 찾아오시는 길 상세 안내"
+              >
+                <span className="btn-icon">✈️ 🚄</span>
+                <span className="btn-text">
+                  {isEnglish
+                    ? 'Nationwide Access Guide (Airport · KTX)'
+                    : '전국에서 찾아오시는 길 (공항·KTX 직결 안내)'}
+                </span>
+                <span className="btn-arrow">→</span>
+              </a>
+            </div>
             <div className="hours-card">
               <span>{text.hoursTitle}</span>
               <strong>{text.weekday}</strong>
@@ -872,6 +889,12 @@ export default function ClinicHome({
               allowFullScreen
             />
             <div className="map-links" aria-label={text.mapTitle}>
+              <a
+                href={isEnglish ? '/en/location' : '/location'}
+                className="map-link-highlight"
+              >
+                {isEnglish ? 'Nationwide Guide →' : '전국 찾아오시는 길 →'}
+              </a>
               <TrackedLink
                 href={clinic.naverPlaceUrl}
                 target="_blank"

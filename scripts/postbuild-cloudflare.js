@@ -326,7 +326,7 @@ if (fs.existsSync(indexPath)) {
       "telephone": "+82-2-6959-5982",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "마곡중앙로 161-1, 롯데캐슬 르웨스트 104동 2층 238호·239호",
+        "streetAddress": "마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 238호·239호",
         "addressLocality": "강서구",
         "addressRegion": "서울특별시",
         "postalCode": "07789",

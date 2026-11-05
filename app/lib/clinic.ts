@@ -5,18 +5,18 @@ export const clinic = {
   nameEn: 'ORB Korean Medicine Clinic',
   phoneDisplay: '02-6959-5982',
   phoneHref: 'tel:0269595982',
-  addressKo: '서울 강서구 마곡중앙로 161-1, 롯데캐슬 르웨스트 104동 2층 238호·239호',
+  addressKo: '서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 (238호·239호)',
   addressEn:
-    '161-1 Magokjungang-ro, Lotte Castle Le West, Building 104, 2F, Units 238–239, Gangseo-gu, Seoul',
+    '111 Magokjungang-ro, Lotte Castle Le West, Building 104, 2F, Units 238–239, Gangseo-gu, Seoul',
   naverPlaceUrl: 'https://pcmap.place.naver.com/hospital/2005324011/home',
   naverBookingUrl:
     'https://m.booking.naver.com/booking/16/bizes/1731406?theme=place&lang=ko&area=ple',
   kakaoMapUrl:
-    'https://map.kakao.com/link/search/%EC%98%A4%EB%B8%8C%ED%95%9C%EC%9D%98%EC%9B%90%20',
+    'https://map.kakao.com/link/search/%EC%98%A4%EB%B8%8C%ED%95%9C%EC%9D%98%EC%9B%90',
   googleMapUrl:
-    'https://www.google.com/maps/search/?api=1&query=%EC%98%A4%EB%B8%8C%ED%95%9C%EC%9D%98%EC%9B%90++%EC%84%9C%EC%9A%B8+%EA%B0%95%EC%84%9C%EA%B5%AC+%EB%A7%88%EA%B3%A1%EC%A4%91%EC%95%99%EB%A1%9C+161-1',
+    'https://www.google.com/maps/search/?api=1&query=%EC%98%A4%EB%B8%8C%ED%95%9C%EC%9D%98%EC%9B%90+%EC%84%9C%EC%9A%B8+%EA%B0%95%EC%84%9C%EA%B5%AC+%EB%A7%88%EA%B3%A1%EC%A4%91%EC%95%99%EB%A1%9C+111',
   googleMapEmbedUrl:
-    'https://www.google.com/maps?q=%EC%84%9C%EC%9A%B8+%EA%B0%95%EC%84%9C%EA%B5%AC+%EB%A7%88%EA%B3%A1%EC%A4%91%EC%95%99%EB%A1%9C+161-1&output=embed',
+    'https://www.google.com/maps?q=%EC%84%9C%EC%9A%B8+%EA%B0%95%EC%84%9C%EA%B5%AC+%EB%A7%88%EA%B3%A1%EC%A4%91%EC%95%99%EB%A1%9C+111&output=embed',
 } as const;
 
 export type Locale = 'ko' | 'en';

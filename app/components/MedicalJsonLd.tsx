@@ -63,7 +63,7 @@ export default function MedicalJsonLd({
     ],
     address: {
       '@type': 'PostalAddress',
-      streetAddress: isEn ? clinic.addressEn : '마곡중앙로 161-1, 롯데캐슬 르웨스트 104동 2층 238호·239호',
+      streetAddress: isEn ? clinic.addressEn : '마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 (238호·239호), 롯데캐슬 르웨스트 104동 2층 238호·239호',
       addressLocality: isEn ? 'Gangseo-gu' : '강서구',
       addressRegion: isEn ? 'Seoul' : '서울',
       postalCode: '07789',

@@ -32,7 +32,7 @@ export default function SiteFooter({ isEnglish = false }: SiteFooterProps) {
           <span>개인정보관리책임자 : 전두희</span>
         </p>
         <p className="footer-info-row">
-          <span>위치 : 서울특별시 강서구 마곡중앙로 161-1, 롯데캐슬 르웨스트 104동 2층 (238호·239호)</span>
+          <span>위치 : 서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 (238호·239호)</span>
         </p>
         <p className="footer-info-row">
           <span>대중교통 : 지하철 9호선 급행·공항철도 마곡나루역 5번 출구 도보 1분 / 5호선 마곡역 2번 출구 도보 5분</span>
@@ -43,9 +43,9 @@ export default function SiteFooter({ isEnglish = false }: SiteFooterProps) {
           <span>평일 10:30 ~ 20:20 · 토요일 13:00 ~ 18:00 (매주 일요일 휴진)</span>
         </p>
         <div className="footer-access-action">
-          <Link href="/location" className="footer-access-btn">
+          <a href="/location" className="footer-access-btn" role="button" aria-label="전국에서 찾아오시는 길 안내 페이지로 이동">
             {isEnglish ? 'Nationwide Directions & Access →' : '전국에서 찾아오시는 길 →'}
-          </Link>
+          </a>
         </div>
       </address>
 

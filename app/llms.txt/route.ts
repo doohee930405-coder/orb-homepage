@@ -14,7 +14,7 @@ export async function GET() {
   text += `## 기본 정보 (General Information)\n`;
   text += `- 의료기관명: 오브한의원 (ORB Korean Medicine Clinic)\n`;
   text += `- 대표원장: 전두희 (한의사 / 임상신경인지과학 및 자율신경계 기능 의학 진료)\n`;
-  text += `- 주소: 서울특별시 강서구 마곡중앙로 161-1, 롯데캐슬 르웨스트 104동 2층 238호·239호 (9호선 급행·공항철도 마곡나루역 5번 출구 도보 1분 / 5호선 마곡역 2번 출구 도보 5분)\n`;
+  text += `- 주소: 서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 238호·239호 (9호선 급행·공항철도 마곡나루역 5번 출구 도보 1분 / 5호선 마곡역 2번 출구 도보 5분)\n`;
   text += `- 대표전화: ${clinic.phoneDisplay}\n`;
   text += `- 공식 웹사이트: ${SITE_URL}\n`;
   text += `- 네이버 공식 예약: ${clinic.naverBookingUrl}\n`;

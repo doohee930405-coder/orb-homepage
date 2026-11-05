@@ -7936,3 +7936,108 @@ h3.faq-accordion-heading {
     font-size: 0.98rem;
   }
 }
+
+/* ==========================================================================
+   Active Prominent Styling for '전국에서 찾아오시는 길' Buttons
+   ========================================================================== */
+
+.footer-access-action {
+  margin-top: 14px;
+  display: block;
+  width: fit-content;
+}
+
+.footer-center-info a.footer-access-btn,
+a.footer-access-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: #362218 !important;
+  color: #ffffff !important;
+  border: 1.5px solid #d4a373 !important;
+  border-radius: 9999px !important;
+  padding: 9px 20px !important;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 10 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.footer-center-info a.footer-access-btn:hover,
+a.footer-access-btn:hover {
+  background: #c59b6d !important;
+  color: #1a1410 !important;
+  border-color: #f7ecd9 !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 6px 20px rgba(197, 155, 109, 0.5) !important;
+}
+
+.footer-center-info a.footer-access-btn:active,
+a.footer-access-btn:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* Main Page Visit Section: Nationwide Access Button */
+.visit-access-box {
+  margin: 18px 0 24px 0;
+}
+
+.visit-nationwide-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  background: linear-gradient(135deg, #2c1a14 0%, #442a1f 100%) !important;
+  color: #ffffff !important;
+  border: 1.5px solid #c59b6d !important;
+  border-radius: 12px !important;
+  padding: 13px 22px !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 16px rgba(44, 26, 20, 0.18) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.visit-nationwide-btn:hover {
+  background: #c59b6d !important;
+  color: #1a1410 !important;
+  border-color: #2c1a14 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(197, 155, 109, 0.4) !important;
+}
+
+.map-links a.map-link-highlight {
+  background: #2c1a14 !important;
+  color: #f7ecd9 !important;
+  border: 1.5px solid #c59b6d !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  padding: 8px 14px !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+}
+
+.map-links a.map-link-highlight:hover {
+  background: #c59b6d !important;
+  color: #1a1410 !important;
+  border-color: #2c1a14 !important;
+}
+
+@media (max-width: 768px) {
+  .site-footer {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
