@@ -54,7 +54,8 @@ const exactOfficialOrgAndPhysicianJsonLd = {
       "@type": ["MedicalBusiness", "MedicalClinic"],
       "@id": "https://orbmed.co.kr/#organization",
       "name": "오브한의원 마곡점",
-      "alternateName": ["오브한의원", "ORBMED CLINIC", "오브한의원 마곡"],
+      "alternateName": "오브한의원 마곡점",
+      "description": "다채널 습식 정량화 뇌파검사(qEEG)와 HRV 검사를 통해 자율신경실조증 및 브레인포그를 중점 진료하는 한의원",
       "url": "https://orbmed.co.kr",
       "telephone": "+82-2-6959-5982",
       "priceRange": "₩₩",
@@ -63,8 +64,13 @@ const exactOfficialOrgAndPhysicianJsonLd = {
       "areaServed": ["마곡동", "강서구", "서울"],
       "medicalSpecialty": [
         "Neurology",
-        "Psychiatry",
-        "TraditionalChineseMedicine"
+        "Psychiatry"
+      ],
+      "knowsAbout": [
+        "https://en.wikipedia.org/wiki/Dysautonomia",
+        "https://en.wikipedia.org/wiki/Brain_fog",
+        "Dysautonomia",
+        "Brain fog"
       ],
       "address": {
         "@type": "PostalAddress",
