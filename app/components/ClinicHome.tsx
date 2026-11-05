@@ -52,7 +52,7 @@ const copy = {
       },
       {
         title: 'Normative DB Z-score 정밀 대조',
-        desc: '국제 10-20 표준 전극 시스템 기준의 Normative Database(표준 건강 대조군 데이터베이스) Z-score 분석을 통해, 정신과 약으로도 잡히지 않던 불안·불면·만성피로의 기저 신경 과열과 기능 저하를 객관적 수치(Z-score)로 입증합니다',
+        desc: 'AI 기반 뇌파 분석 솔루션인 QEEG-32FX AI 시스템을 통해 두피 미세 신호를 정밀 추출합니다. 이를 성별·연령별 정상 건강 대조군 빅데이터(Normative DB)와 정밀 매핑하여, 육안으로 보이지 않는 신경망 과열 상태를 통계적 편차 지표인 Z-score로 정량화하여 입증합니다.',
       },
     ],
     protocolSteps: [
