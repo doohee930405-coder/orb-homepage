@@ -22,6 +22,7 @@ export interface Column {
   slug: string;
   title: string;
   summary: string;
+  snippet?: string;
   content: string;
   category: string;
   author: string;

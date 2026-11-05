@@ -135,7 +135,7 @@ export default function HomeColumnsArchive({
                   <time dateTime={col.date}>{col.date}</time>
                 </div>
                 <h3 className="home-column-title">{col.title}</h3>
-                <p className="home-column-summary">{col.summary}</p>
+                <p className="column-snippet home-column-summary">{col.snippet || col.summary}</p>
                 <div className="home-column-footer">
                   <span className="read-more-text">
                     {readMoreText}

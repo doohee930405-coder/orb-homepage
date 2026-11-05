@@ -27,6 +27,7 @@ export default function Home() {
     slug: col.slug,
     title: col.title,
     summary: col.summary,
+    snippet: col.snippet || col.summary,
     content: '',
     category: col.category,
     author: col.author,

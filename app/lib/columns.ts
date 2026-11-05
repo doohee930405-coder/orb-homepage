@@ -645,10 +645,54 @@ export function cleanAndRepairMarkdown(text: string): string {
   return cleaned;
 }
 
+/**
+ * Dynamically extract the very first semantic text node containing the patient's
+ * subjective complaint, quoted symptom, or primary opening lead sentence from the article content.
+ */
+export function extractFirstComplaintSentence(content: string, fallbackSummary: string = ''): string {
+  if (!content || typeof content !== 'string') return fallbackSummary;
+
+  // Split into paragraphs / lines
+  const lines = content.split(/\r?\n/);
+
+  for (let rawLine of lines) {
+    let line = rawLine.trim();
+    if (!line) continue;
+    // Skip Markdown headings, image tags, horizontal rules, blockquotes, HTML tags
+    if (/^(#{1,6}\s|!\[|<img|---|___|\*\*\*|>)/i.test(line)) continue;
+
+    // 1. Check for quoted patient complaint first (e.g. "숨이 턱턱...", “원장님, 식사량을...”)
+    const quoteMatch = line.match(/(?:["“])([^"”]{10,240})(?:["”])/);
+    if (quoteMatch) {
+      return `"${quoteMatch[1].trim()}"`;
+    }
+
+    // 2. Clean markdown syntax, links, bold, italics, HTML tags
+    const cleaned = line
+      .replace(/!\[.*?\]\(.*?\)/g, '')
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+      .replace(/[*_~`#]/g, '')
+      .replace(/<[^>]+>/g, '')
+      .trim();
+
+    // 3. Extract the very first semantic complete sentence
+    if (cleaned.length >= 15) {
+      const sentenceMatch = cleaned.match(/^.*?[.?!](?=\s|$)/);
+      if (sentenceMatch && sentenceMatch[0].length >= 15) {
+        return sentenceMatch[0].trim();
+      }
+      return cleaned.slice(0, 140).trim();
+    }
+  }
+
+  return fallbackSummary;
+}
+
 export function normalizeColumn(parsed: any): Column {
   const category = normalizeCategory(parsed.category);
   const cleanedContent = cleanAndRepairMarkdown(parsed.content || '');
   const cleanedSummary = cleanAndRepairMarkdown(decodeTextEntities(parsed.summary || ''));
+  const snippet = parsed.snippet || extractFirstComplaintSentence(cleanedContent, cleanedSummary);
 
   let thumbnail = (parsed.thumbnail || '').trim();
   if (
@@ -676,6 +720,7 @@ export function normalizeColumn(parsed: any): Column {
     slug: parsed.slug,
     title: decodeTextEntities(parsed.title || ''),
     summary: cleanedSummary,
+    snippet,
     content: cleanedContent,
     category,
     author: parsed.author || '오브한의원 대표원장 전두희',

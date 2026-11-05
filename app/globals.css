@@ -5614,16 +5614,19 @@ h3.faq-accordion-heading {
   overflow: hidden;
 }
 
+.column-snippet,
 .home-column-summary {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
-  color: var(--cocoa-soft);
+  color: var(--taupe, #8a8077);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.68;
+  margin: 12px 0 20px;
   display: -webkit-box;
   flex-grow: 1;
-  font-size: 0.92rem;
-  line-height: 1.72;
-  margin: 0 0 20px;
   overflow: hidden;
+  word-break: keep-all;
 }
 
 .home-column-footer {
