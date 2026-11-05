@@ -55,27 +55,29 @@ export default function LocationPage() {
           </p>
         </div>
 
-        {/* Quick Highlights Bar */}
-        <div className="access-quick-bar">
-          <div className="quick-badge-item">
-            <span className="badge-sub">항공편 직결</span>
-            <strong className="badge-val">김포공항 5분</strong>
-            <span className="badge-desc">공항철도/9호선 단 1정거장</span>
-          </div>
-          <div className="quick-badge-item">
-            <span className="badge-sub">KTX 열차</span>
-            <strong className="badge-val">서울역 15~20분</strong>
-            <span className="badge-desc">공항철도 다이렉트 연결</span>
-          </div>
-          <div className="quick-badge-item">
-            <span className="badge-sub">지하철 초역세권</span>
-            <strong className="badge-val">마곡나루역 도보 1분</strong>
-            <span className="badge-desc">5번 출구 지하 연결통로</span>
-          </div>
-          <div className="quick-badge-item">
-            <span className="badge-sub">운영 원칙</span>
-            <strong className="badge-val">100% 사전 예약제</strong>
-            <span className="badge-desc">원거리 맞춤 당일 정밀 검사</span>
+        {/* Right Column: 2x2 Square 4-Quadrant Widget */}
+        <div className="nationwide-hero-visual">
+          <div className="access-quad-square" role="region" aria-label="전국 접근성 핵심 요약">
+            <div className="quad-item quad-top-left">
+              <span className="badge-sub">항공편 직결</span>
+              <strong className="badge-val">김포공항 5분</strong>
+              <span className="badge-desc">공항철도/9호선 단 1정거장</span>
+            </div>
+            <div className="quad-item quad-top-right">
+              <span className="badge-sub">KTX 열차</span>
+              <strong className="badge-val">서울역 15~20분</strong>
+              <span className="badge-desc">공항철도 다이렉트 연결</span>
+            </div>
+            <div className="quad-item quad-bottom-left">
+              <span className="badge-sub">지하철 초역세권</span>
+              <strong className="badge-val">마곡나루역 도보 1분</strong>
+              <span className="badge-desc">5번 출구 지하 연결통로</span>
+            </div>
+            <div className="quad-item quad-bottom-right">
+              <span className="badge-sub">운영 원칙</span>
+              <strong className="badge-val">100% 사전 예약제</strong>
+              <span className="badge-desc">원거리 맞춤 당일 정밀 검사</span>
+            </div>
           </div>
         </div>
       </section>
