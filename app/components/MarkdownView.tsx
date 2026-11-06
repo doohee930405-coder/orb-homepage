@@ -18,34 +18,34 @@ export interface InternalLinkRule {
 
 export const CLINICAL_INTERNAL_LINK_RULES: InternalLinkRule[] = [
   {
+    key: 'chuna',
+    pattern: /(?:뇌신경\s*추나요법|뇌신경\s*추나|상부경추\s*추나|추나요법|추나\s*치료)/i,
+    url: '/pain',
+    title: '오브한의원 뇌신경·척추 관절 추나요법 클리닉 안내',
+  },
+  {
     key: 'qeeg',
     pattern: /(?:다채널\s*습식\s*)?(?:정량화\s*뇌파\s*검사|정량뇌파\s*검사|정량화\s*뇌파|qEEG\s*뇌파검사|qEEG\s*검사|qEEG)/i,
-    url: '/#treatments',
-    title: '오브한의원 마곡점 다채널 습식 정량화 뇌파검사(qEEG) 진료 안내',
+    url: '/qeeg',
+    title: '오브한의원 다채널 습식 정량화 뇌파검사(qEEG) 정밀 진료 안내',
   },
   {
     key: 'dysautonomia',
     pattern: /(?:자율신경실조증|자율신경계\s*불균형|자율신경\s*기능이상|자율신경장애)/i,
-    url: '/#treatments',
-    title: '오브한의원 마곡점 자율신경실조증 특화 클리닉 안내',
+    url: '/treatments/autonomic-qeeg',
+    title: '오브한의원 자율신경실조증 특화 클리닉 안내',
   },
   {
     key: 'brainfog',
     pattern: /(?:브레인포그|두중감|머리\s*멍함)/i,
-    url: '/#treatments',
+    url: '/treatments/autonomic-qeeg',
     title: '오브한의원 브레인포그 및 만성피로 신경계 원인 치료 안내',
-  },
-  {
-    key: 'chuna',
-    pattern: /(?:뇌신경\s*추나요법|뇌신경\s*추나|상부경추\s*추나|추나요법|추나\s*치료)/i,
-    url: '/#treatments',
-    title: '오브한의원 마곡점 뇌신경·구조 정렬 추나요법 안내',
   },
   {
     key: 'booking',
     pattern: /(?:진료\s*예약|온라인\s*예약|상담\s*예약)/i,
     url: '/#contact',
-    title: '오브한의원 마곡점 진료 예약 및 내원 안내',
+    title: '오브한의원 진료 예약 및 내원 안내',
   },
 ];
 
