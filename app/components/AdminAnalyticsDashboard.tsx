@@ -265,6 +265,10 @@ export default function AdminAnalyticsDashboard() {
 
   // SVG Chart Calculations
   const trends = activeDailyTrends;
+  const todayTrend = useMemo(() => {
+    if (trends.length === 0) return null;
+    return trends[trends.length - 1];
+  }, [trends]);
   const maxViewVal = useMemo(() => {
     if (trends.length === 0) return 10;
     const maxVal = Math.max(...trends.map((t) => Math.max(t.views, t.uv)));
@@ -273,8 +277,8 @@ export default function AdminAnalyticsDashboard() {
 
   const chartWidth = 900;
   const chartHeight = 280;
-  const paddingX = 40;
-  const paddingY = 30;
+  const paddingX = 55;
+  const paddingY = 35;
   const plotWidth = chartWidth - paddingX * 2;
   const plotHeight = chartHeight - paddingY * 2;
 
@@ -742,11 +746,32 @@ export default function AdminAnalyticsDashboard() {
           }}
         >
           <div>
-            <h2 style={{ fontSize: '17px', fontWeight: 700, color: '#1F2937' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: '17px', fontWeight: 700, color: '#1F2937' }}>
               {activeTab === 'site'
                 ? '일자별 웹사이트 전체 조회수(PV) 및 순 방문자(UV) 추이'
                 : '일자별 칼럼 전체 조회수(PV) 및 순 방문자(UV) 추이'}
             </h2>
+              {todayTrend && (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: '#EFF6FF',
+                    border: '1px solid #BFDBFE',
+                    color: '#1D4ED8',
+                    padding: '3px 10px',
+                    borderRadius: '9999px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                  }}
+                >
+                  <span style={{ width: '7px', height: '7px', background: '#2563EB', borderRadius: '50%' }}></span>
+                  오늘({todayTrend.date.slice(5)}): 조회수 {todayTrend.views.toLocaleString()}회 · 순방문 {todayTrend.uv.toLocaleString()}명
+                </span>
+              )}
+            </div>
             <p style={{ fontSize: '13px', color: '#6B7280' }}>
               {activeTab === 'site'
                 ? '전체 홈페이지 유입 패턴을 통해 어떤 요일에 병원 정보 탐색이 활발한지 파악할 수 있습니다.'
@@ -1059,38 +1084,76 @@ export default function AdminAnalyticsDashboard() {
             })}
           </svg>
 
-          {/* Floating Tooltip Card */}
-          {hoveredPoint && (
-            <div
-              style={{
-                position: 'absolute',
-                left: `${(hoveredPoint.x / chartWidth) * 100}%`,
-                top: '15px',
-                transform: 'translateX(-50%)',
-                background: 'rgba(17, 24, 39, 0.95)',
-                color: '#FFFFFF',
-                padding: '8px 14px',
-                borderRadius: '8px',
-                fontSize: '12px',
-                pointerEvents: 'none',
-                whiteSpace: 'nowrap',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                zIndex: 10,
-              }}
-            >
-              <div style={{ fontWeight: 700, marginBottom: '4px', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '3px' }}>
-                📅 {hoveredPoint.item.date}
+          {/* Floating Tooltip Card (Smart edge alignment to prevent right/left overflow and scrollbar) */}
+          {hoveredPoint && (() => {
+            const xPercent = (hoveredPoint.x / chartWidth) * 100;
+            const isRightSide = xPercent > 65;
+            const isLeftSide = xPercent < 25;
+
+            return (
+              <div
+                style={{
+                  position: 'absolute',
+                  ...(isRightSide
+                    ? { right: `${Math.max(8, 100 - xPercent)}%`, left: 'auto' }
+                    : isLeftSide
+                    ? { left: `${Math.max(8, xPercent)}%`, right: 'auto' }
+                    : { left: `${xPercent}%`, right: 'auto', transform: 'translateX(-50%)' }),
+                  top: '12px',
+                  background: 'rgba(17, 24, 39, 0.96)',
+                  backdropFilter: 'blur(6px)',
+                  color: '#FFFFFF',
+                  padding: '10px 16px',
+                  borderRadius: '10px',
+                  fontSize: '12px',
+                  pointerEvents: 'none',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  zIndex: 30,
+                  boxSizing: 'border-box',
+                }}
+              >
+                <div
+                  style={{
+                    fontWeight: 700,
+                    marginBottom: '6px',
+                    borderBottom: '1px solid rgba(255,255,255,0.2)',
+                    paddingBottom: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <span>📅 {hoveredPoint.item.date}</span>
+                  {hoveredPoint.index === trends.length - 1 && (
+                    <span
+                      style={{
+                        background: '#2563EB',
+                        color: '#FFFFFF',
+                        fontSize: '10px',
+                        padding: '1px 6px',
+                        borderRadius: '4px',
+                        fontWeight: 700,
+                      }}
+                    >
+                      오늘
+                    </span>
+                  )}
+                </div>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                  <span style={{ color: '#93C5FD', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{ width: '8px', height: '8px', background: '#3B82F6', borderRadius: '50%', display: 'inline-block' }}></span>
+                    조회수(PV): <strong style={{ color: '#FFFFFF', fontSize: '13px' }}>{hoveredPoint.item.views.toLocaleString()}회</strong>
+                  </span>
+                  <span style={{ color: '#6EE7B7', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%', display: 'inline-block' }}></span>
+                    순방문(UV): <strong style={{ color: '#FFFFFF', fontSize: '13px' }}>{hoveredPoint.item.uv.toLocaleString()}명</strong>
+                  </span>
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <span style={{ color: '#93C5FD' }}>
-                  조회수(PV): <strong>{hoveredPoint.item.views.toLocaleString()}회</strong>
-                </span>
-                <span style={{ color: '#6EE7B7' }}>
-                  순방문(UV): <strong>{hoveredPoint.item.uv.toLocaleString()}명</strong>
-                </span>
-              </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
 
         {/* Chart Legend */}
@@ -1445,7 +1508,10 @@ export default function AdminAnalyticsDashboard() {
                             height={barH}
                             fill="#3B82F6"
                             rx="2"
-                          />
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <title>{`${d.date}: ${d.views.toLocaleString()}회`}</title>
+                          </rect>
                           {i % 5 === 0 && (
                             <text
                               x={x}
