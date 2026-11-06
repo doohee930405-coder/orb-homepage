@@ -379,7 +379,7 @@ export function cleanAndRepairMarkdown(text: string): string {
   const quoteSummaryPattern = /^(?:>\s*(?:💡\s*)?\**\s*(?:(?:전두희\s*원장의\s*)?핵심\s*(?:진료\s*)?요약|Medical\s*Summary|Summary)[^\n]*\n)(?:>[^\n]*\n*)+/i;
   cleaned = cleaned.replace(quoteSummaryPattern, '').trim();
 
-  // If text starts with any summary blockquote
+  // If text starts with any summary blockquote (protect link blocks and patient quotes from accidental removal)
   if (cleaned.startsWith('>')) {
     const lines = cleaned.split('\n');
     let quoteEnd = 0;
@@ -387,7 +387,21 @@ export function cleanAndRepairMarkdown(text: string): string {
       quoteEnd++;
     }
     const topQuote = lines.slice(0, quoteEnd).join(' ');
-    if (topQuote.includes('핵심') || topQuote.includes('요약') || topQuote.includes('Summary')) {
+    const isLinkOrPatient =
+      topQuote.includes('🔗') ||
+      topQuote.includes('http') ||
+      topQuote.includes('연계 칼럼') ||
+      topQuote.includes('바로가기') ||
+      /(?:원장님|선생님)/.test(topQuote) ||
+      /^>\s*["'“]/.test(lines[0]);
+
+    if (
+      !isLinkOrPatient &&
+      (topQuote.includes('핵심 요약') ||
+        topQuote.includes('핵심진료') ||
+        topQuote.includes('Medical Summary') ||
+        topQuote.includes('3줄 요약'))
+    ) {
       cleaned = lines.slice(quoteEnd).join('\n').trim();
     }
   }

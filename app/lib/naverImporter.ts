@@ -579,6 +579,15 @@ export async function fetchNaverBlogPosts(
         break;
       }
 
+      // Stop immediately if allPosts reached the true total count reported by Naver API
+      const reportedTotal =
+        typeof data.totalCount === 'number'
+          ? data.totalCount
+          : parseInt(String(data.totalCount || ''), 10);
+      if (!isNaN(reportedTotal) && reportedTotal > 0 && allPosts.length >= reportedTotal) {
+        break;
+      }
+
       // If this page returned fewer than countPerPage and we are at page 2 or higher, we reached the end
       if (data.postList.length < countPerPage && page >= 2) {
         break;
@@ -1041,20 +1050,38 @@ export async function convertNaverHtmlToMasterMarkdown(
     }
   }
 
-  // 1. Extract Top Blockquote / Summary (인용구 상단 3줄 요약)
+  // 1. Extract Top Blockquote / Summary (진짜 핵심 요약인 경우만 summary로 분리, 환자 공감/호소 멘트는 본문 인용구로 100% 보존)
   const quoteRegex =
     /<blockquote[^>]*class="[^"]*(?:se_blockquote|se-quotation-container|se-quote-container|se-module-blockquote|se-quote|se-quotation|se-component-quotation)[^"]*"[^>]*>([\s\S]*?)<\/blockquote>/i;
   const quoteMatch = bodyHtml.match(quoteRegex) || bodyHtml.match(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/i);
 
   if (quoteMatch) {
     let rawQuote = stripHtml(quoteMatch[1]).trim();
-    rawQuote = rawQuote
-      .replace(/^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i, '')
-      .replace(/^[>\s💡📌🔗]+/gu, '')
-      .trim();
-    if (rawQuote.length >= 10) {
-      summary = rawQuote;
-      bodyHtml = bodyHtml.replace(quoteMatch[0], '');
+    // 환자 호소/공감 대사인지 판별 (따옴표 대화체, 원장님/선생님 호칭, 구어체 의문/호소문)
+    const isPatientQuote =
+      /^["'“]/.test(rawQuote) ||
+      /["'”]$/.test(rawQuote) ||
+      /(?:원장님|선생님)[,\s!]/.test(rawQuote.slice(0, 30)) ||
+      /(?:할까요|인가요|나요|있을까요|것\s*같아요|했습니다|돼요|합니다)\?["]?$/.test(rawQuote) ||
+      /(?:연습하는데요|심해지는\s*것|답답함을\s*호소|잠을\s*못)/.test(rawQuote);
+
+    const isExplicitSummary =
+      /(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary|3줄\s*요약|핵심\s*정리|임상\s*요약)/i.test(
+        quoteMatch[1]
+      );
+
+    if (isExplicitSummary && !isPatientQuote) {
+      rawQuote = rawQuote
+        .replace(
+          /^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i,
+          ''
+        )
+        .replace(/^[>\s💡📌🔗]+/gu, '')
+        .trim();
+      if (rawQuote.length >= 10) {
+        summary = rawQuote;
+        bodyHtml = bodyHtml.replace(quoteMatch[0], '');
+      }
     }
   }
 
@@ -1321,20 +1348,25 @@ export async function convertNaverHtmlToMasterMarkdown(
     () => `\n\n[📍 **오브한의원 마곡점 (서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층)**](${NAVER_PLACE_SEARCH_URL})\n\n`
   );
 
-  // 5. OpenGraph Card Links (네이버 지도 플레이스, 톡톡, 뇌파기기 소개글 등 보존 및 치환)
+  // 5. OpenGraph Card Links (네이버 지도 플레이스, 톡톡, 뇌파기기 소개글, 연계 칼럼 링크 등 보존 및 치환)
   bodyHtml = replaceBalancedDivComponent(
     bodyHtml,
     '<div[^>]*class="[^"]*(?:se-component\\s+se-oglink|se-oglink|se-module-oglink)[^"]*"[^>]*>',
     (compHtml) => {
       const linkMatch = compHtml.match(/href="([^"]+)"/i);
-      const titleMatch = compHtml.match(/class="[^"]*se-oglink-title[^"]*"[^>]*>([\s\S]*?)<\/strong>/i) ||
-                         compHtml.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);
+      const titleMatch =
+        compHtml.match(/class="[^"]*se-oglink-title[^"]*"[^>]*>([\s\S]*?)<\/strong>/i) ||
+        compHtml.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);
       if (linkMatch) {
         const href = linkMatch[1];
-        const linkTitle = titleMatch ? stripHtml(titleMatch[1]).trim() : '관련 정보 바로가기';
+        let linkTitle = titleMatch ? stripHtml(titleMatch[1]).trim() : '관련 정보 바로가기';
+        linkTitle = decodeHtmlEntities(linkTitle)
+          .replace(/</g, '〈')
+          .replace(/>/g, '〉')
+          .trim();
 
         if (isQeegPostReference(href, linkTitle)) {
-          return `\n\n[👉 오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기](/columns/습식-정량-뇌파-측정-과정에-대해-안내해드립니다-314941)\n\n`;
+          return `\n\n[👉 **오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기**](/columns/습식-정량-뇌파-측정-과정에-대해-안내해드립니다-314941)\n\n`;
         }
         if (href.includes('booking.naver.com')) {
           return `\n\n[🗓️ **오브한의원 마곡점 네이버 빠른 예약 바로가기**](${href})\n\n`;
@@ -1348,7 +1380,7 @@ export async function convertNaverHtmlToMasterMarkdown(
         if (href.includes('pf.kakao.com')) {
           return `\n\n[💬 **오브한의원 카카오톡 채널 문의 바로가기**](${href})\n\n`;
         }
-        return `\n\n[🔗 **${linkTitle}**](${href})\n\n`;
+        return `\n\n> 🔗 **연계 칼럼**: [${linkTitle}](${href})\n\n`;
       }
       return '';
     }
@@ -1480,6 +1512,14 @@ export async function convertNaverHtmlToMasterMarkdown(
   bodyHtml = bodyHtml.replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, (_, inner) => `\n\n### ${stripHtml(inner)}\n\n`);
   bodyHtml = bodyHtml.replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, (_, inner) => `\n\n### ${stripHtml(inner)}\n\n`);
 
+  // Convert all blockquotes to authentic markdown blockquotes (> ...)
+  bodyHtml = bodyHtml.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, bqInner) => {
+    const raw = stripHtml(bqInner).trim();
+    if (!raw) return '';
+    const lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
+    return `\n\n${lines.map((l) => `> ${l}`).join('\n>\n')}\n\n`;
+  });
+
   // Parse se-text-paragraph with full formatting retention
   bodyHtml = bodyHtml.replace(/<p[^>]*class="[^"]*se-text-paragraph[^"]*"[^>]*>([\s\S]*?)<\/p>/gi, (_, inner) => {
     return convertHtmlParagraph(inner);
@@ -1606,14 +1646,36 @@ export async function convertNaverHtmlToMasterMarkdown(
   // Strip remaining stray zero-width spaces
   markdown = markdown.replace(/[\u200B\uFEFF]/g, '');
 
-  // If no summary was found from blockquote, extract first substantive sentences without truncation
+  // If no explicit summary was found, intelligently extract substantive text from introductory paragraphs
+  // (strictly skip blockquotes like patient dialogue, link cards, headers, or images)
   if (!summary) {
     const paragraphs = markdown.split('\n\n').filter((p) => {
       const tp = p.trim();
-      return tp && !tp.startsWith('#') && !tp.startsWith('!') && !tp.startsWith('---') && !tp.startsWith('📌');
+      return (
+        tp &&
+        !tp.startsWith('#') &&
+        !tp.startsWith('!') &&
+        !tp.startsWith('---') &&
+        !tp.startsWith('📌') &&
+        !tp.startsWith('>') &&
+        !tp.startsWith('[🔗') &&
+        !tp.startsWith('[👉') &&
+        !tp.startsWith('[📍') &&
+        !tp.startsWith('관련 정보')
+      );
     });
+
     if (paragraphs.length > 0) {
-      summary = paragraphs[0].trim();
+      const firstP = paragraphs[0].trim();
+      if (firstP.length <= 250 && firstP.length >= 40) {
+        summary = firstP;
+      } else {
+        const sentences = firstP.split(/(?<=[.!?])\s+/);
+        summary = sentences.slice(0, 2).join(' ');
+        if (summary.length < 50 && sentences.length > 2) {
+          summary = sentences.slice(0, 3).join(' ');
+        }
+      }
     } else {
       summary = `${postTitle}에 대한 전두희 대표원장의 한의학적 진단과 치료 칼럼입니다.`;
     }

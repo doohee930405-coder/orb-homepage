@@ -889,15 +889,55 @@ const handleDelete = async (slug: string, title: string) => {
             '해당 블로그에서 공개 글을 찾지 못했습니다. 블로그 ID를 확인하시거나 [방법 2: URL 직접 입력]을 이용해 주세요.'
           );
         } else {
-          const currentSlugs = new Set(columns.map((c) => c.slug));
-          const currentTitles = new Set(columns.map((c) => c.title.trim().toLowerCase()));
+          const cleanTitleForCompare = (raw: string) => {
+            if (!raw) return '';
+            let t = raw;
+            t = t
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'")
+              .replace(/&apos;/g, "'")
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&amp;/g, '&')
+              .replace(/&middot;/g, '·');
+            t = t.replace(/^\[[^\]]+\]\s*/, '');
+            return t.replace(/[\s\-_\'",.·:;!?~()[\]{}]+/g, '').toLowerCase().trim();
+          };
+
+          const currentSlugs = columns.map((c) => c.slug);
+          const currentLogSuffixes = new Set<string>();
+          for (const s of currentSlugs) {
+            const m = s.match(/-(\d{5,14})$/);
+            if (m) currentLogSuffixes.add(m[1]);
+          }
+          const currentNormTitles = columns.map((c) => cleanTitleForCompare(c.title));
 
           setDiscoveredPosts(
             data.posts.map((p: any) => {
-              const isAlreadyMigrated =
-                currentSlugs.has(p.logNo) ||
-                Array.from(currentSlugs).some((s) => s.endsWith(`-${p.logNo}`)) ||
-                currentTitles.has(p.title.trim().toLowerCase());
+              const pLogNo = String(p.logNo || '').trim();
+              const pSuffix = pLogNo.slice(-6);
+              const pNormTitle = cleanTitleForCompare(p.title);
+
+              const isMatchedByLogNo =
+                Boolean(pLogNo) &&
+                (currentSlugs.some((s) => s.endsWith(`-${pLogNo}`)) ||
+                  currentLogSuffixes.has(pLogNo) ||
+                  currentLogSuffixes.has(pSuffix) ||
+                  currentSlugs.some((s) => s.includes(pSuffix)));
+
+              const isMatchedByTitle =
+                Boolean(pNormTitle) &&
+                currentNormTitles.some((ct) => {
+                  if (!ct) return false;
+                  if (ct === pNormTitle) return true;
+                  if (ct.length >= 10 && pNormTitle.length >= 10) {
+                    return ct.includes(pNormTitle) || pNormTitle.includes(ct);
+                  }
+                  return false;
+                });
+
+              const isAlreadyMigrated = isMatchedByLogNo || isMatchedByTitle;
+
               return {
                 ...p,
                 alreadyImported: isAlreadyMigrated,
