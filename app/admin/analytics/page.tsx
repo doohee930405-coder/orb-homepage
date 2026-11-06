@@ -98,7 +98,7 @@ export default function AdminAnalyticsPage() {
       <header className="admin-topbar">
         <div className="admin-topbar-inner">
           <div className="admin-topbar-title">
-            <a href="/admin/columns" className="admin-logo">ORB CLINIC</a>
+            <Link href="/" className="admin-logo" title="메인페이지(홈)로 이동">ORB CLINIC</Link>
             <span>원장실 통합 대시보드</span>
           </div>
 

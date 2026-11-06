@@ -1258,7 +1258,7 @@ const handleDelete = async (slug: string, title: string) => {
       <div className="admin-shell">
         <div className="admin-login-card">
           <div className="admin-login-header">
-            <span className="admin-brand">ORB CLINIC</span>
+            <Link href="/" className="admin-brand" style={{ textDecoration: 'none' }} title="메인페이지(홈)로 이동">ORB CLINIC</Link>
             <h1>원장실 관리자 인증</h1>
             <p>오브한의원 칼럼 작성 및 관리를 위해 비밀번호를 입력해 주세요.</p>
           </div>
@@ -1306,7 +1306,7 @@ const handleDelete = async (slug: string, title: string) => {
       <header className="admin-topbar" style={{ height: 'auto', minHeight: '64px' }}>
         <div className="admin-topbar-inner" style={{ overflowX: 'auto', gap: '16px', padding: '8px 24px' }}>
           <div className="admin-topbar-title" style={{ flexShrink: 0 }}>
-            <a href="/admin/columns" className="admin-logo" style={{ whiteSpace: 'nowrap' }}>ORB CLINIC</a>
+            <Link href="/" className="admin-logo" style={{ whiteSpace: 'nowrap' }} title="메인페이지(홈)로 이동">ORB CLINIC</Link>
             <span style={{ whiteSpace: 'nowrap' }}>원장실 통합 대시보드</span>
           </div>
 
