@@ -5060,17 +5060,22 @@ h3.faq-accordion-heading {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
 }
 
 .qeeg-spec-item {
   align-items: start;
   display: flex;
   gap: 10px;
+  height: 100%;
 }
 
 .qeeg-spec-item > div {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .spec-check {
@@ -5079,6 +5084,7 @@ h3.faq-accordion-heading {
   font-size: 0.95rem;
   font-weight: 800;
   line-height: 1.4;
+  margin-top: 1px;
 }
 
 .qeeg-spec-item strong {
@@ -5086,6 +5092,8 @@ h3.faq-accordion-heading {
   display: block;
   font-size: 0.92rem;
   font-weight: 700;
+  line-height: 1.4;
+  min-height: 2.8em;
   margin-bottom: 6px;
 }
 
@@ -5093,8 +5101,10 @@ h3.faq-accordion-heading {
   color: var(--taupe);
   font-size: 0.82rem;
   line-height: 1.5;
-  text-align: center;
+  text-align: left;
   word-break: keep-all;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .protocol-grid {
@@ -5704,6 +5714,15 @@ h3.faq-accordion-heading {
   .qeeg-spec-items {
     grid-template-columns: 1fr;
     gap: 14px;
+  }
+
+  .qeeg-spec-item strong {
+    min-height: auto;
+  }
+
+  .qeeg-spec-item p {
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   .protocol-grid {
