@@ -68,11 +68,20 @@ export function stripTopDuplicateSummary(rawContent: string, summary?: string): 
       quoteEnd++;
     }
     const topQuote = lines.slice(0, quoteEnd).join(' ');
+    const isLinkOrPatient =
+      topQuote.includes('🔗') ||
+      topQuote.includes('http') ||
+      topQuote.includes('연계 칼럼') ||
+      topQuote.includes('바로가기') ||
+      /(?:원장님|선생님)/.test(topQuote) ||
+      /^>\s*["'“]/.test(lines[0]);
+
     if (
-      topQuote.includes('핵심') ||
-      topQuote.includes('요약') ||
-      topQuote.includes('Summary') ||
-      (summary && summary.length >= 15 && topQuote.replace(/[^가-힣a-zA-Z0-9]/g, '').includes(summary.slice(0, 25).replace(/[^가-힣a-zA-Z0-9]/g, '')))
+      !isLinkOrPatient &&
+      (topQuote.includes('핵심 요약') ||
+        topQuote.includes('핵심진료') ||
+        topQuote.includes('Medical Summary') ||
+        topQuote.includes('3줄 요약'))
     ) {
       text = lines.slice(quoteEnd).join('\n').trim();
     }

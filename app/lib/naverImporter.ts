@@ -1117,13 +1117,63 @@ export async function convertNaverHtmlToMasterMarkdown(
     .replace(/<(?:div|p|span)[^>]*class="[^"]*(?:se-caption|se-module-caption|se-image-caption)[^"]*"[^>]*>[\s\S]*?<\/(?:div|p|span)>/gi, '')
     .replace(/<p[^>]*class="[^"]*se_textarea[^"]*"[^>]*>\s*[\*_]?(?:설명\s*:|오브한의원)[^<]*<\/(?:p|span)>/gi, '');
 
-  // Strip <a> tags wrapping images (e.g. <a href="#" class="se-module-image-link"><img ...></a>)
+  // Helper: Detect if a link refers to the Naver QEEG device introduction post
+  const isQeegPostReference = (url: string, text: string): boolean => {
+    const combined = `${url} ${text}`.toLowerCase();
+    const hasQeegTerm = /qeeg|정량뇌파|정량화뇌파|뇌파검사|뇌파기계|뇌파장비|뇌파\s*측정/.test(combined);
+    const isNaverOrLocal = /blog\.naver\.com|naver\.com|orbclinic|\/columns\//.test(combined);
+    return hasQeegTerm && (isNaverOrLocal || /기기|소개|안내|검사|과정|장비/.test(combined));
+  };
+
+  // 3-1. Naver Map & Place Module conversion to authentic place URL (Must run BEFORE image extraction so map thumbs aren't saved as body images)
+  bodyHtml = replaceBalancedDivComponent(
+    bodyHtml,
+    '<div[^>]*class="[^"]*(?:se-component\\s+se-placesMap|se-placesMap|se-section-placesMap|se-module-map|se-component-map|se-map)[^"]*"[^>]*>',
+    () => `\n\n[📍 **오브한의원 마곡점 (서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층)**](${NAVER_PLACE_SEARCH_URL})\n\n`
+  );
+
+  // 3-2. OpenGraph Card Links (연계 칼럼 링크, 지도 플레이스, 톡톡, 카카오채널 등 보존 - Must run BEFORE image extraction to preserve <a> wrappers and prevent thumbnail image leaks)
+  bodyHtml = replaceBalancedDivComponent(
+    bodyHtml,
+    '<div[^>]*class="[^"]*(?:se-component\\s+se-oglink|se-oglink|se-module-oglink)[^"]*"[^>]*>',
+    (compHtml) => {
+      const linkMatch = compHtml.match(/href="([^"]+)"/i);
+      const titleMatch =
+        compHtml.match(/class="[^"]*se-oglink-title[^"]*"[^>]*>([\s\S]*?)<\/strong>/i) ||
+        compHtml.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);
+      if (linkMatch) {
+        const href = linkMatch[1];
+        let linkTitle = titleMatch ? stripHtml(titleMatch[1]).trim() : '관련 정보 바로가기';
+        linkTitle = decodeHtmlEntities(linkTitle)
+          .replace(/</g, '〈')
+          .replace(/>/g, '〉')
+          .trim();
+
+        if (isQeegPostReference(href, linkTitle)) {
+          return `\n\n[👉 **오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기**](/columns/습식-정량-뇌파-측정-과정에-대해-안내해드립니다-314941)\n\n`;
+        }
+        if (href.includes('booking.naver.com')) {
+          return `\n\n[🗓️ **오브한의원 마곡점 네이버 빠른 예약 바로가기**](${href})\n\n`;
+        }
+        if (href.includes('map.naver.com') || href.includes('naver.me') || href.includes('place.naver.com')) {
+          return `\n\n[📍 **오브한의원 마곡점 네이버 지도(플레이스) 바로가기**](${href})\n\n`;
+        }
+        if (href.includes('talk.naver.com')) {
+          return `\n\n[💬 **오브한의원 네이버 톡톡 1:1 상담 바로가기**](${href})\n\n`;
+        }
+        if (href.includes('pf.kakao.com')) {
+          return `\n\n[💬 **오브한의원 카카오톡 채널 문의 바로가기**](${href})\n\n`;
+        }
+        return `\n\n> 🔗 **연계 칼럼**: [${linkTitle}](${href})\n\n`;
+      }
+      return '';
+    }
+  );
+
+  // Strip <a> tags only when they are image link wrappers (se-module-image-link or href="#")
   // so images are never converted into [ ![alt](src) ](#)
-  bodyHtml = bodyHtml.replace(/<a\b[^>]*>([\s\S]*?<img\b[\s\S]*?>[\s\S]*?)<\/a>/gi, '$1');
-  bodyHtml = bodyHtml.replace(/<a\b[^>]*class="[^"]*se-module-image-link[^"]*"[^>]*>([\s\S]*?)<\/a>/gi, '$1');
-  bodyHtml = bodyHtml.replace(/<a\b[^>]*href=["'](?:#|javascript:[^"']*)["'][^>]*>(\s*<img\b[\s\S]*?<\/a>)/gi, (m) => {
-    return m.replace(/<\/?a\b[^>]*>/gi, '');
-  });
+  bodyHtml = bodyHtml.replace(/<a\b[^>]*class=["'][^"']*se-module-image-link[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi, '$1');
+  bodyHtml = bodyHtml.replace(/<a\b[^>]*href=["'](?:#|javascript:[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi, '$1');
 
   // Safe identifier for thumbnail downloading
   const logNoMatch = (logNo || slugPrefix).match(/(\d{6,14})/);
@@ -1333,58 +1383,7 @@ export async function convertNaverHtmlToMasterMarkdown(
     thumbnail = '';
   }
 
-  // Helper: Detect if a link refers to the Naver QEEG device introduction post
-  const isQeegPostReference = (url: string, text: string): boolean => {
-    const combined = `${url} ${text}`.toLowerCase();
-    const hasQeegTerm = /qeeg|정량뇌파|정량화뇌파|뇌파검사|뇌파기계|뇌파장비|뇌파\s*측정/.test(combined);
-    const isNaverOrLocal = /blog\.naver\.com|naver\.com|orbclinic|\/columns\//.test(combined);
-    return hasQeegTerm && (isNaverOrLocal || /기기|소개|안내|검사|과정|장비/.test(combined));
-  };
 
-  // Naver Map & Place Module conversion to authentic place URL
-  bodyHtml = replaceBalancedDivComponent(
-    bodyHtml,
-    '<div[^>]*class="[^"]*(?:se-component\\s+se-placesMap|se-placesMap|se-section-placesMap|se-module-map|se-component-map|se-map)[^"]*"[^>]*>',
-    () => `\n\n[📍 **오브한의원 마곡점 (서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층)**](${NAVER_PLACE_SEARCH_URL})\n\n`
-  );
-
-  // 5. OpenGraph Card Links (네이버 지도 플레이스, 톡톡, 뇌파기기 소개글, 연계 칼럼 링크 등 보존 및 치환)
-  bodyHtml = replaceBalancedDivComponent(
-    bodyHtml,
-    '<div[^>]*class="[^"]*(?:se-component\\s+se-oglink|se-oglink|se-module-oglink)[^"]*"[^>]*>',
-    (compHtml) => {
-      const linkMatch = compHtml.match(/href="([^"]+)"/i);
-      const titleMatch =
-        compHtml.match(/class="[^"]*se-oglink-title[^"]*"[^>]*>([\s\S]*?)<\/strong>/i) ||
-        compHtml.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);
-      if (linkMatch) {
-        const href = linkMatch[1];
-        let linkTitle = titleMatch ? stripHtml(titleMatch[1]).trim() : '관련 정보 바로가기';
-        linkTitle = decodeHtmlEntities(linkTitle)
-          .replace(/</g, '〈')
-          .replace(/>/g, '〉')
-          .trim();
-
-        if (isQeegPostReference(href, linkTitle)) {
-          return `\n\n[👉 **오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기**](/columns/습식-정량-뇌파-측정-과정에-대해-안내해드립니다-314941)\n\n`;
-        }
-        if (href.includes('booking.naver.com')) {
-          return `\n\n[🗓️ **오브한의원 마곡점 네이버 빠른 예약 바로가기**](${href})\n\n`;
-        }
-        if (href.includes('map.naver.com') || href.includes('naver.me') || href.includes('place.naver.com')) {
-          return `\n\n[📍 **오브한의원 마곡점 네이버 지도(플레이스) 바로가기**](${href})\n\n`;
-        }
-        if (href.includes('talk.naver.com')) {
-          return `\n\n[💬 **오브한의원 네이버 톡톡 1:1 상담 바로가기**](${href})\n\n`;
-        }
-        if (href.includes('pf.kakao.com')) {
-          return `\n\n[💬 **오브한의원 카카오톡 채널 문의 바로가기**](${href})\n\n`;
-        }
-        return `\n\n> 🔗 **연계 칼럼**: [${linkTitle}](${href})\n\n`;
-      }
-      return '';
-    }
-  );
 
   // Regular anchor links
   bodyHtml = bodyHtml.replace(/<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (_, href, text) => {
