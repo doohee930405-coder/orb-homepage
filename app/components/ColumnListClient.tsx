@@ -399,7 +399,7 @@ export default function ColumnListClient({ initialColumns, categories }: ColumnL
                         <time dateTime={col.date}>{col.date}</time>
                       </div>
                       <h3 className="column-card-title">{cleanDisplayText(col.title)}</h3>
-                      <p className="column-card-summary">{cleanDisplayText(col.summary)}</p>
+                      <p className="column-card-summary">{cleanDisplayText(col.summary || col.snippet || '')}</p>
                       <div className="column-card-footer">
                         <div className="column-tags">
                           {col.tags.slice(0, 3).map((tag) => (

@@ -691,30 +691,44 @@ export async function downloadAndSaveImage(
       cleanUrl = cleanUrl.replace(/\?type=[a-zA-Z0-9_]+/, '?type=w966');
     }
 
-    const res = await fetch(cleanUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Referer': 'https://m.blog.naver.com/',
-        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-      },
-      signal: AbortSignal.timeout(10000),
-    });
-
-    if (!res.ok) {
-      console.warn(`Failed to download image ${cleanUrl}: ${res.status}`);
-      return null;
+    // Candidate URLs with fallback CDN hosts for large animated GIFs
+    const candidateUrls = [cleanUrl];
+    if (cleanUrl.includes('postfiles.pstatic.net')) {
+      candidateUrls.push(cleanUrl.replace('postfiles.pstatic.net', 'mblogthumb-phinf.pstatic.net'));
+      candidateUrls.push(cleanUrl.replace('postfiles.pstatic.net', 'blogthumb.pstatic.net'));
     }
 
-    const arrayBuffer = await res.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    let buffer: Buffer | null = null;
+    let contentType = '';
 
-    // Skip tiny icons/spacers (< 3KB)
-    if (buffer.length < 3000) {
-      return null;
+    for (const urlToTry of candidateUrls) {
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const res = await fetch(urlToTry, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+              'Referer': 'https://m.blog.naver.com/',
+              'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+            },
+            signal: AbortSignal.timeout(25000), // generous 25s timeout for large animated GIFs
+          });
+          if (res.ok) {
+            const ab = await res.arrayBuffer();
+            buffer = Buffer.from(ab);
+            contentType = res.headers.get('content-type') || '';
+            break;
+          }
+        } catch {
+          // retry
+        }
+      }
+      if (buffer && buffer.length >= 3000) break;
     }
 
-    // Determine extension
-    const contentType = res.headers.get('content-type') || '';
+    if (!buffer || buffer.length < 3000) {
+      console.warn(`Failed to download image after retries: ${cleanUrl}`);
+      return null;
+    }
     let ext = '.jpg';
     if (contentType.includes('webp')) ext = '.webp';
     else if (contentType.includes('png')) ext = '.png';
@@ -1174,6 +1188,17 @@ export async function convertNaverHtmlToMasterMarkdown(
   // so images are never converted into [ ![alt](src) ](#)
   bodyHtml = bodyHtml.replace(/<a\b[^>]*class=["'][^"']*se-module-image-link[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi, '$1');
   bodyHtml = bodyHtml.replace(/<a\b[^>]*href=["'](?:#|javascript:[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi, '$1');
+
+  // Convert Naver SmartEditor ONE animated GIF video tags (<video class="_gifmp4" data-gif-url="...">) into standard <img> tags
+  // so animated GIFs are properly downloaded and rendered in the markdown body
+  bodyHtml = bodyHtml.replace(
+    /<video\b[^>]*\bdata-gif-url=["']([^"']+)["'][^>]*>[\s\S]*?<\/video>/gi,
+    '<img src="$1" data-lazy-src="$1" alt="오브한의원 임상 칼럼" />'
+  );
+  bodyHtml = bodyHtml.replace(
+    /<video\b[^>]*\bsrc=["']([^"']+\.gif(?:\?[^"']*)?)["'][^>]*>[\s\S]*?<\/video>/gi,
+    '<img src="$1" data-lazy-src="$1" alt="오브한의원 임상 칼럼" />'
+  );
 
   // Safe identifier for thumbnail downloading
   const logNoMatch = (logNo || slugPrefix).match(/(\d{6,14})/);
@@ -1645,40 +1670,9 @@ export async function convertNaverHtmlToMasterMarkdown(
   // Strip remaining stray zero-width spaces
   markdown = markdown.replace(/[\u200B\uFEFF]/g, '');
 
-  // If no explicit summary was found, intelligently extract substantive text from introductory paragraphs
-  // (strictly skip blockquotes like patient dialogue, link cards, headers, or images)
-  if (!summary) {
-    const paragraphs = markdown.split('\n\n').filter((p) => {
-      const tp = p.trim();
-      return (
-        tp &&
-        !tp.startsWith('#') &&
-        !tp.startsWith('!') &&
-        !tp.startsWith('---') &&
-        !tp.startsWith('📌') &&
-        !tp.startsWith('>') &&
-        !tp.startsWith('[🔗') &&
-        !tp.startsWith('[👉') &&
-        !tp.startsWith('[📍') &&
-        !tp.startsWith('관련 정보')
-      );
-    });
-
-    if (paragraphs.length > 0) {
-      const firstP = paragraphs[0].trim();
-      if (firstP.length <= 250 && firstP.length >= 40) {
-        summary = firstP;
-      } else {
-        const sentences = firstP.split(/(?<=[.!?])\s+/);
-        summary = sentences.slice(0, 2).join(' ');
-        if (summary.length < 50 && sentences.length > 2) {
-          summary = sentences.slice(0, 3).join(' ');
-        }
-      }
-    } else {
-      summary = `${postTitle}에 대한 전두희 대표원장의 한의학적 진단과 치료 칼럼입니다.`;
-    }
-  }
+  // [중요 원칙]: 원글에 명시적인 요약(인용구/Medical Summary/핵심 요약)이 없는 경우,
+  // 본문 서두 멘트를 억지로 Summary 박스로 만들지 않고 빈 문자열("")로 유지합니다.
+  // (상세 페이지에서 본문 첫 문단과 Summary 박스의 내용이 2중 중복되는 문제를 완전히 방지)
 
   summary = summary
     .replace(/^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i, '')
