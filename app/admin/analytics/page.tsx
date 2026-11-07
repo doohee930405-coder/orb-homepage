@@ -24,6 +24,7 @@ export default function AdminAnalyticsPage() {
     if (password.trim() === '135700') {
       try {
         localStorage.setItem('orb_admin_authenticated', '135700');
+        document.cookie = 'orb_admin_authenticated=135700; path=/; max-age=31536000; SameSite=Lax';
       } catch {}
       setIsAuthenticated(true);
       setPassword('');
@@ -37,6 +38,7 @@ export default function AdminAnalyticsPage() {
   const handleLogout = () => {
     try {
       localStorage.removeItem('orb_admin_authenticated');
+      document.cookie = 'orb_admin_authenticated=; path=/; max-age=0; SameSite=Lax';
     } catch {}
     setIsAuthenticated(false);
   };

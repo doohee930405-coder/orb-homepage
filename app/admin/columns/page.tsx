@@ -474,6 +474,7 @@ export default function AdminColumnsPage() {
     if (inputPw === '135700') {
       try {
         localStorage.setItem('orb_admin_authenticated', '135700');
+        document.cookie = 'orb_admin_authenticated=135700; path=/; max-age=31536000; SameSite=Lax';
         const defaultTok = xorDecrypt(ENC_TOKEN_HEX, '135700');
         if (defaultTok && !localStorage.getItem('orb_github_token')) {
           localStorage.setItem('orb_github_token', defaultTok);
@@ -508,6 +509,7 @@ export default function AdminColumnsPage() {
         if (data && data.success) {
           try {
             localStorage.setItem('orb_admin_authenticated', '135700');
+        document.cookie = 'orb_admin_authenticated=135700; path=/; max-age=31536000; SameSite=Lax';
           } catch {}
           setIsAuthenticated(true);
           setPassword('');
@@ -526,6 +528,7 @@ export default function AdminColumnsPage() {
   const handleLogout = async () => {
     try {
       localStorage.removeItem('orb_admin_authenticated');
+      document.cookie = 'orb_admin_authenticated=; path=/; max-age=0; SameSite=Lax';
     } catch {}
     try {
       await fetch('/api/admin/logout', { method: 'POST' });

@@ -15,12 +15,22 @@ export default function SitePageViewTracker() {
         // 1. Exclude admin dashboard and internal API endpoints
         if (path.startsWith('/admin') || path.startsWith('/api')) return;
 
-        // 2. Exclude individual column article pages (they are tracked with full metadata by ColumnViewTracker)
+        // 2. Exclude Admin / Internal Tester (logged in to admin or has opt-out flag)
+        try {
+          const isAdmin =
+            localStorage.getItem('orb_admin_authenticated') === '135700' ||
+            localStorage.getItem('orb_ignore_analytics') === 'true' ||
+            document.cookie.includes('orb_admin_token') ||
+            document.cookie.includes('orb_admin_authenticated=135700');
+          if (isAdmin) return;
+        } catch {}
+
+        // 3. Exclude individual column article pages (they are tracked with full metadata by ColumnViewTracker)
         if (path.startsWith('/columns/') && path !== '/columns' && path !== '/columns/') {
           return;
         }
 
-        // 3. Exclude automated bots, crawlers, and headless testing agents
+        // 4. Exclude automated bots, crawlers, and headless testing agents
         if (
           navigator.webdriver ||
           (window as any)._phantom ||

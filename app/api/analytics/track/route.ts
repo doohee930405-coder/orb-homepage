@@ -22,6 +22,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '유효한 path 또는 slug가 필요합니다.' }, { status: 400 });
     }
 
+    // Exclude Admin & Internal Testers from tracking
+    const cookieHeader = req.headers.get('cookie') || '';
+    if (
+      cookieHeader.includes('orb_admin_token') ||
+      cookieHeader.includes('orb_admin_authenticated=135700')
+    ) {
+      return NextResponse.json(
+        { success: true, recorded: false, isDuplicate: true, isAdmin: true },
+        {
+          status: 200,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Cache-Control': 'no-store',
+          },
+        }
+      );
+    }
+
     // Extract Client IP
     const forwardedFor = req.headers.get('x-forwarded-for');
     const realIp = req.headers.get('x-real-ip');

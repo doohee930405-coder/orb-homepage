@@ -12,6 +12,16 @@ export default function ColumnViewTracker({ slug }: ColumnViewTrackerProps) {
   useEffect(() => {
     if (!slug || trackedRef.current || typeof window === 'undefined') return;
 
+    // Exclude Admin / Internal Tester (logged in to admin or has opt-out flag)
+    try {
+      const isAdmin =
+        localStorage.getItem('orb_admin_authenticated') === '135700' ||
+        localStorage.getItem('orb_ignore_analytics') === 'true' ||
+        document.cookie.includes('orb_admin_token') ||
+        document.cookie.includes('orb_admin_authenticated=135700');
+      if (isAdmin) return;
+    } catch {}
+
     // Exclude automated bots and headless browsers
     if (
       navigator.webdriver ||
