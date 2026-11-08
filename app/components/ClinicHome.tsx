@@ -527,18 +527,20 @@ export default function ClinicHome({
       {/* 2. [PAGE 2] DIAGNOSTIC TECHNOLOGY PROTOCOL SECTION (RENEWED) */}
       <TreatmentMethodSection />
 
-      {/* 3단계 임상 프로토콜 세부 절차 */}
-      <section className="protocol-section-wrapper bg-[#FAF8F5] pb-20 md:pb-28 px-6">
+      {/* 3단계 임상 프로토콜 세부 절차 (핵심 변증 및 치료법 H2) */}
+      <section className="protocol-section-wrapper bg-[#FAF8F5] pb-20 md:pb-28 px-6" id="protocol">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10 md:mb-14">
             <span className="text-xs font-mono font-bold tracking-widest text-[#8E7463] px-3 py-1.5 rounded-full bg-[#8E7463]/10 uppercase">
-              3-STEP CLINICAL PROTOCOL
+              {isEnglish ? 'CORE PROTOCOL & CLINICAL TREATMENT' : '핵심 변증 및 원인 치료'}
             </span>
-            <h3 className="text-2xl md:text-3xl font-extrabold text-stone-900 mt-3 tracking-tight">
-              오브한의원 3단계 원인 치료 프로세스
-            </h3>
+            <h2 className="text-2xl md:text-3xl lg:text-[34px] font-extrabold text-stone-900 mt-3 tracking-tight leading-snug">
+              {isEnglish ? 'Autonomic Dysregulation Care: Upper Cervical Chuna & Herbal Medicine' : '자율신경실조증 치료: 상부경추 추나요법과 한약 처방'}
+            </h2>
             <p className="text-stone-500 text-sm md:text-base mt-2 max-w-2xl mx-auto">
-              정밀 진단 데이터부터 맞춤 치료까지 뇌와 자율신경의 항상성을 되살리는 체계적인 진료 흐름
+              {isEnglish
+                ? 'From precision neuro-diagnostic data (qEEG · HRV) to upper-cervical Chuna and personalized herbal decoctions, restoring neuro-autonomic balance.'
+                : '정밀 진단(qEEG·HRV) 데이터 변증부터 상부경추 뇌신경 추나요법과 1:1 체질 맞춤 한약 처방까지, 뇌와 자율신경의 항상성을 되살리는 3단계 원인 치료 프로세스'}
             </p>
           </div>
           <div className="protocol-grid">
@@ -575,11 +577,11 @@ export default function ClinicHome({
         <div className="section-heading split-heading">
           <div>
             <p className="eyebrow">{text.treatmentEyebrow}</p>
-            <div className="treatment-section-heading">
+            <h2 className="treatment-section-heading">
               {text.treatmentTitle.split('\n').map((line) => (
                 <span key={line}>{line}</span>
               ))}
-            </div>
+            </h2>
           </div>
           <p>{text.treatmentBody}</p>
         </div>
@@ -607,7 +609,7 @@ export default function ClinicHome({
                       </span>
                     )}
                   </div>
-                  <h2 className="treatment-card-title">{treatment.title[locale]}</h2>
+                  <h3 className="treatment-card-title">{treatment.title[locale]}</h3>
                   <p className="treatment-card-desc">{treatment.summary[locale]}</p>
                   <b className="treatment-card-link">
                     {text.detail}
@@ -718,7 +720,10 @@ export default function ClinicHome({
       <section className="space-section reveal" id="space">
         <div className="section-heading split-heading space-split-heading">
           <div>
-            <h2 className="space-title-large">{text.spaceTitle}</h2>
+            <h4 className="space-title-large">
+              {text.spaceTitle}
+              <span className="sr-only"> - {isEnglish ? 'Clinic Interior Space Tour' : '인테리어 공간 안내'}</span>
+            </h4>
           </div>
           <p className="space-body-text">{text.spaceBody}</p>
         </div>

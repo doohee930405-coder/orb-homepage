@@ -321,7 +321,7 @@ if (fs.existsSync(indexPath)) {
       "@id": "https://orbmed.co.kr/#organization",
       "name": "오브한의원",
       "alternateName": ["오브한의원 마곡점", "ORB Korean Medicine Clinic"],
-      "description": "전국 각지에서 찾는 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 19채널 다채널 습식 정량화뇌파(Wet QEEG) 및 심박변이도(HRV) 정밀 진단과 개인별 맞춤 한의학 치료.",
+      "description": "전국 각지에서 찾는 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 정밀 다채널 습식 정량화뇌파(Wet QEEG) 및 심박변이도(HRV) 정밀 진단과 개인별 맞춤 한의학 치료.",
       "url": "https://orbmed.co.kr",
       "telephone": "+82-2-6959-5982",
       "address": {
