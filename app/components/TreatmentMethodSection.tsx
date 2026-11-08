@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// 자율신경실조증 증상 키워드 데이터셋 (공간감 및 브레인포그 연출을 위한 가중치/스타일 포함)
+// 자율신경실조증 증상 키워드 데이터셋 (중앙 텍스트 침범 방지 Safe-Zone 좌표 적용)
 interface SymptomKeyword {
   id: string;
   text: string;
@@ -12,21 +12,137 @@ interface SymptomKeyword {
   opacity: string; // opacity-30 ~ opacity-100
   blur: string; // blur-[1px], blur-none
   position: { top?: string; bottom?: string; left?: string; right?: string };
+  extraClass?: string;
 }
 
 const SYMPTOM_POOL: SymptomKeyword[] = [
-  { id: '1', text: '원인 모를 가슴 두근거림', size: 'text-2xl md:text-3xl', weight: 'font-bold', opacity: 'opacity-90', blur: 'blur-0', position: { top: '18%', left: '12%' } },
-  { id: '2', text: '과민성대장증후군', size: 'text-lg md:text-xl', weight: 'font-medium', opacity: 'opacity-60', blur: 'blur-[0.5px]', position: { top: '32%', right: '14%' } },
-  { id: '3', text: '만성 소화장애 & 명치 답답함', size: 'text-sm md:text-base', weight: 'font-normal', opacity: 'opacity-40', blur: 'blur-[1px]', position: { bottom: '28%', left: '8%' } },
-  { id: '4', text: '숨이 턱 끝까지 차는 호흡 곤란', size: 'text-xl md:text-2xl', weight: 'font-bold', opacity: 'opacity-85', blur: 'blur-0', position: { top: '55%', right: '18%' } },
-  { id: '5', text: '밤새 뒤척이는 불면증', size: 'text-base md:text-lg', weight: 'font-medium', opacity: 'opacity-70', blur: 'blur-0', position: { bottom: '15%', right: '22%' } },
-  { id: '6', text: '자도 자도 풀리지 않는 만성피로', size: 'text-2xl md:text-3xl', weight: 'font-bold', opacity: 'opacity-95', blur: 'blur-0', position: { top: '22%', right: '8%' } },
-  { id: '7', text: '머릿속 안개 브레인포그(Brain Fog)', size: 'text-3xl md:text-4xl', weight: 'font-extrabold', opacity: 'opacity-100', blur: 'blur-0', position: { top: '42%', left: '16%' } },
-  { id: '8', text: '얼음장 같은 손발 수족냉증', size: 'text-sm md:text-base', weight: 'font-normal', opacity: 'opacity-40', blur: 'blur-[1px]', position: { bottom: '38%', right: '10%' } },
-  { id: '9', text: '구름 위를 걷는 듯한 어지럼증', size: 'text-lg md:text-xl', weight: 'font-semibold', opacity: 'opacity-75', blur: 'blur-0', position: { bottom: '20%', left: '24%' } },
-  { id: '10', text: '시도 때도 없이 치솟는 식은땀과 열감', size: 'text-base md:text-lg', weight: 'font-medium', opacity: 'opacity-50', blur: 'blur-[0.5px]', position: { top: '12%', right: '35%' } },
-  { id: '11', text: '목·어깨 만성 경직과 긴장성 두통', size: 'text-sm md:text-base', weight: 'font-normal', opacity: 'opacity-35', blur: 'blur-[1px]', position: { bottom: '48%', left: '4%' } },
-  { id: '12', text: '이유 없는 불안감과 공황 발작', size: 'text-xl md:text-2xl', weight: 'font-bold', opacity: 'opacity-80', blur: 'blur-0', position: { bottom: '10%', right: '40%' } },
+  // Group 0: Top-Left, Right-Flank, Bottom-Left
+  {
+    id: '1',
+    text: '원인 모를 가슴 두근거림',
+    size: 'text-lg md:text-2xl',
+    weight: 'font-bold',
+    opacity: 'opacity-90',
+    blur: 'blur-0',
+    position: { top: '7%', left: '5%' },
+    extraClass: 'max-w-[260px] md:max-w-none',
+  },
+  {
+    id: '2',
+    text: '과민성대장증후군',
+    size: 'text-base md:text-xl',
+    weight: 'font-medium',
+    opacity: 'opacity-65',
+    blur: 'blur-[0.5px]',
+    position: { top: '44%', right: '3%' },
+    extraClass: 'hidden lg:block max-w-[220px]',
+  },
+  {
+    id: '3',
+    text: '만성 소화장애 & 명치 답답함',
+    size: 'text-sm md:text-base',
+    weight: 'font-normal',
+    opacity: 'opacity-50',
+    blur: 'blur-[0.5px]',
+    position: { bottom: '13%', left: '5%' },
+    extraClass: 'max-w-[260px] md:max-w-none',
+  },
+
+  // Group 1: Top-Right, Left-Flank, Bottom-Right
+  {
+    id: '4',
+    text: '숨이 턱 끝까지 차는 호흡 곤란',
+    size: 'text-lg md:text-2xl',
+    weight: 'font-bold',
+    opacity: 'opacity-90',
+    blur: 'blur-0',
+    position: { top: '7%', right: '5%' },
+    extraClass: 'max-w-[260px] md:max-w-none text-right',
+  },
+  {
+    id: '5',
+    text: '밤새 뒤척이는 불면증',
+    size: 'text-base md:text-xl',
+    weight: 'font-medium',
+    opacity: 'opacity-70',
+    blur: 'blur-0',
+    position: { top: '48%', left: '3%' },
+    extraClass: 'hidden lg:block max-w-[220px]',
+  },
+  {
+    id: '6',
+    text: '자도 자도 풀리지 않는 만성피로',
+    size: 'text-lg md:text-2xl',
+    weight: 'font-bold',
+    opacity: 'opacity-95',
+    blur: 'blur-0',
+    position: { bottom: '13%', right: '5%' },
+    extraClass: 'max-w-[260px] md:max-w-none text-right',
+  },
+
+  // Group 2: Top-Left, Right-Flank, Bottom-Left
+  {
+    id: '7',
+    text: '머릿속 안개 브레인포그(Brain Fog)',
+    size: 'text-xl md:text-3xl',
+    weight: 'font-extrabold',
+    opacity: 'opacity-100',
+    blur: 'blur-0',
+    position: { top: '8%', left: '6%' },
+    extraClass: 'max-w-[280px] md:max-w-none',
+  },
+  {
+    id: '8',
+    text: '얼음장 같은 손발 수족냉증',
+    size: 'text-sm md:text-lg',
+    weight: 'font-normal',
+    opacity: 'opacity-50',
+    blur: 'blur-[0.5px]',
+    position: { top: '40%', right: '3%' },
+    extraClass: 'hidden lg:block max-w-[220px]',
+  },
+  {
+    id: '9',
+    text: '구름 위를 걷는 듯한 어지럼증',
+    size: 'text-base md:text-xl',
+    weight: 'font-semibold',
+    opacity: 'opacity-75',
+    blur: 'blur-0',
+    position: { bottom: '15%', left: '6%' },
+    extraClass: 'max-w-[260px] md:max-w-none',
+  },
+
+  // Group 3: Top-Right, Left-Flank, Bottom-Right
+  {
+    id: '10',
+    text: '시도 때도 없는 식은땀과 열감',
+    size: 'text-base md:text-xl',
+    weight: 'font-medium',
+    opacity: 'opacity-60',
+    blur: 'blur-[0.5px]',
+    position: { top: '8%', right: '6%' },
+    extraClass: 'max-w-[260px] md:max-w-none text-right',
+  },
+  {
+    id: '11',
+    text: '목·어깨 만성 경직과 긴장성 두통',
+    size: 'text-sm md:text-base',
+    weight: 'font-normal',
+    opacity: 'opacity-45',
+    blur: 'blur-[0.5px]',
+    position: { top: '42%', left: '3%' },
+    extraClass: 'hidden lg:block max-w-[220px]',
+  },
+  {
+    id: '12',
+    text: '이유 없는 불안감과 공황 발작',
+    size: 'text-lg md:text-2xl',
+    weight: 'font-bold',
+    opacity: 'opacity-85',
+    blur: 'blur-0',
+    position: { bottom: '15%', right: '6%' },
+    extraClass: 'max-w-[260px] md:max-w-none text-right',
+  },
 ];
 
 // '왜 정량화 뇌파 분석인가?' 3열 Feature Cards 데이터
@@ -45,10 +161,10 @@ const FEATURE_CARDS: FeatureCardData[] = [
     step: '01',
     keyword: '정밀 측정',
     title: '국제 10-20 표준 전극 시스템',
-    subtitle: '19채널 전뇌(Full-Head) 습식 검사',
+    subtitle: '다채널 전뇌(Full-Head) 정밀 습식 검사',
     description:
-      '시중의 간이 건식 밴드는 이마 부위 2~4채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 오브한의원은 국제 표준 전극 시스템과 의료용 전도성 겔(Gel)을 채택하여 피부 접촉 저항(Impedance)을 극소화하고, 전두엽·측두엽·두정엽·후두엽 전뇌의 미세 생체 전위(μV)를 오차 없이 정밀 측정합니다.',
-    highlights: ['국제 10-20 표준 19채널', '의료용 전도성 겔 피부 저항 극소화', '전두엽·측두엽·두정엽 전뇌 커버'],
+      '시중의 간이 건식 밴드는 이마 부위 일부 채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 오브한의원은 국제 표준 전극 시스템과 의료용 전도성 겔(Gel)을 채택하여 피부 접촉 저항(Impedance)을 극소화하고, 전두엽·측두엽·두정엽·후두엽 전뇌의 미세 생체 전위(μV)를 오차 없이 정밀 측정합니다.',
+    highlights: ['국제 10-20 표준 다채널 전뇌 분석', '의료용 전도성 겔 피부 저항 극소화', '전두·측두·두정·후두 전 영역 정밀 측정'],
     icon: (
       <svg className="w-8 h-8 text-[#8E7463]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         {/* 센서/정밀 타겟 아이콘 */}
@@ -100,15 +216,15 @@ const FEATURE_CARDS: FeatureCardData[] = [
 export default function TreatmentMethodSection() {
   // 클라이언트 마운트 여부 확인 (Hydration 안전성 확보)
   const [mounted, setMounted] = useState(false);
-  // 활성화되어 화면에 팝업되는 증상 키워드 인덱스 그룹 (2~3개씩 순환)
+  // 활성화되어 화면에 팝업되는 증상 키워드 인덱스 그룹 (3초 주기로 전환)
   const [activeGroupIndex, setActiveGroupIndex] = useState(0);
 
   useEffect(() => {
     setMounted(true);
-    // 2.8초마다 화면 곳곳의 증상 키워드 그룹 순환
+    // 3초마다 화면 곳곳의 증상 키워드 그룹 순환 (중앙 텍스트 침범 없는 Safe Zone)
     const interval = setInterval(() => {
       setActiveGroupIndex((prev) => (prev + 1) % 4);
-    }, 2800);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -124,10 +240,10 @@ export default function TreatmentMethodSection() {
       {/* =========================================================================
           1. 히어로 인트로 (증상 팝업 & 브레인포그 안개 영역)
           - 배경: 다크 브라운 bg-[#4E4647] Full-width
-          - 동적 효과: 증상 키워드 2~3개씩 페이드인/아웃 팝업
-          - 공간감(Depth): 글자 크기, 가중치, 투명도, 블러의 입체적 교차
+          - 3초 주기 페이드인/아웃 전환
+          - 중앙 메인 텍스트 영역 침범 방지 Safe-Zone 레이아웃
       ========================================================================= */}
-      <div className="relative w-full min-h-[580px] md:min-h-[640px] bg-[#4E4647] text-white flex flex-col justify-center items-center px-6 py-20 select-none overflow-hidden">
+      <div className="relative w-full min-h-[580px] md:min-h-[660px] bg-[#4E4647] text-white flex flex-col justify-center items-center px-6 py-20 select-none overflow-hidden">
         {/* 배경 안개 (Brain Fog Glow Effects) */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-[420px] h-[420px] bg-[#6B5E5F]/30 rounded-full blur-[100px] animate-pulse" />
@@ -135,7 +251,7 @@ export default function TreatmentMethodSection() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[350px] bg-[#8E7463]/10 rounded-full blur-[140px]" />
         </div>
 
-        {/* 증상 키워드 팝업 레이어 (공간감과 Depth 연출) */}
+        {/* 증상 키워드 팝업 레이어 (중앙 메인 카피와 겹치지 않는 외곽 Safe Zone) */}
         {mounted && (
           <div className="absolute inset-0 pointer-events-none max-w-7xl mx-auto">
             <AnimatePresence mode="wait">
@@ -150,19 +266,19 @@ export default function TreatmentMethodSection() {
                 {currentKeywords.map((item, idx) => (
                   <motion.div
                     key={item.id}
-                    initial={{ opacity: 0, scale: 0.88, y: 15 }}
+                    initial={{ opacity: 0, scale: 0.88, y: 12 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 1.05, y: -15 }}
+                    exit={{ opacity: 0, scale: 1.05, y: -12 }}
                     transition={{
                       duration: 0.9,
-                      delay: idx * 0.18,
+                      delay: idx * 0.15,
                       ease: [0.22, 1, 0.36, 1],
                     }}
                     style={{
                       position: 'absolute',
                       ...item.position,
                     }}
-                    className={`text-stone-200 tracking-tight transition-all duration-700 ${item.size} ${item.weight} ${item.opacity} ${item.blur} drop-shadow-md whitespace-nowrap`}
+                    className={`text-stone-200 tracking-tight transition-all duration-700 ${item.size} ${item.weight} ${item.opacity} ${item.blur} ${item.extraClass || ''} drop-shadow-md whitespace-nowrap`}
                   >
                     <span className="relative inline-block">
                       {item.text}
@@ -176,17 +292,18 @@ export default function TreatmentMethodSection() {
           </div>
         )}
 
-        {/* 히어로 중앙 환자 공감 카피 */}
+        {/* 히어로 중앙 환자 공감 카피 (독립된 z-10 영역 확보) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.9, delay: 0.2 }}
-          className="relative z-10 max-w-3xl text-center mx-auto"
+          className="relative z-10 max-w-2xl lg:max-w-3xl text-center mx-auto px-4"
         >
+          {/* 수정된 배지 문구 */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[#E7DEC8] text-xs md:text-sm font-medium mb-6">
             <span className="w-2 h-2 rounded-full bg-[#E7DEC8] animate-pulse" />
-            자율신경실조증 · 브레인포그 환자분들이 매일 마주하는 고통
+            자율신경실조증 환자분들이 매일 마주하는 고통
           </div>
 
           <h3 className="text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-snug md:leading-tight mb-6">
@@ -234,7 +351,7 @@ export default function TreatmentMethodSection() {
               DIAGNOSTIC TECHNOLOGY · QEEG SYSTEM
             </div>
 
-            {/* 메인 카피 (요구사항 필수 반영) */}
+            {/* 메인 카피 */}
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold text-stone-900 leading-snug md:leading-tight lg:leading-[1.28] tracking-tight max-w-4xl mx-auto mb-6">
               병원 검사상 <span className="text-[#8E7463] underline decoration-[#8E7463]/40 underline-offset-8">'이상 없음'</span>에도 지속되는 고통,
               <br className="hidden sm:inline" />
@@ -245,7 +362,7 @@ export default function TreatmentMethodSection() {
             <p className="text-base md:text-lg text-stone-600 font-normal leading-relaxed max-w-3xl mx-auto">
               CT나 MRI는 뇌출혈이나 종양 같은 <strong className="font-semibold text-stone-800">'구조적 기질 병변'</strong>만 진단합니다.<br className="hidden md:inline" />
               오브한의원은 보이지 않는 뇌신경망의 미세 과열과 자율신경 조절 장애를{' '}
-              <strong className="font-semibold text-stone-800">19채널 정량화 뇌파(qEEG)와 심박변이도(HRV)</strong>로 객관화합니다.
+              <strong className="font-semibold text-stone-800">정밀 다채널 정량화 뇌파(qEEG)와 심박변이도(HRV)</strong>로 객관화합니다.
             </p>
           </motion.div>
         </div>
