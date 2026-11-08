@@ -362,7 +362,7 @@ export default function TreatmentMethodSection() {
             <p className="text-base md:text-lg text-stone-600 font-normal leading-relaxed max-w-3xl mx-auto">
               CT나 MRI는 뇌출혈이나 종양 같은 <strong className="font-semibold text-stone-800">'구조적 기질 병변'</strong>만 진단합니다.<br className="hidden md:inline" />
               오브한의원은 보이지 않는 뇌신경망의 미세 과열과 자율신경 조절 장애를{' '}
-              <strong className="font-semibold text-stone-800">정밀 다채널 정량화 뇌파(qEEG)와 심박변이도(HRV)</strong>로 객관화합니다.
+              <strong className="font-semibold text-stone-800">습식 정량화 뇌파(qEEG)와 심박변이도(HRV)</strong>로 객관화합니다.
             </p>
           </motion.div>
         </div>
@@ -387,7 +387,7 @@ export default function TreatmentMethodSection() {
             className="text-center mb-12 md:mb-16"
           >
             <h3 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight">
-              왜 정량화 뇌파(qEEG) 분석인가?
+              왜 습식 정량화 뇌파(qEEG) 분석인가?
             </h3>
             <p className="text-sm md:text-base text-stone-500 mt-2 font-normal">
               간이 밴드나 설문식 검사와는 차원이 다른 대학병원급 객관적 뇌신경 정밀 진단 시스템
@@ -467,7 +467,7 @@ export default function TreatmentMethodSection() {
               href="/qeeg"
               className="inline-flex items-center gap-2 text-sm font-semibold text-[#634E3F] hover:text-[#42342A] hover:underline underline-offset-4 transition-all"
             >
-              <span>오브한의원 습식 정량뇌파(qEEG) 측정 과정 및 장비 안내 자세히 보기</span>
+              <span>오브한의원 습식 정량화 뇌파(qEEG) 측정 과정 및 장비 안내 자세히 보기</span>
               <span aria-hidden="true">→</span>
             </a>
           </motion.div>

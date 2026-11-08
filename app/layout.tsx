@@ -13,11 +13,11 @@ const hasGoogleAnalyticsId = Boolean(
 export const metadata: Metadata = {
   metadataBase: new URL('https://orbmed.co.kr'),
   title: {
-    default: '오브한의원 | 습식 정량화뇌파 QEEG 기반 자율신경·신경정신 중점 진료',
+    default: '오브한의원 | 습식 정량화 뇌파(QEEG) 기반 자율신경·신경정신 중점 진료',
     template: '%s | 오브한의원',
   },
   description:
-    '전국 각지에서 찾는 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 뇌 기능과 자율신경계 불균형을 정밀 분석하여 개인별 맞춤 한의학 치료를 제시합니다.',
+    '전국 각지에서 찾는 습식 정량화 뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 뇌 기능과 자율신경계 불균형을 정밀 분석하여 개인별 맞춤 한의학 치료를 제시합니다.',
   robots: {
     index: true,
     follow: true,
@@ -37,9 +37,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: '오브한의원 | 습식 정량화뇌파 QEEG 기반 자율신경·신경정신 중점 진료',
+    title: '오브한의원 | 습식 정량화 뇌파(QEEG) 기반 자율신경·신경정신 중점 진료',
     description:
-      '습식 정량화뇌파(QEEG)로 뇌와 자율신경의 연결고리를 정밀 진단하는 오브한의원입니다.',
+      '습식 정량화 뇌파(QEEG)로 뇌와 자율신경의 연결고리를 정밀 진단하는 오브한의원입니다.',
     url: '/',
     siteName: '오브한의원',
     locale: 'ko_KR',
@@ -55,7 +55,7 @@ const exactOfficialOrgAndPhysicianJsonLd = {
       "@id": "https://orbmed.co.kr/#organization",
       "name": "오브한의원",
       "alternateName": ["오브한의원 마곡점", "ORB Korean Medicine Clinic"],
-      "description": "전국 각지에서 찾는 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 19채널 다채널 습식 정량화뇌파(Wet QEEG) 및 심박변이도(HRV) 정밀 진단과 개인별 맞춤 한의학 치료.",
+      "description": "전국 각지에서 찾는 습식 정량화 뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 습식 정량화 뇌파(Wet QEEG) 및 심박변이도(HRV) 정밀 진단과 개인별 맞춤 한의학 치료.",
       "url": "https://orbmed.co.kr",
       "telephone": "+82-2-6959-5982",
       "priceRange": "₩₩",
@@ -127,7 +127,7 @@ const exactOfficialOrgAndPhysicianJsonLd = {
             "@type": "Offer",
             "itemOffered": {
               "@type": "MedicalTest",
-              "name": "19채널 다채널 습식 정량화 뇌파검사(Wet QEEG) & 심박변이도(HRV) 자율신경 동시 검사"
+              "name": "습식 정량화 뇌파(Wet QEEG) & 심박변이도(HRV) 자율신경 동시 검사"
             },
             "price": "50000-60000",
             "priceCurrency": "KRW",
@@ -148,7 +148,7 @@ const exactOfficialOrgAndPhysicianJsonLd = {
       "availableService": [
         {
           "@type": "MedicalTherapy",
-          "name": "습식 정량화 뇌파검사(Wet QEEG) 및 뇌신경 맞춤 한약"
+          "name": "습식 정량화 뇌파(Wet QEEG) 및 뇌신경 맞춤 한약"
         },
         {
           "@type": "MedicalTherapy",
@@ -194,15 +194,15 @@ const officialFaqJsonLd = {
       "name": "Q. 대학병원 종합검진(CT·MRI·혈액검사)에서 '이상 없음'인데 왜 계속 아프고 힘든가요?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "CT·MRI는 뇌출혈이나 종양 등 구조적 기질 병변만 진단할 뿐, 신경망의 기능적 과열과 자율신경 조절 장애는 발견할 수 없기 때문입니다. 만성피로, 어지럼증, 가슴 두근거림, 브레인포그, 소화불량 등은 신경망의 기능적 과부하 및 교감·부교감신경의 조절 불균형에서 시작됩니다.\n\n오브한의원은 다채널 습식 정량화 뇌파검사(qEEG)와 심박변이도(HRV) 자율신경 정밀 검사를 통해 눈에 보이지 않던 신경계의 기능적 과부하를 객관적 Z-score 수치로 규명하여 근원 치료를 시행합니다."
+        "text": "CT·MRI는 뇌출혈이나 종양 등 구조적 기질 병변만 진단할 뿐, 신경망의 기능적 과열과 자율신경 조절 장애는 발견할 수 없기 때문입니다. 만성피로, 어지럼증, 가슴 두근거림, 브레인포그, 소화불량 등은 신경망의 기능적 과부하 및 교감·부교감신경의 조절 불균형에서 시작됩니다.\n\n오브한의원은 습식 정량화 뇌파(qEEG)와 심박변이도(HRV) 자율신경 정밀 검사를 통해 눈에 보이지 않던 신경계의 기능적 과부하를 객관적 Z-score 수치로 규명하여 근원 치료를 시행합니다."
       }
     },
     {
       "@type": "Question",
-      "name": "Q. 오브한의원의 '다채널 습식 정량화 뇌파검사(qEEG)'는 일반 밴드형 검사와 어떻게 다른가요?",
+      "name": "Q. 오브한의원의 '습식 정량화 뇌파(qEEG)'는 일반 밴드형 검사와 어떻게 다른가요?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "국제 10-20 표준 전극 시스템을 적용한 전뇌(Full-Head) 습식 검사로 측정 정밀도와 신뢰성이 압도적입니다. 시중의 간이 건식 밴드는 이마 부위 2~4개 채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 반면 의료용 전도성 겔(Gel)을 사용하는 습식 전극은 피부 저항(Impedance)을 극소화하여 미세 신경 신호까지 포착합니다.\n\n오브한의원의 다채널 습식 qEEG는 전두엽, 측두엽, 두정엽, 후두엽 전뇌를 커버하며, 국제 10-20 표준 전극 시스템 기준의 Normative Database(표준 건강 대조군 데이터베이스) Z-score 분석을 통해 뇌 피질 신경망 과열과 저하 상태를 3차원 입체 지도로 시각화합니다."
+        "text": "국제 10-20 표준 전극 시스템을 적용한 전뇌(Full-Head) 습식 검사로 측정 정밀도와 신뢰성이 압도적입니다. 시중의 간이 건식 밴드는 이마 부위 2~4개 채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 반면 의료용 전도성 겔(Gel)을 사용하는 습식 전극은 피부 저항(Impedance)을 극소화하여 미세 신경 신호까지 포착합니다.\n\n오브한의원의 습식 정량화 뇌파(qEEG)는 전두엽, 측두엽, 두정엽, 후두엽 전뇌를 커버하며, 국제 10-20 표준 전극 시스템 기준의 Normative Database(표준 건강 대조군 데이터베이스) Z-score 분석을 통해 뇌 피질 신경망 과열과 저하 상태를 3차원 입체 지도로 시각화합니다."
       }
     },
     {

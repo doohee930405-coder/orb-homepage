@@ -27,7 +27,7 @@ export const CLINICAL_INTERNAL_LINK_RULES: InternalLinkRule[] = [
     key: 'qeeg',
     pattern: /(?:다채널\s*습식\s*)?(?:정량화\s*뇌파\s*검사|정량뇌파\s*검사|정량화\s*뇌파|qEEG\s*뇌파검사|qEEG\s*검사|qEEG)/i,
     url: '/qeeg',
-    title: '오브한의원 다채널 습식 정량화 뇌파검사(qEEG) 정밀 진료 안내',
+    title: '오브한의원 습식 정량화 뇌파(qEEG) 정밀 진료 안내',
   },
   {
     key: 'dysautonomia',

@@ -92,7 +92,7 @@ export default function MedicalJsonLd({
     availableService: [
       {
         '@type': 'MedicalTherapy',
-        name: isEn ? 'Quantitative EEG (QEEG) Brain Function Analysis' : '습식 정량화 뇌파검사(QEEG) 및 뇌신경 맞춤 탕약',
+        name: isEn ? 'Quantitative EEG (QEEG) Brain Function Analysis' : '습식 정량화 뇌파(QEEG) 및 뇌신경 맞춤 탕약',
       },
       {
         '@type': 'MedicalTherapy',
