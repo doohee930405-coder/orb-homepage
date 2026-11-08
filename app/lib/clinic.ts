@@ -88,7 +88,7 @@ export const treatments: Treatment[] = [
   {
     slug: 'autonomic-qeeg',
     number: '01',
-    image: 'brain-3d-rotating.gif',
+    image: 'brain-3d-rotating-v2.gif',
     imagePosition: 'center',
     imageFit: 'contain',
     title: { ko: '자율신경실조증 : HRV, QEEG 정량뇌파검사', en: 'Autonomic System · QEEG' },
