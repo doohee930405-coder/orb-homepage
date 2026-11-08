@@ -7515,6 +7515,30 @@ h3.faq-accordion-heading {
   border-color: rgba(44, 26, 20, 0.32);
 }
 
+@media (max-width: 959px) {
+  .treatment-card-primary {
+    grid-template-rows: 380px auto;
+  }
+
+  .treatment-card-primary picture {
+    background-color: #4a494b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .treatment-card-primary picture img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain !important;
+    object-position: center !important;
+    background-color: #4a494b;
+    filter: none !important;
+    transform: none !important;
+  }
+}
+
 @media (min-width: 960px) {
   .treatment-grid {
     display: grid;
@@ -7527,7 +7551,7 @@ h3.faq-accordion-heading {
     display: grid;
     grid-template-columns: 1fr 1.15fr;
     grid-template-rows: 1fr;
-    min-height: 440px;
+    min-height: 520px;
     height: auto;
     background: linear-gradient(135deg, #FDFBF8 0%, #F8F4EE 100%);
     border: 1.5px solid rgba(44, 26, 20, 0.3);
@@ -7538,14 +7562,26 @@ h3.faq-accordion-heading {
   .treatment-card-primary picture {
     height: 100%;
     min-height: 100%;
+    background-color: #4a494b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
   }
 
   .treatment-card-primary picture img {
     height: 100%;
     width: 100%;
-    object-fit: cover;
-    object-position: center 25%;
+    object-fit: contain !important;
+    object-position: center !important;
+    background-color: #4a494b;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  .treatment-card-primary:hover picture img {
+    filter: none !important;
+    transform: none !important;
   }
 
   .treatment-card-primary .treatment-card-copy {

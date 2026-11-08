@@ -88,8 +88,9 @@ export const treatments: Treatment[] = [
   {
     slug: 'autonomic-qeeg',
     number: '01',
-    image: 'naver-qeeg-clinic',
-    imagePosition: 'center 28%',
+    image: 'brain-3d-rotating.gif',
+    imagePosition: 'center',
+    imageFit: 'contain',
     title: { ko: '자율신경실조증 : HRV, QEEG 정량뇌파검사', en: 'Autonomic System · QEEG' },
     shortTitle: { ko: '자율신경과 뇌파', en: 'Autonomic system & QEEG' },
     summary: {
@@ -101,8 +102,8 @@ export const treatments: Treatment[] = [
       en: 'No single test result determines a diagnosis. Sleep, fatigue, concentration, physical symptoms, and test findings are reviewed together when discussing care.',
     },
     imageAlt: {
-      ko: '마곡 오브한의원 전두희 원장의 다채널 습식 정량화 뇌파검사(qEEG) 진료 및 분석 장면',
-      en: 'Medical Director Doo-hee Jeon performing multichannel wet QEEG and autonomic nervous system assessment at ORB Clinic Magok',
+      ko: '마곡 오브한의원 3차원 정량화 뇌파(qEEG) 회전 뇌신경망 분석 모델',
+      en: '3D Quantitative EEG (qEEG) rotating brain model visualization at ORB Clinic',
     },
     concerns: {
       ko: [
