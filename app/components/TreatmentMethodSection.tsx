@@ -356,7 +356,7 @@ export default function TreatmentMethodSection() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold text-stone-900 leading-snug md:leading-tight lg:leading-[1.35] tracking-tight max-w-4xl mx-auto mb-6 text-center">
               <span className="block">
                 병원 검사상{' '}
-                <span className="text-[#e5b98a] font-black underline decoration-[#e5b98a]/70 underline-offset-8">
+                <span className="text-[#4E4647] font-black underline decoration-[#4E4647]/50 underline-offset-8">
                   '이상 없음'
                 </span>
                 에도 지속되는 고통,

@@ -562,13 +562,7 @@ export default function ClinicHome({
                 <h3 className="protocol-card-title">{step.title}</h3>
                 <h4 className="protocol-card-sub">{step.subtitle}</h4>
                 <p className="protocol-card-desc">{step.desc}</p>
-                <div className="protocol-tags">
-                  {step.tags.map((tag) => (
-                    <span key={tag} className="protocol-tag">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+
               </div>
             </article>
           ))}
