@@ -334,16 +334,17 @@ export default function TreatmentMethodSection() {
       {/* =========================================================================
           2. 솔루션 메시지 및 배경 트랜지션 (어둠 -> 크림 베이지 크로스페이드)
           - 다크 브라운(#4E4647)에서 부드러운 웜 크림 베이지(#FAF8F5)로 점진적 전환
-          - 메인 카피: 묵직하고 명확한 페이드인업(Fade-in up)
+          - 뷰포트 정중앙 정렬 (min-h, flex-col, items-center, justify-center)
+          - 메인 카피: OUR APPROACH ORB 시그니처 골드(#e5b98a) 및 지정 줄바꿈 적용
       ========================================================================= */}
-      <div className="relative w-full bg-gradient-to-b from-[#4E4647] via-[#9F918B]/30 to-[#FAF8F5] pt-12 md:pt-20">
-        <div className="max-w-5xl mx-auto px-6 text-center">
+      <div className="relative w-full min-h-[500px] md:min-h-[580px] flex flex-col justify-center items-center bg-gradient-to-b from-[#4E4647] via-[#857774]/25 to-[#FAF8F5] py-20 md:py-28 px-6 text-center">
+        <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center">
           <motion.div
             initial={{ opacity: 0, y: 35 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
+            viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-            className="pt-10 pb-16 md:pb-24"
+            className="w-full flex flex-col items-center justify-center text-center"
           >
             {/* 정밀 진단 솔루션 배지 */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#8E7463]/10 border border-[#8E7463]/25 text-[#634E3F] text-xs md:text-sm font-semibold tracking-wider uppercase mb-6">
@@ -351,19 +352,32 @@ export default function TreatmentMethodSection() {
               DIAGNOSTIC TECHNOLOGY · QEEG SYSTEM
             </div>
 
-            {/* 메인 카피 */}
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold text-stone-900 leading-snug md:leading-tight lg:leading-[1.28] tracking-tight max-w-4xl mx-auto mb-6">
-              병원 검사상 <span className="text-[#8E7463] underline decoration-[#8E7463]/40 underline-offset-8">'이상 없음'</span>에도 지속되는 고통,
-              <br className="hidden sm:inline" />
-              <span className="text-stone-950 font-black"> 뇌와 자율신경의 기능적 불균형</span>에서 답을 찾습니다.
+            {/* 메인 카피 (정중앙 정렬, 지정 2줄 줄바꿈, '이상 없음' #e5b98a 골드 컬러) */}
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold text-stone-900 leading-snug md:leading-tight lg:leading-[1.35] tracking-tight max-w-4xl mx-auto mb-6 text-center">
+              <span className="block">
+                병원 검사상{' '}
+                <span className="text-[#e5b98a] font-black underline decoration-[#e5b98a]/70 underline-offset-8">
+                  '이상 없음'
+                </span>
+                에도 지속되는 고통,
+              </span>
+              <span className="block text-stone-950 font-black mt-2">
+                뇌와 자율신경의 기능적 불균형에서 답을 찾습니다.
+              </span>
             </h2>
 
-            {/* 솔루션 보조 설명 */}
-            <p className="text-base md:text-lg text-stone-600 font-normal leading-relaxed max-w-3xl mx-auto">
-              CT나 MRI는 뇌출혈이나 종양 같은 <strong className="font-semibold text-stone-800">'구조적 기질 병변'</strong>만 진단합니다.<br className="hidden md:inline" />
-              오브한의원은 보이지 않는 뇌신경망의 미세 과열과 자율신경 조절 장애를{' '}
-              <strong className="font-semibold text-stone-800">습식 정량화 뇌파(qEEG)와 심박변이도(HRV)</strong>로 객관화합니다.
-            </p>
+            {/* 솔루션 보조 설명 (지정 3줄 줄바꿈 및 정중앙 정렬) */}
+            <div className="text-base md:text-lg text-stone-600 font-normal leading-relaxed max-w-3xl mx-auto text-center space-y-1.5">
+              <p className="block">
+                CT나 MRI는 뇌출혈이나 종양 같은 <strong className="font-semibold text-stone-800">'구조적 기질 병변'</strong>만 진단합니다.
+              </p>
+              <p className="block">
+                오브한의원은 보이지 않는 뇌신경망의 미세 과열과 자율신경 조절 장애를
+              </p>
+              <p className="block">
+                <strong className="font-semibold text-stone-800">습식 정량화 뇌파(qEEG)와 심박변이도(HRV)</strong>로 객관화합니다.
+              </p>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -376,7 +390,7 @@ export default function TreatmentMethodSection() {
           - 호버 효과: hover:-translate-y-2 및 그림자 심화
           - 텍스트 위계(Hierarchy): 소제목 강조 + 상세 설명 text-stone-500
       ========================================================================= */}
-      <div className="w-full bg-[#FAF8F5] pb-24 md:pb-32 px-6">
+      <div className="w-full bg-[#FAF8F5] pt-6 md:pt-12 pb-24 md:pb-32 px-6">
         <div className="max-w-7xl mx-auto">
           {/* 섹션 서두 라벨 */}
           <motion.div
