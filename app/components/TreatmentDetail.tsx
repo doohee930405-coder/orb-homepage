@@ -103,7 +103,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
           </div>
         ) : (
           <ResponsivePicture
-            className="detail-hero-image"
+            className={`detail-hero-image${treatment.slug === 'autonomic-qeeg' ? ' detail-hero-image-qeeg' : ''}`}
             image={treatment.image}
             alt={treatment.imageAlt[locale]}
             eager

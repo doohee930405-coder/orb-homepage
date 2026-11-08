@@ -8218,3 +8218,39 @@ a.footer-access-btn:active {
     font-size: 1.15rem;
   }
 }
+
+
+/* ==========================================================================
+   Autonomic QEEG Treatment Detail Hero Image Styling (50% Sizing & Charcoal)
+   ========================================================================== */
+.detail-hero-image-qeeg {
+  background-color: #4a494b !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+}
+
+.detail-hero-image-qeeg picture,
+.detail-hero-image-qeeg img {
+  height: 52% !important;
+  width: 52% !important;
+  max-height: 52% !important;
+  max-width: 52% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  background-color: transparent !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+@media (max-width: 959px) {
+  .detail-hero-image-qeeg {
+    aspect-ratio: 4 / 3;
+    min-height: 340px !important;
+    background-color: #4a494b !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
