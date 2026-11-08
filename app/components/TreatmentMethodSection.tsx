@@ -253,7 +253,7 @@ export default function TreatmentMethodSection() {
 
         {/* 증상 키워드 팝업 레이어 (중앙 메인 카피와 겹치지 않는 외곽 Safe Zone) */}
         {mounted && (
-          <div className="absolute inset-0 pointer-events-none max-w-7xl mx-auto">
+          <div className="absolute inset-0 pointer-events-none max-w-7xl mx-auto hidden sm:block">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeGroupIndex}
@@ -353,28 +353,28 @@ export default function TreatmentMethodSection() {
             </div>
 
             {/* 메인 카피 (정중앙 정렬, 지정 2줄 줄바꿈, '이상 없음' #e5b98a 골드 컬러) */}
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold text-stone-900 leading-snug md:leading-tight lg:leading-[1.35] tracking-tight max-w-4xl mx-auto mb-6 text-center">
-              <span className="block">
+            <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold text-stone-900 leading-snug md:leading-tight lg:leading-[1.35] tracking-tight max-w-4xl mx-auto mb-6 text-center break-keep">
+              <span className="sm:block">
                 병원 검사상{' '}
                 <span className="text-[#4E4647] font-black underline decoration-[#4E4647]/50 underline-offset-8">
                   '이상 없음'
                 </span>
                 에도 지속되는 고통,
               </span>
-              <span className="block text-stone-950 font-black mt-2">
+              <span className="sm:block text-stone-950 font-black mt-1.5 sm:mt-2">
                 뇌와 자율신경의 기능적 불균형에서 답을 찾습니다.
               </span>
             </h2>
 
-            {/* 솔루션 보조 설명 (지정 3줄 줄바꿈 및 정중앙 정렬) */}
-            <div className="text-base md:text-lg text-stone-600 font-normal leading-relaxed max-w-3xl mx-auto text-center space-y-1.5">
-              <p className="block">
+            {/* 솔루션 보조 설명 (반응형 3줄 및 모바일 자연스러운 단락 흐름) */}
+            <div className="text-sm sm:text-base md:text-lg text-stone-600 font-normal leading-relaxed max-w-3xl mx-auto text-center space-y-1 sm:space-y-1.5 break-keep">
+              <p className="sm:block">
                 CT나 MRI는 뇌출혈이나 종양 같은 <strong className="font-semibold text-stone-800">'구조적 기질 병변'</strong>만 진단합니다.
               </p>
-              <p className="block">
+              <p className="sm:block">
                 오브한의원은 보이지 않는 뇌신경망의 미세 과열과 자율신경 조절 장애를
               </p>
-              <p className="block">
+              <p className="sm:block">
                 <strong className="font-semibold text-stone-800">습식 정량화 뇌파(qEEG)와 심박변이도(HRV)</strong>로 객관화합니다.
               </p>
             </div>
@@ -418,7 +418,7 @@ export default function TreatmentMethodSection() {
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: 0.65, delay: index * 0.15, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: -8, transition: { duration: 0.25 } }}
-                className="group relative bg-white rounded-2xl p-8 lg:p-9 border border-[#EAE4DC] shadow-sm hover:shadow-xl hover:border-[#8E7463]/40 transition-all duration-300 flex flex-col justify-between"
+                className="group relative bg-white rounded-2xl p-6 sm:p-8 lg:p-9 border border-[#EAE4DC] shadow-sm hover:shadow-xl hover:border-[#8E7463]/40 transition-all duration-300 flex flex-col justify-between"
               >
                 {/* 상단: 스텝 번호 & 아이콘 */}
                 <div>
@@ -447,7 +447,7 @@ export default function TreatmentMethodSection() {
                   </h5>
 
                   {/* 상세 설명 (위계 조절: text-stone-500, 작은 폰트) */}
-                  <p className="text-[13.5px] lg:text-sm text-stone-500 font-normal leading-relaxed text-justify mb-6">
+                  <p className="text-[13.5px] lg:text-sm text-stone-500 font-normal leading-relaxed text-left break-keep mb-6">
                     {card.description}
                   </p>
                 </div>

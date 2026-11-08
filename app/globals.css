@@ -45,6 +45,7 @@ body {
   line-height: 1.65;
   margin: 0;
   text-rendering: optimizeLegibility;
+  overflow-wrap: break-word;
 }
 
 a {
@@ -80,7 +81,10 @@ address {
 
 h1,
 h2,
-h3 {
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-sans);
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -88,11 +92,15 @@ h3 {
   margin: 0;
   text-wrap: balance;
   word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
-p {
+p,
+li,
+blockquote {
   margin: 0;
   word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 :focus-visible {
@@ -2063,26 +2071,29 @@ h3.faq-accordion-heading {
   }
 
   .hero-content {
-    min-height: 470px;
+    min-height: auto;
     order: 1;
-    padding: 70px 24px 56px;
+    padding: 48px 20px 40px;
   }
 
   .hero-content h1,
   .hero-content .hero-title {
-    font-size: clamp(2.7rem, 9.2vw, 3.4rem);
+    font-size: clamp(2.2rem, 8vw, 3.2rem);
     font-weight: 700;
     gap: 8px 12px;
+    word-break: keep-all;
+    text-wrap: balance;
   }
 
   .hero-branch {
-    font-size: 1.35rem;
+    font-size: 1.25rem;
   }
 
   .hero-lede {
-    font-size: 1.35rem;
-    line-height: 1.65;
-    margin-top: 22px;
+    font-size: clamp(1.02rem, 3.8vw, 1.15rem);
+    line-height: 1.7;
+    margin-top: 20px;
+    word-break: keep-all;
   }
 
   .primary-actions {
@@ -2331,16 +2342,28 @@ h3.faq-accordion-heading {
   }
 
   .detail-hero-copy {
-    min-height: 410px;
-    padding: 54px 24px;
+    min-height: auto;
+    padding: 42px 20px 32px;
   }
 
   .breadcrumbs {
-    margin-bottom: 44px;
+    margin-bottom: 28px;
   }
 
   .detail-hero-copy h1 {
-    font-size: 2.15rem;
+    font-size: clamp(1.65rem, 6vw, 2.25rem);
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+    word-break: keep-all;
+    text-wrap: balance;
+  }
+
+  .detail-hero-copy > p:last-child {
+    font-size: 0.98rem;
+    line-height: 1.75;
+    margin-top: 18px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 
   .detail-hero-image {
@@ -7517,7 +7540,7 @@ h3.faq-accordion-heading {
 
 @media (max-width: 959px) {
   .treatment-card-primary {
-    grid-template-rows: 380px auto;
+    grid-template-rows: clamp(240px, 65vw, 320px) auto;
   }
 
   .treatment-card-primary picture {
@@ -7702,8 +7725,10 @@ h3.faq-accordion-heading {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  width: 380px;
-  height: 380px;
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  aspect-ratio: 1 / 1;
   aspect-ratio: 1 / 1;
   background: #ffffff;
   border: 2px solid rgba(44, 26, 20, 0.14);
@@ -8247,7 +8272,7 @@ a.footer-access-btn:active {
 @media (max-width: 959px) {
   .detail-hero-image-qeeg {
     aspect-ratio: 4 / 3;
-    min-height: 340px !important;
+    min-height: clamp(240px, 60vw, 320px) !important;
     background-color: #4a494b !important;
     display: flex !important;
     align-items: center !important;
