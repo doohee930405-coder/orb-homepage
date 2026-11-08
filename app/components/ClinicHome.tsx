@@ -8,6 +8,7 @@ import SiteMotion from './SiteMotion';
 import TrackedLink from './TrackedLink';
 import FaqAccordion from './FaqAccordion';
 import HomeColumnsArchive from './HomeColumnsArchive';
+import TreatmentMethodSection from './TreatmentMethodSection';
 import { Column } from '../lib/columns';
 import {
   SITE_URL,
@@ -523,43 +524,24 @@ export default function ClinicHome({
         ))}
       </section>
 
-      {/* 2. [PAGE 2] DIAGNOSTIC TECHNOLOGY PROTOCOL SECTION */}
-      <section className="diagnostic-section reveal" id="diagnostic">
-        <div className="diagnostic-header">
-          <div className="diagnostic-badge-pill">
-            <span className="pulse-dot" aria-hidden="true" />
-            {text.diagnosticEyebrow}
-          </div>
-          <h2 className="diagnostic-main-title">
-            {text.diagnosticTitle.split('\n').map((line, idx) => (
-              <span key={idx}>{line}</span>
-            ))}
-          </h2>
-          <p className="diagnostic-sub-lede">
-            {text.diagnosticSubtitle.split('\n').map((line, idx) => (
-              <span key={idx}>{line}</span>
-            ))}
-          </p>
+      {/* 2. [PAGE 2] DIAGNOSTIC TECHNOLOGY PROTOCOL SECTION (RENEWED) */}
+      <TreatmentMethodSection />
 
-          <div className="qeeg-spec-strip">
-            <div className="qeeg-spec-badge">
-              <strong>{text.diagnosticWhyWet}</strong>
-            </div>
-            <div className="qeeg-spec-items">
-              {text.diagnosticPoints.map((pt, idx) => (
-                <div key={idx} className="qeeg-spec-item">
-                  <span className="spec-check">✓</span>
-                  <div>
-                    <strong>{pt.title}</strong>
-                    <p>{pt.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* 3단계 임상 프로토콜 세부 절차 */}
+      <section className="protocol-section-wrapper bg-[#FAF8F5] pb-20 md:pb-28 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-10 md:mb-14">
+            <span className="text-xs font-mono font-bold tracking-widest text-[#8E7463] px-3 py-1.5 rounded-full bg-[#8E7463]/10 uppercase">
+              3-STEP CLINICAL PROTOCOL
+            </span>
+            <h3 className="text-2xl md:text-3xl font-extrabold text-stone-900 mt-3 tracking-tight">
+              오브한의원 3단계 원인 치료 프로세스
+            </h3>
+            <p className="text-stone-500 text-sm md:text-base mt-2 max-w-2xl mx-auto">
+              정밀 진단 데이터부터 맞춤 치료까지 뇌와 자율신경의 항상성을 되살리는 체계적인 진료 흐름
+            </p>
           </div>
-        </div>
-
-        <div className="protocol-grid">
+          <div className="protocol-grid">
           {text.protocolSteps.map((step) => (
             <article className="protocol-card" key={step.step}>
               <div className="protocol-card-head">
@@ -590,6 +572,7 @@ export default function ClinicHome({
               </div>
             </article>
           ))}
+          </div>
         </div>
       </section>
 
