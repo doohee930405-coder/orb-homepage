@@ -216,15 +216,15 @@ const FEATURE_CARDS: FeatureCardData[] = [
 export default function TreatmentMethodSection() {
   // 클라이언트 마운트 여부 확인 (Hydration 안전성 확보)
   const [mounted, setMounted] = useState(false);
-  // 활성화되어 화면에 팝업되는 증상 키워드 인덱스 그룹 (3초 주기로 전환)
+  // 활성화되어 화면에 팝업되는 증상 키워드 인덱스 그룹 (3.8초 주기로 전환)
   const [activeGroupIndex, setActiveGroupIndex] = useState(0);
 
   useEffect(() => {
     setMounted(true);
-    // 3초마다 화면 곳곳의 증상 키워드 그룹 순환 (중앙 텍스트 침범 없는 Safe Zone)
+    // 3.8초마다 화면 곳곳의 증상 키워드 그룹 순환 (중앙 텍스트 침범 없는 Safe Zone)
     const interval = setInterval(() => {
       setActiveGroupIndex((prev) => (prev + 1) % 4);
-    }, 3000);
+    }, 3800);
     return () => clearInterval(interval);
   }, []);
 
@@ -240,7 +240,7 @@ export default function TreatmentMethodSection() {
       {/* =========================================================================
           1. 히어로 인트로 (증상 팝업 & 브레인포그 안개 영역)
           - 배경: 다크 브라운 bg-[#4E4647] Full-width
-          - 3초 주기 페이드인/아웃 전환
+          - 3.8초 주기 페이드인/아웃 전환
           - 중앙 메인 텍스트 영역 침범 방지 Safe-Zone 레이아웃
       ========================================================================= */}
       <div className="relative w-full min-h-[580px] md:min-h-[660px] bg-[#4E4647] text-white flex flex-col justify-center items-center px-6 py-20 select-none overflow-hidden">
