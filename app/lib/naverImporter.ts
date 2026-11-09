@@ -1173,7 +1173,7 @@ export async function convertNaverHtmlToMasterMarkdown(
           return `\n\n[📍 **오브한의원 마곡점 네이버 지도(플레이스) 바로가기**](${href})\n\n`;
         }
         if (href.includes('talk.naver.com')) {
-          return `\n\n[💬 **오브한의원 네이버 톡톡 1:1 상담 바로가기**](${href})\n\n`;
+          return `\n\n[💬 **궁금할 땐 네이버 톡톡하세요!**](https://talk.naver.com/w6v6hxc)\n\n`;
         }
         if (href.includes('pf.kakao.com')) {
           return `\n\n[💬 **오브한의원 카카오톡 채널 문의 바로가기**](${href})\n\n`;
@@ -1430,7 +1430,7 @@ export async function convertNaverHtmlToMasterMarkdown(
       return `[📍 **${cleanText}**](${href})`;
     }
     if (href.includes('talk.naver.com')) {
-      return `[💬 **${cleanText}**](${href})`;
+      return `[💬 **궁금할 땐 네이버 톡톡하세요!**](https://talk.naver.com/w6v6hxc)`;
     }
     if (href.includes('pf.kakao.com')) {
       return `[💬 **${cleanText}**](${href})`;
@@ -1438,6 +1438,9 @@ export async function convertNaverHtmlToMasterMarkdown(
 
     // Map & Address links with href="#" or location text -> Real Naver Place
     const lower = cleanText.toLowerCase();
+    const isTalkRelated =
+      lower.includes('톡톡') || cleanText.includes('톡톡');
+
     const isLocationRelated =
       lower.includes('오브한의원') ||
       lower.includes('마곡') ||
@@ -1448,9 +1451,12 @@ export async function convertNaverHtmlToMasterMarkdown(
       lower.includes('위치') ||
       lower.includes('플레이스');
 
-    if (href === '#' || href === '' || href.startsWith('javascript:') || isLocationRelated) {
+    if (href === '#' || href === '' || href.startsWith('javascript:') || isLocationRelated || isTalkRelated) {
       if (isLocationRelated) {
         return `[📍 **${cleanText.replace(/^📍\s*/, '')}**](${NAVER_PLACE_SEARCH_URL})`;
+      }
+      if (isTalkRelated) {
+        return `[💬 **궁금할 땐 네이버 톡톡하세요!**](https://talk.naver.com/w6v6hxc)`;
       }
       return cleanText;
     }
