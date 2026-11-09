@@ -194,6 +194,10 @@ export function convertHtmlParagraph(innerHtml: string): string {
   parsed = parsed.replace(/<\/?(?!u\b|img\b|a\b)[a-zA-Z0-9_-]+\b[^>]*>/gi, '');
   parsed = decodeHtmlEntities(parsed).trim();
 
+  // Unbold doctor / clinic greeting introductions
+  parsed = parsed.replace(/\*\*((?:오브한의원|마곡\s*오브한의원)[^*]*(?:전두희|대표원장)[^*]*)\*\*/g, '$1');
+  parsed = parsed.replace(/\*\*(전두희\s*원장)\*\*/g, '$1');
+
   // If paragraph starts with bold step subtitle like **1. HPA축...** 본문..., split into H3 + body
   const boldPrefixMatch = parsed.match(/^(\*(?:\d+\.|\d+\.\d+|[①-⑩]|\[\d+단계\]|[^\*\n]{2,50})\*\*)\s*(.+)$/s);
   if (boldPrefixMatch) {

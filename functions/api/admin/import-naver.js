@@ -334,6 +334,10 @@ function convertHtmlParagraph(innerHtml) {
   parsed = parsed.replace(/<\/?(?!u\b|img\b|a\b)[a-zA-Z0-9_-]+\b[^>]*>/gi, '');
   parsed = decodeHtml(parsed).trim();
 
+  // Unbold doctor / clinic greeting introductions
+  parsed = parsed.replace(/\*\*((?:오브한의원|마곡\s*오브한의원)[^*]*(?:전두희|대표원장)[^*]*)\*\*/g, '$1');
+  parsed = parsed.replace(/\*\*(전두희\s*원장)\*\*/g, '$1');
+
   // If paragraph starts with bold step subtitle like **1. HPA축...** 본문..., split into H3 + body
   const boldPrefixMatch = parsed.match(/^(\*(?:\d+\.|\d+\.\d+|[①-⑩]|\[\d+단계\]|[^\*\n]{2,50})\*\*)\s*(.+)$/s);
   if (boldPrefixMatch) {
@@ -550,13 +554,30 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
   const quoteMatch = bodyHtml.match(quoteRegex) || bodyHtml.match(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/i);
   if (quoteMatch) {
     let rawQuote = decodeHtml(stripHtmlPreservingEntities(quoteMatch[1])).trim();
-    rawQuote = rawQuote
-      .replace(/^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i, '')
-      .replace(/^[>\s💡📌🔗]+/gu, '')
-      .trim();
-    if (rawQuote.length >= 10) {
-      summary = rawQuote;
-      bodyHtml = bodyHtml.replace(quoteMatch[0], '');
+    const isPatientQuote =
+      /^["'“]/.test(rawQuote) ||
+      /["'”]$/.test(rawQuote) ||
+      /(?:원장님|선생님)[,\s!]/.test(rawQuote.slice(0, 30)) ||
+      /(?:할까요|인가요|나요|있을까요|것\s*같아요|했습니다|돼요|합니다)\?["]?$/.test(rawQuote) ||
+      /(?:연습하는데요|심해지는\s*것|답답함을\s*호소|잠을\s*못)/.test(rawQuote);
+
+    const isExplicitSummary =
+      /(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary|3줄\s*요약|핵심\s*정리|임상\s*요약)/i.test(
+        quoteMatch[1]
+      );
+
+    if (isExplicitSummary && !isPatientQuote) {
+      rawQuote = rawQuote
+        .replace(
+          /^(?:💡\s*)?(?:(?:오브한의원\s*)?(?:전두희\s*원장의\s*)?(?:핵심\s*(?:진료\s*)?요약)|Medical\s*Summary|Summary)\s*[:\-\n\r]*/i,
+          ''
+        )
+        .replace(/^[>\s💡📌🔗]+/gu, '')
+        .trim();
+      if (rawQuote.length >= 10) {
+        summary = rawQuote;
+        bodyHtml = bodyHtml.replace(quoteMatch[0], '');
+      }
     }
   }
 
@@ -651,7 +672,7 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
           return `\n\n[📍 **오브한의원 마곡점 네이버 지도(플레이스) 바로가기**](${linkHref})\n\n`;
         }
         if (linkHref.includes('talk.naver.com')) {
-          return `\n\n[💬 **오브한의원 네이버 톡톡 1:1 상담 바로가기**](${linkHref})\n\n`;
+          return `\n\n[💬 **궁금할 땐 네이버 톡톡하세요!**](https://talk.naver.com/w6v6hxc)\n\n`;
         }
         if (linkHref.includes('pf.kakao.com')) {
           return `\n\n[💬 **오브한의원 카카오톡 채널 문의 바로가기**](${linkHref})\n\n`;
@@ -740,10 +761,8 @@ function parseNaverPostHtml(html, logNo, blogId, fallbackTitle, forceCategory) {
     .replace(/이\s*블로그의\s*체크인[\s\S]*?MY플레이스/gi, '')
     .replace(/MY\s*플레이스/gi, '');
 
-  if (!summary && markdown.length > 50) {
-    const p1 = markdown.split('\n\n').find(p => p.trim() && !p.startsWith('#') && !p.startsWith('!') && !p.startsWith('---'));
-    summary = (p1 || markdown.slice(0, 150)).replace(/\n+/g, ' ').replace(/^[>\s💡📌🔗]+/gu, '').trim();
-  }
+  // [요약 원칙]: 서두에 인용구로 명시된 요약글이 있을 때만 summary 처리 (임의 첫 문단 요약 생성 금지)
+  summary = summary ? summary.trim() : '';
 
   // References formatting
   markdown = markdown.replace(/(\[\d+\]\s+[^\n]+)/g, '\n\n$1\n\n');

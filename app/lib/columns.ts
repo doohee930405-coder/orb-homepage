@@ -359,6 +359,10 @@ export function cleanAndRepairMarkdown(text: string): string {
   // 1-AC. Strip duplicate top image if the exact same image appears later in the body
   cleaned = removeTopDuplicateImage(cleaned);
 
+  // 1-AD. Unbold doctor / clinic greeting introductions
+  cleaned = cleaned.replace(/\*\*((?:오브한의원|마곡\s*오브한의원)[^*]*(?:전두희|대표원장)[^*]*)\*\*/g, '$1');
+  cleaned = cleaned.replace(/\*\*(전두희\s*원장)\*\*/g, '$1');
+
   // 1-AA2. Normalize closing contact notice to "네이버톡톡 혹은 카카오톡으로 부탁드립니다"
   cleaned = cleaned.replace(
     /네이버\s*톡톡으로\s*부탁드립니다/g,
