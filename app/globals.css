@@ -1008,7 +1008,7 @@ h3.faq-accordion-heading {
 .clinical-faq-block .faq-accordion-item.is-open p.faq-answer-detail,
 .clinical-faq-block .faq-accordion-item[data-open="true"] p.faq-answer-detail,
 .clinical-faq-block .faq-accordion-content.is-expanded p.faq-answer-detail {
-  max-height: 800px;
+  max-height: 1200px;
   opacity: 1;
   padding: 0 24px 22px 24px;
   margin: 0;

@@ -762,15 +762,13 @@ export default function MarkdownView({ content, className = '', summary }: Markd
         // Strip bold markers inside linkText completely
         linkText = linkText.replace(/\*\*/g, '').trim();
 
-        // Check if this link refers to QEEG/Brainwave measurement guide
+        // Check if this link refers specifically to the QEEG equipment measurement guide
         const isQeegLink =
-          url.includes('qeeg') ||
           url.includes('314941') ||
-          linkText.includes('정량화 뇌파') ||
-          linkText.includes('정량뇌파') ||
-          linkText.includes('뇌파검사') ||
-          linkText.includes('뇌파 측정') ||
-          (url.includes('blog.naver.com') && /qeeg|314941|뇌파/.test(`${url} ${linkText}`));
+          url.includes('qeeg-guide') ||
+          linkText.includes('습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내') ||
+          linkText.includes('측정 과정 및 장비 안내') ||
+          (url.includes('blog.naver.com') && url.includes('314941'));
 
         let linkClass = 'article-link';
         let isButton = false;
@@ -781,7 +779,9 @@ export default function MarkdownView({ content, className = '', summary }: Markd
           isButton = true;
           isQeegButton = true;
           url = `/columns/${DEFAULT_QEEG_SLUG}`;
-          linkText = '👉 오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기';
+          if (!linkText.includes('오브한의원 습식 정량화 뇌파')) {
+            linkText = '👉 오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기';
+          }
         } else if (url.includes('booking.naver.com')) {
           linkClass = 'article-action-btn article-btn-booking';
           isButton = true;

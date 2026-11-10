@@ -139,7 +139,7 @@ export const treatments: Treatment[] = [
         ko: {
           name: '습식 정량화 뇌파검사(QEEG) 기반 뇌신경-자율신경 통합 치료',
           alternateName: 'Quantitative EEG Brain Mapping Therapy',
-          description: '국제 10-20 시스템 19채널 습식 전극으로 두피 저항을 낮추고 뇌 피질 전위 및 심박변이도를 정밀 측정하여, 3차원 뇌기능 지형도(3D Brain Map)와 Z-score 편차를 분석한 후 맞춤 한약과 두개추나를 처방하는 치료법',
+          description: '국제 10-20 시스템 습식 전극으로 두피 저항을 낮추고 뇌 피질 전위 및 심박변이도를 정밀 측정하여, 3차원 뇌기능 지형도(3D Brain Map)와 Z-score 편차를 분석한 후 맞춤 한약과 두개추나를 처방하는 치료법',
           procedureType: 'NoninvasiveProcedure',
           bodyLocation: ['Head', 'Brain', 'Cervical Spine', 'Autonomic Nervous System'],
         },

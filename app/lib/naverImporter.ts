@@ -1135,12 +1135,12 @@ export async function convertNaverHtmlToMasterMarkdown(
     .replace(/<(?:div|p|span)[^>]*class="[^"]*(?:se-caption|se-module-caption|se-image-caption)[^"]*"[^>]*>[\s\S]*?<\/(?:div|p|span)>/gi, '')
     .replace(/<p[^>]*class="[^"]*se_textarea[^"]*"[^>]*>\s*[\*_]?(?:설명\s*:|오브한의원)[^<]*<\/(?:p|span)>/gi, '');
 
-  // Helper: Detect if a link refers to the Naver QEEG device introduction post
+  // Helper: Detect if a link refers specifically to the Naver QEEG device introduction post (314941)
   const isQeegPostReference = (url: string, text: string): boolean => {
     const combined = `${url} ${text}`.toLowerCase();
-    const hasQeegTerm = /qeeg|정량뇌파|정량화뇌파|뇌파검사|뇌파기계|뇌파장비|뇌파\s*측정/.test(combined);
-    const isNaverOrLocal = /blog\.naver\.com|naver\.com|orbclinic|\/columns\//.test(combined);
-    return hasQeegTerm && (isNaverOrLocal || /기기|소개|안내|검사|과정|장비/.test(combined));
+    if (url.includes('314941') || url.includes('qeeg-guide')) return true;
+    const isGuideText = /측정\s*과정|장비\s*안내|기계\s*안내|정량\s*뇌파\s*측정\s*과정/.test(combined);
+    return isGuideText && /뇌파|qeeg/.test(combined);
   };
 
   // 3-1. Naver Map & Place Module conversion to authentic place URL (Must run BEFORE image extraction so map thumbs aren't saved as body images)

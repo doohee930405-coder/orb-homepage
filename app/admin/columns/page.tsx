@@ -2035,7 +2035,7 @@ const handleDelete = async (slug: string, title: string) => {
                   type="text"
                   value={uploadAltText}
                   onChange={(e) => setUploadAltText(e.target.value)}
-                  placeholder="예: 오브한의원 19채널 디지털 뇌파 검사 분석 결과지"
+                  placeholder="예: 오브한의원 디지털 뇌파 검사 분석 결과지"
                   className="admin-input"
                 />
                 <small className="form-help">

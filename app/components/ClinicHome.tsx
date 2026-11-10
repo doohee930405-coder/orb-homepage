@@ -128,44 +128,50 @@ const copy = {
     faqLead:
       '병원 검사상 이상 없음에도 지속되는 신경계 불균형에 대해 환자분들이 가장 많이 질문하시는 핵심 사항을 정리했습니다.',
                 faqItems: [
-      {
-        question: "대학병원 종합검진(CT·MRI·혈액검사)에서 '이상 없음'인데 왜 계속 아프고 힘든가요?",
-        answerLead: "CT·MRI는 뇌출혈이나 종양 등 구조적 기질 병변만 진단할 뿐, 신경망의 기능적 과열과 자율신경 조절 장애는 발견할 수 없기 때문입니다.",
-        answerLeadRest: "만성피로, 어지럼증, 가슴 두근거림, 브레인포그, 소화불량 등은 신경망의 기능적 과부하 및 교감·부교감신경의 조절 불균형에서 시작됩니다.",
-        answerDetail: "오브한의원은 습식 정량화 뇌파(qEEG)와 심박변이도(HRV) 자율신경 정밀 검사를 통해 눈에 보이지 않던 신경계의 기능적 과부하를 객관적 Z-score 수치로 규명하여 근원 치료를 시행합니다.",
-      },
-      {
-        question: "오브한의원의 '습식 정량화 뇌파(qEEG)'는 일반 밴드형 검사와 어떻게 다른가요?",
-        answerLead: "국제 10-20 표준 전극 시스템을 적용한 전뇌(Full-Head) 습식 검사로 측정 정밀도와 신뢰성이 압도적입니다.",
-        answerLeadRest: "시중의 간이 건식 밴드는 이마 부위 2~4개 채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 반면 의료용 전도성 겔(Gel)을 사용하는 습식 전극은 피부 저항(Impedance)을 극소화하여 미세 신경 신호까지 포착합니다.",
-        answerDetail: "오브한의원의 습식 정량화 뇌파(qEEG)는 전두엽, 측두엽, 두정엽, 후두엽 전뇌를 커버하며, 국제 10-20 표준 전극 시스템 기준의 Normative Database(표준 건강 대조군 데이터베이스) Z-score 분석을 통해 뇌 피질 신경망 과열과 저하 상태를 3차원 입체 지도로 시각화합니다.",
-      },
-      {
-        question: "정신과 약(항불안제, 수면제, 항우울제)을 복용 중인데 한약이나 추나 치료를 함께 받을 수 있나요?",
-        answerLead: "네, 복용 중이신 신경정신과 약물을 안정적으로 유지하면서 안전하게 병행 치료가 가능합니다.",
-        answerLeadRest: "처방 약물을 임의로 갑자기 중단하면 반동 현상이나 금단 증상이 발생할 수 있으므로, 기존 약물을 유지하면서 뇌신경계의 자율 회복력을 단계적으로 높이는 병행 진료를 시작합니다.",
-        answerDetail: "뇌 중추 과열을 식히는 1:1 맞춤 한약과 두경부 긴장을 완화하는 상부경추 뇌신경 추나요법을 통해 뇌의 자율 회복력을 높여가며, 호전 경과에 따라 안전하게 감량 및 단약(Tapering)을 돕습니다.",
-      },
-      {
-        question: "자율신경실조증 치료 기간과 내원 주기는 보통 어떻게 되나요?",
-        answerLead: "초기 집중 치료기 4~8주 동안은 주 1~2회 내원을 권장하며, 이후 점진적으로 주기를 넓혀갑니다.",
-        answerLeadRest: "두근거림, 불면, 두중감, 감각과민 등 급성 신체화 증상이 심한 초기 4~8주 동안은 주 1~2회 내원하여 뇌신경 추나요법과 약침 치료를 병행하고 1:1 맞춤 한약을 복용합니다.",
-        answerDetail: "신경계 항상성이 안정권에 접어들면 내원 주기를 격주 또는 월 1회로 점진적으로 넓혀, 일상생활 속에서 스스로 활력을 유지하고 재발하지 않도록 돕습니다. 단, 이는 표준적인 가이드이며 환자분의 상태에 따라 처방되는 치료의 종류와 내원 빈도는 달라질 수 있습니다. 가령 원거리에서 방문시, 주기적인 내원이 어려우신만큼 한약 치료 단독으로 진행하며, 생활관리를 비대면으로 도와드릴 수 있습니다.",
-      },
-      {
-        question: "검사 및 치료 비용은 어떻게 되나요?",
-        answerLead: "치료 목표와 신경계 회복 단계에 맞추어 체계적으로 안내해 드립니다.",
-        answerLeadRest: "기본 진료인 침치료와 관절·근막을 교정하는 추나요법은 국민건강보험이 적용됩니다.",
-        answerDetail: "• 신경계 기능 검사: 자율신경계 및 뇌기능 활성도를 정밀 분석하는 QEEG 뇌파검사와 자율신경검사는 검사 구성에 따라 5-6만 원 선으로 진행됩니다.\n• 1:1 맞춤 치료한약: 뇌신경계 안정과 신체 균형 회복을 위한 치료한약(비 녹용 기준)은 1개월 기준 45만 원, 단계별 안정 3개월 치료한약은 120만 원입니다.",
-      },
-    ],
+  {
+    "question": "대학병원 종합검진(CT·MRI·혈액검사)에서 '이상 없음'인데 왜 계속 아프고 힘든가요?",
+    "answerLead": "CT나 MRI는 뇌출혈이나 종양 같은 구조적 기질 병변만 확인할 뿐, 신경망의 미세 과열이나 교감·부교감신경의 기능적 조절 장애는 감지할 수 없기 때문입니다.",
+    "answerLeadRest": "",
+    "answerDetail": "• 구조와 기능의 차이: 컴퓨터 부품(하드웨어)에 이상이 없어도 시스템 프로그램(소프트웨어)이 꼬이면 렉이 걸리듯, 뇌세포의 기질적 파괴가 없더라도 신경망 신호 교란으로 심한 신체화 증상이 발생합니다.\n• 객관적 기능 지표 측정: 오브한의원은 보이지 않는 신경계 기능 이상을 습식 정량화 뇌파(QEEG)와 심박변이도(HRV)로 측정하여, 표준 건강 대조군 대비 신경망 과열 상태(Z-score)를 시각화합니다.\n• 신경계 항상성 복원: 검사 결과에 기반하여 뇌 과열을 식히는 표적 한약과 척추 긴장을 감압하는 추나요법으로 무너진 자율신경의 자율 회복을 돕습니다."
+  },
+  {
+    "question": "오브한의원의 '습식 정량화 뇌파(QEEG)'는 일반 밴드형 검사기기와 어떻게 다른가요?",
+    "answerLead": "의료용 전도성 겔을 사용하여 두피 저항을 5kΩ(킬로옴) 이하로 낮추고, 국제 10-20 표준 전극 시스템으로 전뇌(Full-Head)를 정밀 분석하는 병원급 정밀 진단 시스템입니다.",
+    "answerLeadRest": "",
+    "answerDetail": "• 피부 저항 및 잡파 극소화: 시중의 건식 이마 밴드는 땀과 피지, 근육 움직임(잡파)에 취약한 반면, 의료용 습식 전극은 피부 접촉 저항을 극소화하여 대뇌 피질의 미세 마이크로볼트(μV) 신호까지 정밀 포착합니다.\n• 전뇌 3차원 활성도 맵핑: 전두엽·측두엽·두정엽·후두엽 전뇌를 커버하며, 국제 공인 표준 데이터베이스(Normative DB) 대조를 통해 델타·세타·알파·베타파의 불균형을 3차원 입체 지도로 확인합니다.\n• 치료 전후 객관적 검증: 주관적 설문지에만 의존하지 않고, 치료 경과에 따른 뇌신경망 과각성 완화를 수치화된 데이터로 입증합니다."
+  },
+  {
+    "question": "정신과 약(항불안제, 신경안정제, 수면제)을 복용 중인데 한약이나 추나 치료를 병행해도 안전한가요?",
+    "answerLead": "네, 기존에 처방받아 복용 중이신 신경정신과 약물을 임의로 중단하지 않고 안전하게 병행 치료를 진행할 수 있습니다.",
+    "answerLeadRest": "",
+    "answerDetail": "• 치료 표적의 분리: 정신과 약물이 대뇌 시냅스 수용체를 진정시키는 동안, 맞춤 한약은 장-뇌 축(Brain-Gut Axis) 신경염증을 다스리고 척추 추나 치료는 몸에서 뇌로 올라가는 물리적 과부하를 감압합니다.\n• 단계적 감량(Tapering) 협력: 뇌파(QEEG) 및 자율신경(HRV) 지표 호전이 확인되면, 환자분의 경과에 맞춰 기존 처방의와 상의하며 단계적으로 약물 의존도를 낮출 수 있도록 돕습니다."
+  },
+  {
+    "question": "자율신경실조증 치료 기간과 권장 내원 주기는 어떻게 되나요?",
+    "answerLead": "증상이 심한 초기 4~8주는 주 1~2회 집중 내원 치료를 권장하며, 신경계가 안정권에 접어들면 주기를 2~4주로 점진적으로 넓혀갑니다.",
+    "answerLeadRest": "",
+    "answerDetail": "• 초기 집중 치료기 (4~8주): 급성 두근거림, 불면, 브레인포그 등 신체화 증상을 조절하기 위해 1:1 맞춤 한약과 주 1~2회 뇌신경 추나요법·약침 치료를 병행합니다.\n• 항상성 안정기 (2~3개월 이후): 신경망 과열이 가라앉으면 내원 주기를 격주 또는 월 1회로 넓혀, 신체 스스로 균형을 유지할 수 있도록 돕습니다.\n• 원거리 환자 맞춤 프로그램: 지방이나 해외 등 정기 내원이 어려운 경우, 정밀 검사 후 맞춤 한약 처방 중심과 비대면 생활지도 관리 프로토콜로 전환하여 진행할 수 있습니다."
+  },
+  {
+    "question": "검사 및 치료 비용은 어떻게 책정되어 있나요?",
+    "answerLead": "기본 침구치료와 추나요법은 국민건강보험이 적용되며, 정밀 기능 검사 및 비급여 맞춤 한약은 신경계 회복 단계에 따라 정찰제로 투명하게 운영됩니다.",
+    "answerLeadRest": "",
+    "answerDetail": "• 건강보험 적용 항목: 척추 정렬과 근막 긴장을 이완하는 뇌신경 추나요법 및 침구 치료는 국민건강보험이 적용됩니다.\n• 신경계 정밀 기능 검사: 자율신경과 뇌기능 활성도를 교차 분석하는 습식 QEEG 뇌파검사 및 HRV 검사는 검사 구성에 따라 5~6만 원 선으로 진행됩니다.\n• 1:1 맞춤 치료한약: 중추 신경염증 완화와 뇌신경망 조절을 위한 맞춤 한약(비녹용 기준)은 1개월 45만 원, 단계별 3개월 치료 과정은 120만 원으로 구성되어 있습니다."
+  },
+  {
+    "question": "신경안정제를 먹어도 약 기운이 떨어지면 증상이 왜 자꾸 되살아나나요?",
+    "answerLead": "고통의 발화점이 뇌의 문제(하행성)뿐만 아니라, 굳은 등과 비정상적인 복압(IAP) 등 몸에서 뇌로 끊임없이 치고 올라오는 '상향식 기계적 스트레스'에 있기 때문입니다.",
+    "answerLeadRest": "",
+    "answerDetail": "• 미주신경의 80%는 상향식 경로: 장기와 뇌를 잇는 핵심 부교감신경인 미주신경 섬유의 약 80%는 신체 말초에서 뇌로 올라가는 구심성 신경입니다. 굽은 흉추와 복압 상승은 뇌로 지속적인 비상 신호를 쏘아 올립니다.\n• 화재 경보기와 발화점의 비유: 화재 경보기가 울릴 때 귀마개(신경안정제)를 낀다고 불이 꺼지지 않듯, 신체 말초의 물리적 장력을 풀지 않으면 약효가 끝난 후 뇌는 다시 비상사태로 인식합니다.\n• 상향식·하향식 통합 치료: 상부경추 추나요법으로 물리적 압박을 먼저 감압(상향식)하고 맞춤 한약으로 뇌의 신경염증을 식혀야(하향식) 신경계의 자율 회복을 기대할 수 있습니다."
+  }
+],
     philosophyEyebrow: 'OUR APPROACH',
     philosophyTitle: '정확하게 진단하고\n바르게 치료하겠습니다',
     philosophyBody: 'ORB한의원의 접근',
     principles: [
       ['Origin', '불편이 시작된 배경과 반복되는 패턴을 확인합니다.'],
       ['Reset', '과긴장된 신경계와 굳어진 몸의 흐름을 본래대로 되돌립니다.'],
-      ['Balance', '뇌와 신체의 무너진 균형을 바로잡아 온전한 일상을 지킵니다.'],
+      ['Balance', '뇌와 신체의 무너진 균형을 바로잡아 건강한 일상을 지킵니다.'],
     ],
     spaceEyebrow: '',
     spaceTitle: 'SPACE',
@@ -333,37 +339,43 @@ const copy = {
     faqLead:
       'Answers to the most common clinical questions regarding functional nervous system imbalances when standard medical tests show normal.',
         faqItems: [
-      {
-        question: "Why do standard scans (CT, MRI, blood tests) return 'normal' while symptoms persist?",
-        answerLead: "Standard CT, MRI, and blood tests evaluate structural tissue damage or lesions, not functional regulatory dysfunctions of neural networks.",
-        answerLeadRest: "Chronic fatigue, dizziness, sudden palpitations, brain fog, and digestive distress stem from functional neural hypersensitivity and autonomic dysregulation.",
-        answerDetail: "ORB Clinic utilizes multichannel wet QEEG and HRV autonomic testing to objectively identify and quantify functional neural overload via Z-score benchmarking for root-cause recovery.",
-      },
-      {
-        question: "How does multichannel wet QEEG differ from dry consumer headbands?",
-        answerLead: "Clinical wet QEEG adhering to the International 10-20 standard delivers far superior diagnostic precision over consumer headbands.",
-        answerLeadRest: "Consumer bands measure only 2 to 4 frontal channels and suffer heavily from impedance noise and motion artifacts. In contrast, clinical conductive gel minimizes scalp impedance across all lobes.",
-        answerDetail: "ORB Clinic covers frontal, temporal, parietal, and occipital lobes, benchmarking neural signals against extensive normative databases to visualize cortical hyperarousal in 3D brain maps.",
-      },
-      {
-        question: "Can I receive Korean medicine care while continuing psychiatric medications?",
-        answerLead: "Yes, concurrent care is safe and medically synergistic with psychiatric medications.",
-        answerLeadRest: "We strictly advise against abrupt discontinuation of pharmaceuticals. Our protocol begins with concurrent care while maintaining your current prescription stably.",
-        answerDetail: "By combining individualized neuro-cooling herbal formulas with upper-cervical cranial Chuna therapy, we gradually restore autonomic homeostasis to support safe medication tapering under clinical observation.",
-      },
-      {
-        question: "What is the expected treatment duration and visit frequency?",
-        answerLead: "An initial intensive stabilization phase of 4 to 8 weeks typically requires 1 to 2 visits weekly, transitioning to maintenance.",
-        answerLeadRest: "During acute symptoms (palpitations, insomnia, heavy head sensations, sensory overload), targeted neuro-structural Chuna, pharmacopuncture, and tailored herbal medicine rebuild core homeostasis.",
-        answerDetail: "Once biometric indicators and brainwave patterns normalize, visit intervals are expanded to biweekly or monthly to ensure long-term neural resilience. Note that this is a general guideline; for long-distance patients who cannot visit regularly, customized herbal medicine monotherapy can be administered alongside remote lifestyle management support.",
-      },
-      {
-        question: "What are the examination and treatment costs?",
-        answerLead: "We provide structured guidance tailored to your recovery goals and neural healing stage.",
-        answerLeadRest: "Basic acupuncture and joint/fascial Chuna manual therapy are covered under National Health Insurance.",
-        answerDetail: "• Neurological Function Tests: Multichannel QEEG brain mapping and autonomic testing typically range between 50,000 and 60,000 KRW depending on the protocol.\n• 1:1 Customized Herbal Medicine: Tailored neuro-cooling herbal formulas (non-deer antler base) are 450,000 KRW for 1 month, and 1,200,000 KRW for a 3-month stabilization protocol.",
-      },
-    ],
+  {
+    "question": "Why do standard scans (CT, MRI, blood tests) return 'normal' while symptoms persist?",
+    "answerLead": "Standard CT, MRI, and blood tests evaluate structural tissue damage, not functional regulatory dysfunctions of neural networks.",
+    "answerLeadRest": "",
+    "answerDetail": "• Hardware vs. Software: Just as software glitches freeze a computer despite intact hardware, neural network dysregulation causes severe somatic symptoms without structural lesions.\n• Objective Biometric Benchmarking: ORB Clinic evaluates hidden functional strain via clinical wet QEEG and HRV, benchmarking against international normative databases (Z-scores).\n• Autonomic Homeostasis: Personalized neuro-cooling herbal formulas and decompression Chuna manual therapy help restore the nervous system's intrinsic self-regulation."
+  },
+  {
+    "question": "How does clinical wet QEEG differ from dry consumer headbands?",
+    "answerLead": "Our hospital-grade diagnostic system uses clinical conductive gel to lower scalp impedance below 5kΩ, covering full-head cortical lobes under the International 10-20 standard.",
+    "answerLeadRest": "",
+    "answerDetail": "• Minimal Impedance & Artifacts: Consumer dry bands measure only 2-4 frontal channels and suffer from sweat and motion noise, whereas wet electrodes capture microvolt (μV) cortical signals reliably.\n• 3D Brain Mapping: Benchmarks neural frequency bands (Delta, Theta, Alpha, Beta) against normative clinical databases to visualize hyperarousal across all cerebral lobes.\n• Objective Verification: Treatment progress and neural stabilization are verified through quantifiable data rather than subjective questionnaires alone."
+  },
+  {
+    "question": "Can I receive Korean medicine care while continuing psychiatric medications?",
+    "answerLead": "Yes, concurrent care is safe and structured to proceed while maintaining your current prescription stably.",
+    "answerLeadRest": "",
+    "answerDetail": "• Distinct Therapeutic Targets: While pharmaceuticals manage receptor-level neurochemistry, customized herbal medicine addresses brain-gut axis neuroinflammation and Chuna manual therapy decompresses somatic mechanical strain.\n• Collaborative Tapering: As QEEG brainwave and HRV biometric markers stabilize, we support gradual medication tapering under consultation with your prescribing physician."
+  },
+  {
+    "question": "What is the expected treatment duration and visit frequency?",
+    "answerLead": "An initial intensive care phase of 4 to 8 weeks typically involves 1 to 2 visits weekly, transitioning to maintenance intervals of 2 to 4 weeks.",
+    "answerLeadRest": "",
+    "answerDetail": "• Initial Intensive Phase (Weeks 4-8): Combines 1:1 tailored herbal medicine with neuro-cranial Chuna therapy to rapidly ease acute palpitations, insomnia, and brain fog.\n• Homeostasis Stabilization (Months 2-3): Visit intervals expand to biweekly or monthly to help the body independently maintain autonomic equilibrium.\n• Remote Care for Long-Distance Patients: For interstate or international patients unable to visit weekly, specialized herbal pharmacotherapy is coordinated with remote lifestyle management."
+  },
+  {
+    "question": "What are the examination and treatment costs?",
+    "answerLead": "Acupuncture and spinal Chuna manual therapy are covered under National Health Insurance, while precision tests and customized herbal medicine follow a transparent flat-rate structure.",
+    "answerLeadRest": "",
+    "answerDetail": "• Health Insurance Covered: Joint and myofascial neuro-cranial Chuna manual therapy and acupuncture are covered under National Health Insurance.\n• Precision Functional Diagnostics: Multichannel wet QEEG brain mapping and HRV testing range between 50,000 and 60,000 KRW depending on the diagnostic scope.\n• 1:1 Customized Herbal Medicine: Formulations targeting neuroinflammation (non-deer antler base) are 450,000 KRW for 1 month, and 1,200,000 KRW for a 3-month stabilization protocol."
+  },
+  {
+    "question": "Why do palpitations and anxiety recur once psychiatric medications wear off?",
+    "answerLead": "Because the underlying trigger is often 'bottom-up mechanical tension' from spinal restriction and intra-abdominal pressure (IAP), rather than solely top-down psychological stress.",
+    "answerLeadRest": "",
+    "answerDetail": "• 80% Afferent Vagus Nerve Fibers: Approximately 80% of vagus nerve fibers send sensory mechanical signals upward from visceral organs to the brain. Thoracic stiffness and elevated IAP continuously bombard the brain with mechanical alarm signals.\n• Fire Alarm Analogy: Wearing earplugs (sedatives) muffles the alarm but does not put out the fire. Without releasing peripheral somatic tension, the brain immediately re-enters alarm mode once the medication wanes.\n• Integrated Bottom-Up & Top-Down Care: Decompressing somatic mechanical strain via upper-cervical Chuna (bottom-up) alongside neuro-cooling herbal formulas (top-down) enables true autonomic recovery."
+  }
+],
     philosophyEyebrow: 'OUR APPROACH',
     philosophyTitle: 'Accurate Diagnosis,\nProper Treatment',
     philosophyBody: 'ORB Clinic’s Approach',

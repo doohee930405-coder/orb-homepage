@@ -34,3 +34,16 @@ if (fs.existsSync(targetFile)) {
     console.log('[patch-vinext] vinext prerender-output-paths.js already patched');
   }
 }
+
+const prerenderJs = path.resolve(__dirname, '../node_modules/vinext/dist/build/prerender.js');
+if (fs.existsSync(prerenderJs)) {
+  let pContent = fs.readFileSync(prerenderJs, 'utf-8');
+  if (!pContent.includes('closeAllConnections')) {
+    pContent = pContent.replaceAll(
+      'if (ownedProdServerHandle) await new Promise((resolve) => ownedProdServerHandle.server.close(() => resolve()));',
+      'if (ownedProdServerHandle) { try { ownedProdServerHandle.server.closeAllConnections(); } catch {} await new Promise((resolve) => ownedProdServerHandle.server.close(() => resolve())); }'
+    );
+    fs.writeFileSync(prerenderJs, pContent, 'utf-8');
+    console.log('[patch-vinext] Successfully patched closeAllConnections in prerender.js');
+  }
+}

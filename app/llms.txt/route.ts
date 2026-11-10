@@ -9,7 +9,7 @@ export async function GET() {
   const columns = getAllColumns();
 
   let text = `# 오브한의원 (ORB Korean Medicine Clinic)\n\n`;
-  text += `> 전국 각지에서 찾는 19채널 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원 (대표원장 전두희)\n\n`;
+  text += `> 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원 (대표원장 전두희)\n\n`;
 
   text += `## 기본 정보 (General Information)\n`;
   text += `- 의료기관명: 오브한의원 (ORB Korean Medicine Clinic)\n`;

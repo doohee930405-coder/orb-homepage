@@ -130,14 +130,7 @@ export function getQeegColumnSlug(): string {
   const target314941 = all.find((c) => c.slug.includes('314941') || c.title.includes('습식 정량 뇌파 측정 과정'));
   if (target314941) return target314941.slug;
 
-  // 2. Any column with category '정량화뇌파검사' that is not qeeg-guide
-  const qeegNonGuide = all.find((c) => c.category === '정량화뇌파검사' && c.slug !== 'qeeg-guide');
-  if (qeegNonGuide) return qeegNonGuide.slug;
-
-  // 3. Fallback: qeeg-guide or default slug
-  const qeegGuide = all.find((c) => c.slug === 'qeeg-guide');
-  if (qeegGuide) return qeegGuide.slug;
-
+  // 2. Exact fallback for QEEG guide
   return '습식-정량-뇌파-측정-과정에-대해-안내해드립니다-314941';
 }
 
@@ -497,21 +490,24 @@ export function cleanAndRepairMarkdown(text: string): string {
   const qeegInternalUrl = `/columns/${qeegSlug}`;
   const qeegButtonText = '👉 오브한의원 습식 정량화 뇌파(QEEG) 측정 과정 및 장비 안내 보러가기';
 
-  // Match any Naver blog link or "관련 정보 바로가기" referring to QEEG/뇌파
+  // Only match links that explicitly refer to the QEEG equipment guide (314941 or explicit guide button texts)
   cleaned = cleaned.replace(
-    /\[\s*\**\s*(?:관련\s*정보\s*바로가기|정량뇌파.*?바로가기|뇌파검사.*?바로가기|뇌파.*?보러가기|[^\*\]]*뇌파[^\*\]]*)\s*\**\s*\]\((?:https?:\/\/(?:m\.)?blog\.naver\.com\/[^\)]+|[^\)]*qeeg[^\)]*|[^\)]*314941[^\)]*)\)/gi,
+    /\[\s*\**\s*(?:(?:습식\s*)?정량화?\s*뇌파\s*(?:측정\s*과정|장비\s*안내|안내)|👉\s*오브한의원\s*습식\s*정량화\s*뇌파[^\*\]]*)\s*\**\s*\]\((?:https?:\/\/(?:m\.)?blog\.naver\.com\/orbmed\/22314941|https?:\/\/(?:m\.)?blog\.naver\.com\/[^\)]*314941[^\)]*|\/columns\/[^\)]*314941[^\)]*|\/columns\/qeeg-guide|[^\)]*314941[^\)]*)\)/gi,
     `[${qeegButtonText}](${qeegInternalUrl})`
   );
+
+  // If a Naver blog link points to orbmed/<logNo>, resolve it to our internal column if found!
   cleaned = cleaned.replace(
-    /\[\s*\**\s*관련\s*정보\s*바로가기\s*\**\s*\]\((?:https?:\/\/(?:m\.)?blog\.naver\.com\/[^\)]+|[^\)]*qeeg[^\)]*)\)/gi,
-    `[${qeegButtonText}](${qeegInternalUrl})`
-  );
-  cleaned = cleaned.replace(
-    /\[([^\]]+)\]\((https?:\/\/(?:m\.)?blog\.naver\.com\/orbmed\/\d+)\)/gi,
-    (m, linkText, url) => {
-      const combined = `${linkText} ${url}`.toLowerCase();
-      if (/qeeg|정량뇌파|정량화뇌파|뇌파/.test(combined)) {
+    /\[([^\]]+)\]\((https?:\/\/(?:m\.)?blog\.naver\.com\/orbmed\/(\d+))\)/gi,
+    (m, linkText, url, logNo) => {
+      if (logNo.endsWith('314941') || logNo === '22314941') {
         return `[${qeegButtonText}](${qeegInternalUrl})`;
+      }
+      const store = getMemoryStore();
+      const all = Array.from(store.values());
+      const matched = all.find((c) => c.slug.includes(logNo) || (logNo.length >= 6 && c.slug.endsWith(logNo.slice(-6))));
+      if (matched) {
+        return `[${linkText}](/columns/${matched.slug})`;
       }
       return m;
     }
