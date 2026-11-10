@@ -53,6 +53,11 @@ safeCopy(path.join(clientDir, 'en', 'privacy.rsc'), path.join(clientDir, 'en', '
   safeCopy(path.join(clientDir, `${page}.rsc`), path.join(clientDir, page, 'index.rsc'));
 });
 
+// 3.6 Ensure root favicons exist in clientDir
+['favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png', 'favicon-48x48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png'].forEach(f => {
+  safeCopy(path.join(rootDir, 'public', f), path.join(clientDir, f));
+});
+
 // 3.8 Generate static /api/columns and /api/columns.json feed for Admin & Clients
 const contentColumnsDir = path.join(rootDir, 'content', 'columns');
 if (fs.existsSync(contentColumnsDir)) {
@@ -405,6 +410,17 @@ if (fs.existsSync(indexPath)) {
       headPart = headPart.slice(0, insertPos) + '\n' + unifiedJsonLdTag + headPart.slice(insertPos);
     } else {
       headPart = unifiedJsonLdTag + '\n' + headPart;
+    }
+
+    if (!headPart.includes('rel="shortcut icon"')) {
+      const faviconHtml = [
+        '<link rel="shortcut icon" href="/favicon.ico"/>',
+        '<link rel="icon" type="image/x-icon" href="/favicon.ico"/>',
+        '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>',
+        '<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>',
+        '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>',
+      ].join('\n');
+      headPart += '\n' + faviconHtml;
     }
 
     indexHtml = headPart + '\n' + restPart;
