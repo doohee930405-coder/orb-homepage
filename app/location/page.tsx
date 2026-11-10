@@ -12,11 +12,11 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/location`,
   },
   openGraph: {
-    title: '전국에서 찾아오시는 길 | 오브한의원',
+    title: '전국에서 찾아오시는 길 | 오브한의원 마곡점',
     description:
       '오브한의원은 습식 정량화 뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 김포공항 5분, 서울역 KTX 15분 직결, 마곡나루역 1분.',
     url: `${SITE_URL}/location`,
-    siteName: '오브한의원',
+    siteName: '오브한의원 마곡점',
     locale: 'ko_KR',
     type: 'website',
     images: [`${SITE_URL}/images/clinic/hero-lobby-wide.webp`],

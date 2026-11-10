@@ -47,8 +47,8 @@ export default function MedicalJsonLd({
   const clinicSchema = {
     '@type': 'MedicalClinic',
     '@id': `${SITE_URL}/#clinic`,
-    name: isEn ? clinic.nameEn : clinic.nameKo,
-    alternateName: isEn ? clinic.nameKo : ['오브한의원 마곡점', 'ORB Korean Medicine Clinic'],
+    name: isEn ? clinic.nameEn : '오브한의원 마곡점',
+    alternateName: isEn ? clinic.nameKo : ['오브한의원', 'ORB Korean Medicine Clinic'],
     url: SITE_URL,
     logo: `${SITE_URL}/images/logo/orb-symbol-clean.png`,
     image: `${SITE_URL}/images/clinic/hero-lobby-wide.webp`,
@@ -123,7 +123,7 @@ export default function MedicalJsonLd({
       '@type': 'WebSite',
       '@id': `${SITE_URL}/#website`,
       url: SITE_URL,
-      name: isEn ? clinic.nameEn : clinic.nameKo,
+      name: isEn ? clinic.nameEn : '오브한의원 마곡점',
     },
     about: {
       '@id': `${SITE_URL}/#clinic`,

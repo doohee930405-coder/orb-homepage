@@ -13,11 +13,11 @@ const hasGoogleAnalyticsId = Boolean(
 export const metadata: Metadata = {
   metadataBase: new URL('https://orbmed.co.kr'),
   title: {
-    default: '오브한의원 | 습식 정량화 뇌파(QEEG) 기반 자율신경·신경정신 중점 진료',
-    template: '%s | 오브한의원',
+    default: '오브한의원 마곡점 | 뇌파검사·자율신경·신경정신 클리닉 (마곡나루역)',
+    template: '%s | 오브한의원 마곡점',
   },
   description:
-    '전국 각지에서 찾는 습식 정량화 뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 뇌 기능과 자율신경계 불균형을 정밀 분석하여 개인별 맞춤 한의학 치료를 제시합니다.',
+    '마곡나루역 5번 출구, 전국 각지에서 찾는 습식 정량화 뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원 마곡점. 뇌 기능과 자율신경계 불균형을 정밀 분석하여 개인별 맞춤 한의학 치료를 제시합니다.',
   robots: {
     index: true,
     follow: true,
@@ -37,11 +37,11 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: '오브한의원 | 습식 정량화 뇌파(QEEG) 기반 자율신경·신경정신 중점 진료',
+    title: '오브한의원 마곡점 | 뇌파검사·자율신경·신경정신 클리닉 (마곡나루역)',
     description:
-      '습식 정량화 뇌파(QEEG)로 뇌와 자율신경의 연결고리를 정밀 진단하는 오브한의원입니다.',
+      '습식 정량화 뇌파(QEEG)로 뇌와 자율신경의 연결고리를 정밀 진단하는 오브한의원 마곡점입니다.',
     url: '/',
-    siteName: '오브한의원',
+    siteName: '오브한의원 마곡점',
     locale: 'ko_KR',
     type: 'website',
   },
@@ -53,9 +53,9 @@ const exactOfficialOrgAndPhysicianJsonLd = {
     {
       "@type": ["MedicalClinic", "MedicalOrganization"],
       "@id": "https://orbmed.co.kr/#organization",
-      "name": "오브한의원",
-      "alternateName": ["오브한의원 마곡점", "ORB Korean Medicine Clinic"],
-      "description": "전국 각지에서 찾는 습식 정량화 뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 습식 정량화 뇌파(Wet QEEG) 및 심박변이도(HRV) 정밀 진단과 개인별 맞춤 한의학 치료.",
+      "name": "오브한의원 마곡점",
+      "alternateName": ["오브한의원", "ORB Korean Medicine Clinic"],
+      "description": "마곡나루역 5번 출구, 전국 각지에서 찾는 습식 정량화 뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원 마곡점. 습식 정량화 뇌파(Wet QEEG) 및 심박변이도(HRV) 정밀 진단과 개인별 맞춤 한의학 치료.",
       "url": "https://orbmed.co.kr",
       "telephone": "+82-2-6959-5982",
       "priceRange": "₩₩",
