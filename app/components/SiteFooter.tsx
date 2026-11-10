@@ -52,7 +52,7 @@ export default function SiteFooter({ isEnglish = false }: SiteFooterProps) {
       {/* [우측] */}
       <div className="footer-meta">
         <div className="footer-links-row">
-          <Link href="/columns">{isEnglish ? 'Columns' : '원장 칼럼'}</Link>
+          <Link href="/columns">{isEnglish ? 'Columns' : '칼럼'}</Link>
           <span className="footer-sep">|</span>
           <button
             type="button"
