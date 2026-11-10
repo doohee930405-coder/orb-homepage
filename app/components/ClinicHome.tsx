@@ -537,11 +537,6 @@ export default function ClinicHome({
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-extrabold text-stone-900 mt-3 tracking-tight leading-snug break-keep">
               {isEnglish ? 'Autonomic Dysregulation Care: Upper Cervical Chuna & Herbal Medicine' : '자율신경실조증 치료: 상부경추 추나요법과 한약 처방'}
             </h2>
-            <p className="text-stone-500 text-sm md:text-base mt-2 max-w-2xl mx-auto break-keep">
-              {isEnglish
-                ? 'From precision neuro-diagnostic data (qEEG · HRV) to upper-cervical Chuna and personalized herbal decoctions, restoring neuro-autonomic balance.'
-                : '정밀 진단(qEEG·HRV) 데이터 변증부터 상부경추 뇌신경 추나요법과 1:1 체질 맞춤 한약 처방까지, 뇌와 자율신경의 항상성을 되살리는 3단계 원인 치료 프로세스'}
-            </p>
           </div>
           <div className="protocol-grid">
           {text.protocolSteps.map((step) => (
