@@ -319,9 +319,9 @@ if (fs.existsSync(indexPath)) {
     {
       "@type": ["MedicalClinic", "MedicalOrganization"],
       "@id": "https://orbmed.co.kr/#organization",
-      "name": "오브한의원",
-      "alternateName": ["오브한의원 마곡점", "ORB Korean Medicine Clinic"],
-      "description": "전국 각지에서 찾는 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 정밀 다채널 습식 정량화뇌파(Wet QEEG) 및 심박변이도(HRV) 정밀 진단과 개인별 맞춤 한의학 치료.",
+      "name": "오브한의원 마곡점",
+      "alternateName": ["오브한의원", "ORB Korean Medicine Clinic"],
+      "description": "마곡나루역 5번 출구, 전국 각지에서 찾는 습식 정량화 뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원 마곡점. 뇌 기능과 자율신경계 불균형을 정밀 분석하여 개인별 맞춤 한의학 치료를 제시합니다.",
       "url": "https://orbmed.co.kr",
       "telephone": "+82-2-6959-5982",
       "address": {
@@ -354,10 +354,10 @@ if (fs.existsSync(indexPath)) {
 }
 </script>`;
   const unifiedJsonLdTag = exactUserProvidedJsonLdScript;
-  const exactIndexTitle = '<title>오브한의원 | 습식 정량화뇌파 QEEG 기반 자율신경·신경정신 중점 진료</title>';
-  const exactIndexDesc = '<meta name="description" content="전국 각지에서 찾는 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원. 뇌 기능과 자율신경계 불균형을 정밀 분석하여 개인별 맞춤 한의학 치료를 제시합니다.">';
-  const exactOgTitle = '<meta property="og:title" content="오브한의원 | 습식 정량화뇌파 QEEG 기반 자율신경·신경정신 중점 진료"/>';
-  const exactOgDesc = '<meta property="og:description" content="습식 정량화뇌파(QEEG)로 뇌와 자율신경의 연결고리를 정밀 진단하는 오브한의원입니다.">';
+  const exactIndexTitle = '<title>오브한의원 마곡점 | 뇌파검사·자율신경·신경정신 클리닉 (마곡나루역)</title>';
+  const exactIndexDesc = '<meta name="description" content="마곡나루역 5번 출구, 전국 각지에서 찾는 습식 정량화 뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원 마곡점. 뇌 기능과 자율신경계 불균형을 정밀 분석하여 개인별 맞춤 한의학 치료를 제시합니다.">';
+  const exactOgTitle = '<meta property="og:title" content="오브한의원 마곡점 | 뇌파검사·자율신경·신경정신 클리닉 (마곡나루역)"/>';
+  const exactOgDesc = '<meta property="og:description" content="습식 정량화 뇌파(QEEG)로 뇌와 자율신경의 연결고리를 정밀 진단하는 오브한의원 마곡점입니다.">';
 
   const headEndIndex = indexHtml.indexOf('</head>');
   if (headEndIndex !== -1) {
@@ -387,7 +387,7 @@ if (fs.existsSync(indexPath)) {
 
     if (/<meta[^>]*property=["']og:description["'][^>]*>/i.test(headPart)) {
       headPart = headPart.replace(/<meta[^>]*property=["']og:description["'][^>]*>/i, exactOgDesc);
-    const exactOgSiteName = '<meta property="og:site_name" content="오브한의원"/>';
+    const exactOgSiteName = '<meta property="og:site_name" content="오브한의원 마곡점"/>';
     if (/<meta[^>]*property=["']og:site_name["'][^>]*>/i.test(headPart)) {
       headPart = headPart.replace(/<meta[^>]*property=["']og:site_name["'][^>]*>/i, exactOgSiteName);
     } else {
@@ -440,7 +440,7 @@ const exactAutonomicJsonLd = {
   }
 };
 const autonomicJsonLdTag = `<script type="application/ld+json">\n${JSON.stringify(exactAutonomicJsonLd, null, 2)}\n</script>`;
-const expectedTitleTag = '<title>마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원</title>';
+const expectedTitleTag = '<title>마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원 마곡점</title>';
 const expectedDescContent = '오브한의원의 정량화뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.';
 
 for (const filePath of autonomicQeegFiles) {
