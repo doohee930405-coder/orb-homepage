@@ -118,7 +118,7 @@ export default function MedicalJsonLd({
     '@id': `${pageUrl}#webpage`,
     url: pageUrl,
     name: pageTitle || (isEn ? clinic.nameEn : clinic.nameKo),
-    description: pageDescription || (isEn ? 'Specialized clinic for autonomic, neurocognitive, and pain disorders.' : '자율신경 · 뇌신경 · 통증 중점 의료기관, 오브한의원입니다.'),
+    description: pageDescription || (isEn ? 'Specialized clinic for autonomic, neurocognitive, and pain disorders.' : '자율신경 · 뇌신경 · 통증 중점 의료기관, 오브한의원 마곡점입니다.'),
     isPartOf: {
       '@type': 'WebSite',
       '@id': `${SITE_URL}/#website`,

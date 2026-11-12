@@ -440,7 +440,7 @@ const autonomicQeegFiles = [
 const exactAutonomicJsonLd = {
   "@context": "https://schema.org",
   "@type": "MedicalWebPage",
-  "name": "오브한의원 자율신경실조증 및 뇌파검사 클리닉",
+  "name": "오브한의원 마곡점 자율신경실조증 및 뇌파검사 클리닉",
   "url": "https://www.orbmed.co.kr/treatments/autonomic-qeeg",
   "about": {
     "@type": "MedicalCondition",
@@ -457,7 +457,7 @@ const exactAutonomicJsonLd = {
 };
 const autonomicJsonLdTag = `<script type="application/ld+json">\n${JSON.stringify(exactAutonomicJsonLd, null, 2)}\n</script>`;
 const expectedTitleTag = '<title>마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원 마곡점</title>';
-const expectedDescContent = '오브한의원의 정량화뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.';
+const expectedDescContent = '오브한의원 마곡점의 정량화뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.';
 
 for (const filePath of autonomicQeegFiles) {
   if (fs.existsSync(filePath)) {

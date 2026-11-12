@@ -41,10 +41,10 @@ export async function generateMetadata({
     ? column.thumbnail
     : `${SITE_URL}${column.thumbnail}`;
 
-  const authorName = column.author || '오브한의원 대표원장 전두희';
+  const authorName = column.author || '오브한의원 마곡점 대표원장 전두희';
 
   return {
-    title: `${column.title} | 오브한의원 전두희 원장 칼럼`,
+    title: `${column.title} | 오브한의원 마곡점 전두희 원장 칼럼`,
     description: column.summary,
     keywords: column.tags,
     authors: [{ name: authorName }],
@@ -76,7 +76,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${column.title} | 오브한의원 전두희 원장`,
+      title: `${column.title} | 오브한의원 마곡점 전두희 원장`,
       description: column.summary,
       images: [imageUrl],
     },
@@ -538,7 +538,7 @@ export default async function ColumnDetailPage({
                 함께 읽어보면 좋은 자율신경 칼럼
               </h3>
               <p className="recommended-desc">
-                오브한의원 전두희 대표원장이 직접 집필한 연관 증상 및 질환별 심층 임상 칼럼입니다. 증상이 겹치거나 원인이 연결되는 의학 정보를 이어서 확인해 보세요.
+                오브한의원 마곡점 전두희 대표원장이 직접 집필한 연관 증상 및 질환별 심층 임상 칼럼입니다. 증상이 겹치거나 원인이 연결되는 의학 정보를 이어서 확인해 보세요.
               </p>
             </div>
 
@@ -583,13 +583,13 @@ export default async function ColumnDetailPage({
             </ul>
 
             {/* 검색엔진 크롤러 & AI 로봇을 위한 내부 순환 링크 (화면 UI 비노출, HTML/DOM 검색 로봇 수집 전용) */}
-            <div className="sr-only" aria-label="오브한의원 내부 순환 탐색 링크">
-              <a href="/" title="오브한의원 마곡점 메인 홈페이지">마곡 오브한의원 홈</a>
+            <div className="sr-only" aria-label="오브한의원 마곡점 내부 순환 탐색 링크">
+              <a href="/" title="오브한의원 마곡점 메인 홈페이지">오브한의원 마곡점 홈</a>
               <a href="/treatments/autonomic-qeeg" title="마곡 자율신경실조증 치료·뇌파검사 클리닉">자율신경·뇌파검사 클리닉</a>
-              <a href={`/columns?category=${encodeURIComponent(column.category)}`} title={`오브한의원 ${column.category} 칼럼 전체 모아보기`}>
+              <a href={`/columns?category=${encodeURIComponent(column.category)}`} title={`오브한의원 마곡점 ${column.category} 칼럼 전체 모아보기`}>
                 ${column.category} 칼럼 아카이브
               </a>
-              <a href="/columns" title="오브한의원 전체 의학 칼럼 아카이브">전체 칼럼 목록</a>
+              <a href="/columns" title="오브한의원 마곡점 전체 의학 칼럼 아카이브">전체 칼럼 목록</a>
             </div>
           </nav>
         )}
@@ -605,7 +605,7 @@ export default async function ColumnDetailPage({
               <div className="qeeg-guide-banner-text">
                 <h4>각종 검사상 &lsquo;이상 없음&rsquo;에도 지속되는 고통, 원인을 규명합니다</h4>
                 <p>
-                  습식 정량화 뇌파(QEEG)와 정밀 자율신경 검사로 뇌 신경망 피로도와 불균형을 객관적 데이터로 분석하는 오브한의원의 진단 프로토콜을 확인해 보세요.
+                  습식 정량화 뇌파(QEEG)와 정밀 자율신경 검사로 뇌 신경망 피로도와 불균형을 객관적 데이터로 분석하는 오브한의원 마곡점의 진단 프로토콜을 확인해 보세요.
                 </p>
               </div>
               <a href="/columns/qeeg-guide" className="qeeg-guide-banner-link">
@@ -635,13 +635,13 @@ export default async function ColumnDetailPage({
           <div className="authority-details">
             <div className="authority-text-block">
               <p className="authority-writer">
-                <strong>의학적 집필 및 감수:</strong> 오브한의원 대표원장 <strong>전두희</strong>
+                <strong>의학적 집필 및 감수:</strong> 오브한의원 마곡점 대표원장 <strong>전두희</strong>
               </p>
               <p className="authority-standard">
                 <strong>진단 기준:</strong> 자율신경검사(HRV) 및 습식 정량화 뇌파(QEEG), 기능 의학
               </p>
               <p className="authority-note">
-                오브한의원은 과학적이고 정량화된 뇌파 및 자율신경 데이터에 근거하여 개인별 원인 치료를 진행합니다.
+                오브한의원 마곡점은 과학적이고 정량화된 뇌파 및 자율신경 데이터에 근거하여 개인별 원인 치료를 진행합니다.
               </p>
             </div>
           </div>

@@ -9,7 +9,7 @@ import { getAllCategories, getAllColumns } from '../lib/columns';
 export const metadata: Metadata = {
   title: '칼럼',
   description:
-    '마곡나루역 5번 출구 오브한의원 대표원장이 직접 집필하는 자율신경실조증, 브레인포그, 초민감자(HSP), ADHD, 다이어트, 위장관, 갑상선, 정량화뇌파검사, 통증 전문 의료 칼럼 모음입니다.',
+    '마곡나루역 5번 출구 오브한의원 마곡점 대표원장이 직접 집필하는 자율신경실조증, 브레인포그, 초민감자(HSP), ADHD, 다이어트, 위장관, 갑상선, 정량화뇌파검사, 통증 전문 의료 칼럼 모음입니다.',
   alternates: {
     canonical: `${SITE_URL}/columns`,
     languages: {
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '칼럼 | 오브한의원 마곡점',
     description:
-      '마곡나루역 5번 출구 오브한의원 대표원장이 직접 집필하는 자율신경실조증, 브레인포그, 초민감자(HSP), ADHD, 다이어트, 위장관, 갑상선, 정량화뇌파검사, 통증 전문 의료 칼럼입니다.',
+      '마곡나루역 5번 출구 오브한의원 마곡점 대표원장이 직접 집필하는 자율신경실조증, 브레인포그, 초민감자(HSP), ADHD, 다이어트, 위장관, 갑상선, 정량화뇌파검사, 통증 전문 의료 칼럼입니다.',
     url: `${SITE_URL}/columns`,
     siteName: '오브한의원 마곡점',
     locale: 'ko_KR',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '칼럼 | 오브한의원 마곡점',
     description:
-      '마곡나루역 5번 출구 오브한의원 대표원장이 직접 집필하는 전문 의료 칼럼 모음.',
+      '마곡나루역 5번 출구 오브한의원 마곡점 대표원장이 직접 집필하는 전문 의료 칼럼 모음.',
     images: [`${SITE_URL}/images/clinic/hero-lobby-wide.webp`],
   },
 };
@@ -55,7 +55,7 @@ export default function ColumnsPage() {
         url: `${SITE_URL}/columns`,
         name: '오브한의원 마곡점 칼럼',
         description:
-          '마곡나루역 5번 출구 오브한의원 대표원장이 직접 집필하는 자율신경실조증, 브레인포그, 정량화뇌파검사, 다이어트 전문 의료 칼럼입니다.',
+          '마곡나루역 5번 출구 오브한의원 마곡점 대표원장이 직접 집필하는 자율신경실조증, 브레인포그, 정량화뇌파검사, 다이어트 전문 의료 칼럼입니다.',
         publisher: {
           '@type': 'MedicalClinic',
           name: clinic.nameKo,
@@ -117,7 +117,7 @@ export default function ColumnsPage() {
           </nav>
           <h1>ORB article</h1>
           <p className="column-hero-lede">
-            오브한의원 대표원장이 직접 임상 경험과 의학적 근거를 바탕으로 집필합니다.
+            오브한의원 마곡점 대표원장이 직접 임상 경험과 의학적 근거를 바탕으로 집필합니다.
           </p>
         </div>
       </section>

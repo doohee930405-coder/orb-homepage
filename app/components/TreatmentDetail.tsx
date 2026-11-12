@@ -81,7 +81,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
             <div className="diet-hero-duo-item diet-duo-quantum">
               <img
                 src="/images/clinic/diet-quantum-fit.png"
-                alt={isEnglish ? 'Quantum Fit Microwave Lifting (Same Technology as ONDA Lifting)' : '오브한의원 퀀텀핏 리프팅 (온다 리프팅 동일 기술)'}
+                alt={isEnglish ? 'Quantum Fit Microwave Lifting (Same Technology as ONDA Lifting)' : '오브한의원 마곡점 퀀텀핏 리프팅 (온다 리프팅 동일 기술)'}
                 className="diet-duo-img"
               />
               <div className="diet-duo-overlay">
@@ -92,7 +92,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
             <div className="diet-hero-duo-item diet-duo-line">
               <img
                 src="/images/clinic/diet-acurex-line.png"
-                alt={isEnglish ? 'Acurex Line Targeted Pharmacopuncture at ORB Clinic Magok' : '마곡 오브한의원 전두희 원장의 부작용 없는 천연 생약 성분 아큐렉스 라인 감량 약침 시술'}
+                alt={isEnglish ? 'Acurex Line Targeted Pharmacopuncture at ORB Clinic Magok' : '오브한의원 마곡점 전두희 원장의 부작용 없는 천연 생약 성분 아큐렉스 라인 감량 약침 시술'}
                 className="diet-duo-img"
               />
               <div className="diet-duo-overlay">
@@ -131,7 +131,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
             <p>
               {isEnglish
                 ? 'Reshape facial and body contours without pain or downtime through next-generation microwave lifting and targeted herbal pharmacopuncture.'
-                : '오브한의원 끝내는 다이어트 클리닉은 무리한 절식이나 피부 처짐 없이, 통증 없는 차세대 극초단파 리프팅과 순수 생약 성분의 라인약침을 결합하여 무너진 페이스 라인과 바디 윤곽을 정밀하게 재설계합니다.'}
+                : '오브한의원 마곡점 끝내는 다이어트 클리닉은 무리한 절식이나 피부 처짐 없이, 통증 없는 차세대 극초단파 리프팅과 순수 생약 성분의 라인약침을 결합하여 무너진 페이스 라인과 바디 윤곽을 정밀하게 재설계합니다.'}
             </p>
           </div>
 
@@ -141,7 +141,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
               <div className="diet-tech-visual-wrap">
                 <img
                   src="/images/clinic/diet-quantum-fit.png"
-                  alt={isEnglish ? 'Quantum Fit Microwave Lifting Platform at ORB Clinic Magok' : '마곡 오브한의원 전두희 원장의 퀀텀핏 극초단파 바디 윤곽 리프팅 시술 장비'}
+                  alt={isEnglish ? 'Quantum Fit Microwave Lifting Platform at ORB Clinic Magok' : '오브한의원 마곡점 전두희 원장의 퀀텀핏 극초단파 바디 윤곽 리프팅 시술 장비'}
                   className="diet-tech-poster"
                 />
                 <span className="tech-badge-gold">
@@ -200,7 +200,7 @@ export default function TreatmentDetail({ treatment, locale }: { treatment: Trea
               <div className="diet-tech-visual-wrap">
                 <img
                   src="/images/clinic/diet-acurex-line.png"
-                  alt={isEnglish ? 'Acurex Line Targeted Pharmacopuncture at ORB Clinic Magok' : '마곡 오브한의원 전두희 원장의 군살 집중 감량을 위한 아큐렉스 라인 약침 시술'}
+                  alt={isEnglish ? 'Acurex Line Targeted Pharmacopuncture at ORB Clinic Magok' : '오브한의원 마곡점 전두희 원장의 군살 집중 감량을 위한 아큐렉스 라인 약침 시술'}
                   className="diet-tech-poster"
                 />
                 <span className="tech-badge-bronze">

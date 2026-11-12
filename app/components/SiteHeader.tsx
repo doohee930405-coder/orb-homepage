@@ -30,7 +30,7 @@ export default function SiteHeader({ locale, compact = false }: { locale: Locale
   return (
     <header className={`site-header${compact ? ' site-header-compact' : ''}`}>
       <div className="header-top-row">
-        <a className="brand-mark" href={home} aria-label={isEnglish ? 'ORB home' : '오브한의원 홈'}>
+        <a className="brand-mark" href={home} aria-label={isEnglish ? 'ORB home' : '오브한의원 마곡점 홈'}>
           <span>ORB</span>
         </a>
         <nav className="desktop-nav" aria-label={isEnglish ? 'Main navigation' : '주요 메뉴'}>

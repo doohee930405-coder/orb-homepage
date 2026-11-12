@@ -7,14 +7,14 @@ import { SITE_URL } from '../lib/clinic';
 export const metadata: Metadata = {
   title: '전국에서 찾아오시는 길',
   description:
-    '오브한의원은 습식 정량화 뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 김포국제공항 5분, 서울역 KTX 15~20분 직결, 9호선 급행·공항철도 마곡나루역 5번 출구 도보 1분.',
+    '오브한의원 마곡점은 습식 정량화 뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 김포국제공항 5분, 서울역 KTX 15~20분 직결, 9호선 급행·공항철도 마곡나루역 5번 출구 도보 1분.',
   alternates: {
     canonical: `${SITE_URL}/location`,
   },
   openGraph: {
     title: '전국에서 찾아오시는 길 | 오브한의원 마곡점',
     description:
-      '오브한의원은 습식 정량화 뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 김포공항 5분, 서울역 KTX 15분 직결, 마곡나루역 1분.',
+      '오브한의원 마곡점은 습식 정량화 뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 김포공항 5분, 서울역 KTX 15분 직결, 마곡나루역 1분.',
     url: `${SITE_URL}/location`,
     siteName: '오브한의원 마곡점',
     locale: 'ko_KR',
@@ -30,8 +30,8 @@ export default function LocationPage() {
     <main className="site-shell detail-page locale-ko">
       <MedicalJsonLd
         pageUrl={canonicalUrl}
-        pageTitle="전국에서 찾아오시는 길 | 오브한의원"
-        pageDescription="오브한의원은 습식 정량화 뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 공항철도 및 9호선 급행 환승역(마곡나루역)과 인접하여 KTX, 고속버스, 항공편을 통한 내원이 편리합니다."
+        pageTitle="전국에서 찾아오시는 길 | 오브한의원 마곡점"
+        pageDescription="오브한의원 마곡점은 습식 정량화 뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 공항철도 및 9호선 급행 환승역(마곡나루역)과 인접하여 KTX, 고속버스, 항공편을 통한 내원이 편리합니다."
         breadcrumbs={[
           { name: '홈', url: SITE_URL },
           { name: '전국에서 찾아오시는 길', url: canonicalUrl },
@@ -52,7 +52,7 @@ export default function LocationPage() {
             <p className="eyebrow">NATIONWIDE ACCESSIBILITY & DIRECTIONS</p>
             <h1>전국에서 찾아오시는 길</h1>
             <p className="nationwide-hero-lead">
-              오브한의원은 습식 정량화 뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 공항철도 및 9호선 급행 환승역(마곡나루역)과 인접하여 KTX, 고속버스, 항공편을 통한 내원이 편리합니다.
+              오브한의원 마곡점은 습식 정량화 뇌파(QEEG) 정밀 검사 및 자율신경 집중 진료를 위해 서울 외 전국의 다양한 지역에서 찾아주고 계십니다. 공항철도 및 9호선 급행 환승역(마곡나루역)과 인접하여 KTX, 고속버스, 항공편을 통한 내원이 편리합니다.
             </p>
           </div>
 

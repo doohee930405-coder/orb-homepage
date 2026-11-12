@@ -22,18 +22,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (slug === 'autonomic-qeeg') {
     return {
       title: {
-        absolute: '마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원',
+        absolute: '마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원 마곡점',
       },
       description:
-        '오브한의원의 습식 정량화 뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.',
+        '오브한의원 마곡점의 습식 정량화 뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.',
       alternates: {
         canonical: pageUrl,
         languages: { ko: pageUrl, en: `${SITE_URL}/en/treatments/${treatment.slug}` },
       },
       openGraph: {
-        title: '마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원',
+        title: '마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원 마곡점',
         description:
-          '오브한의원의 습식 정량화 뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.',
+          '오브한의원 마곡점의 습식 정량화 뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.',
         url: pageUrl,
         siteName: '오브한의원 마곡점',
         locale: 'ko_KR',
@@ -49,9 +49,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       },
       twitter: {
         card: 'summary_large_image',
-        title: '마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원',
+        title: '마곡 자율신경실조증 치료·뇌파검사 클리닉 - 오브한의원 마곡점',
         description:
-          '오브한의원의 습식 정량화 뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.',
+          '오브한의원 마곡점의 습식 정량화 뇌파(QEEG) 및 자율신경 진단 시스템. 만성피로, 수면장애, 브레인포그, 가슴 두근거림 등 자율신경실조증의 근본 원인을 파악하고 맞춤 한약과 추나로 치료합니다.',
         images: [imageUrl],
       },
     };

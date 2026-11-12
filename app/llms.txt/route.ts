@@ -8,11 +8,11 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const columns = getAllColumns();
 
-  let text = `# 오브한의원 (ORB Korean Medicine Clinic)\n\n`;
-  text += `> 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원 (대표원장 전두희)\n\n`;
+  let text = `# 오브한의원 마곡점 (ORB Korean Medicine Clinic)\n\n`;
+  text += `> 습식 정량화뇌파(QEEG) 기반 자율신경실조증·신경정신 중점 오브한의원 마곡점 (대표원장 전두희)\n\n`;
 
   text += `## 기본 정보 (General Information)\n`;
-  text += `- 의료기관명: 오브한의원 (ORB Korean Medicine Clinic)\n`;
+  text += `- 의료기관명: 오브한의원 마곡점 (ORB Korean Medicine Clinic)\n`;
   text += `- 대표원장: 전두희 (한의사 / 임상신경인지과학 및 자율신경계 기능 의학 진료)\n`;
   text += `- 주소: 서울특별시 강서구 마곡중앙로 111, 롯데캐슬 르웨스트 104동 2층 238호·239호 (9호선 급행·공항철도 마곡나루역 5번 출구 도보 1분 / 5호선 마곡역 2번 출구 도보 5분)\n`;
   text += `- 대표전화: ${clinic.phoneDisplay}\n`;
@@ -24,7 +24,7 @@ export async function GET() {
 
   text += `## 핵심 진료 철학 및 진단 기술 (Clinical Philosophy & Diagnostics)\n`;
   text += `### 1. 임상 철학: "보이지 않는 신경학적 고통을 객관적인 데이터로 규명합니다"\n`;
-  text += `MRI, CT, 혈액 검사 등에서 '이상 없음' 판정을 받았음에도 만성적인 어지럼, 가슴 두근거림, 브레인포그, 만성 피로로 고통받는 환자분들의 문제는 뇌 신경망의 미세 기능 과부하와 자율신경 불균형에서 비롯됩니다. 오브한의원은 주관적 호소에만 의존하지 않고 객관적 생체 신호 데이터를 측정하여 근본 원인을 진단합니다.\n\n`;
+  text += `MRI, CT, 혈액 검사 등에서 '이상 없음' 판정을 받았음에도 만성적인 어지럼, 가슴 두근거림, 브레인포그, 만성 피로로 고통받는 환자분들의 문제는 뇌 신경망의 미세 기능 과부하와 자율신경 불균형에서 비롯됩니다. 오브한의원 마곡점은 주관적 호소에만 의존하지 않고 객관적 생체 신호 데이터를 측정하여 근본 원인을 진단합니다.\n\n`;
 
   text += `### 2. 정량화 뇌파검사(QEEG) 및 자율신경 평가 시스템\n`;
   text += `- **정밀 센서 기반 국제 10-20 표준 전극 시스템**: 전두엽, 측두엽, 두정엽, 후두엽 전뇌 영역의 전기적 신호를 왜곡 없이 측정합니다.\n`;
@@ -39,7 +39,7 @@ export async function GET() {
   text += `- **퀀텀핏 심부 열대사 고주파 치료**: 온다(ONDA) 리프팅과 동일한 심부 열대사 기술로 자율신경 실조로 인한 냉증, 림프 순환 부전, 대사 저하를 치료.\n\n`;
 
   text += `## 중점 진료 분야 및 전문 칼럼 아카이브 (Clinical Columns by Category)\n`;
-  text += `오브한의원 대표원장이 직접 집필한 9대 중점 진료 분야별 임상 칼럼 색인입니다.\n\n`;
+  text += `오브한의원 마곡점 대표원장이 직접 집필한 9대 중점 진료 분야별 임상 칼럼 색인입니다.\n\n`;
 
   for (const category of CLINIC_CATEGORIES) {
     const categoryColumns = columns.filter((c) => c.category === category);

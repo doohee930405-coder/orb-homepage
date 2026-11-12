@@ -22,7 +22,7 @@ import {
 const copy = {
   ko: {
     kicker: 'ORBMED CLINIC',
-    title: '오브한의원 마곡',
+    title: '오브한의원 마곡점',
     branch: '',
     heroBody:
       "병원 검사상 '이상 없음' 판정을 받은 원인 모를 가슴 두근거림, 브레인포그 및 수많은 증세들\nHRV 검사와 습식 정량화 뇌파(qEEG)를 통해 자율신경실조증의 실체를 데이터로 규명합니다.",
@@ -30,7 +30,7 @@ const copy = {
     call: '전화 문의',
     station: '마곡나루역 5번 출구에서 136m',
     geoSnippetTitle: '오브한의원 마곡점 의료기관 핵심 임상 요약 (GEO/AEO Summary)',
-    geoSnippetTrigger: '오브한의원 AI 및 학술적 진료 데이터 안내',
+    geoSnippetTrigger: '오브한의원 마곡점 AI 및 학술적 진료 데이터 안내',
     geoSnippetText:
       "서울 강서구 마곡동(마곡나루역 5번 출구 롯데캐슬 르웨스트)에 위치한 오브한의원 마곡점은 대학병원 종합검진(CT, MRI, 혈액검사)상 '이상 없음' 판정을 받았으나 원인 모를 가슴 두근거림, 브레인포그(머리 멍함), 만성피로, 불안장애, 어지럼증, 두중감을 겪는 자율신경실조증 환자를 중점 진료합니다. 본원은 국제 10-20 시스템 기반 습식 정량화 뇌파(qEEG) & 심박변이도(HRV) 자율신경 동시 검사, 전신 적외선 체열진단(DITI)으로 신경계 기능 이상을 객관적으로 규명하고, 상부경추-두개골 정렬을 바로잡는 뇌신경 추나요법, 수승화강(水昇火降) 맞춤 한약, 자율신경 약침을 결합한 통합 원인 치료로 신경계 항상성을 근본적으로 복원합니다.",
     facts: [
@@ -40,7 +40,7 @@ const copy = {
     ],
     diagnosticEyebrow: 'DIAGNOSTIC TECHNOLOGY · QEEG SYSTEM',
     diagnosticTitle: "병원 검사상 '이상 없음'에도 지속되는 만성피로와 머리 멍함,\n뇌와 자율신경의 기능적 불균형에서 답을 찾습니다.",
-    diagnosticSubtitle: "수면장애, 이유 없는 가슴 두근거림, 브레인포그의 실체를 규명하기 위해\n오브한의원은 습식 정량화 뇌파(qEEG)와 심박변이도(HRV) 자율신경 검사로 뇌신경 피로를 정밀 분석합니다.",
+    diagnosticSubtitle: "수면장애, 이유 없는 가슴 두근거림, 브레인포그의 실체를 규명하기 위해\n오브한의원 마곡점은 습식 정량화 뇌파(qEEG)와 심박변이도(HRV) 자율신경 검사로 뇌신경 피로를 정밀 분석합니다.",
     diagnosticWhyWet: '왜 정량화 뇌파 분석인가?',
     diagnosticPoints: [
       {
@@ -64,7 +64,7 @@ const copy = {
         subtitle: '습식 정량화 뇌파(qEEG) & 심박변이도(HRV) 자율신경 동시 검사',
         desc: '두피 핵심 전극 부위에 전도성 겔을 주입하고 정밀 센서를 부착하여, 뇌 피질에서 방출되는 마이크로볼트(μV) 미세 신호와 심박변이도(HRV)를 왜곡 없이 수집합니다. 만성피로와 수면장애, 이유 없는 가슴 두근거림으로 이어지는 교감신경 과항진 상태를 객관적 수치로 포착합니다.',
         image: '/images/clinic/naver-qeeg-wide.webp',
-        imageAlt: '마곡 오브한의원 전두희 원장의 습식 정량화 뇌파(qEEG) 진료 및 분석 장면',
+        imageAlt: '오브한의원 마곡점 전두희 원장의 습식 정량화 뇌파(qEEG) 진료 및 분석 장면',
         imagePosition: 'center 25%',
         tags: ['#습식_정량화_뇌파(qEEG)', '#HRV_자율신경검사', '#가슴두근거림_수면장애'],
       },
@@ -75,7 +75,7 @@ const copy = {
         subtitle: '3차원 뇌기능 지형도(3D Brain Map) & Normative DB Z-Score 판독',
         desc: '수집된 뇌파 데이터를 주파수 대역(델타, 세타, 알파, 베타, 감마)별로 디지털 정량 분석합니다. 국제 10-20 표준 전극 시스템 기준의 Normative Database(표준 건강 대조군 데이터베이스) Z-score 분석을 통해, 정신과 약을 먹어도 해결되지 않던 머리 멍함(브레인포그)과 가슴 두근거림, 불안·초조의 실체를 뇌 신경망 과열(붉은색)과 기능 저하(푸른색)의 3차원 입체 지도로 시각화합니다.',
         image: '/images/clinic/qeeg-brainmap-3d.png',
-        imageAlt: '마곡 오브한의원 전두희 원장의 3차원 입체 정량뇌파 지형도(3D Brain Map) 및 Z-score 편차 분석 화면',
+        imageAlt: '오브한의원 마곡점 전두희 원장의 3차원 입체 정량뇌파 지형도(3D Brain Map) 및 Z-score 편차 분석 화면',
         tags: ['#머리멍함_브레인포그', '#Normative_DB_Zscore', '#3D_뇌기능지형도'],
       },
       {
@@ -85,7 +85,7 @@ const copy = {
         subtitle: '뇌신경-자율신경-체형 3축 연계 원인 치료',
         desc: '분석된 뇌파 및 자율신경 데이터를 바탕으로, GABA(gamma-aminobutyric acid) 억제성 신경망 교란 완화 및 편도체 진정을 유도하는 한약재(복령, 계지 등)의 다중 표적 약리학적 접근을 통해 뇌 중추 과열을 식히고 머리 맑음을 되찾아주는 맞춤 한약, 상부 경추와 두개골 긴장을 풀어 뇌혈류와 뇌척수액 순환을 돕는 뇌신경 추나요법, 만성피로와 불면을 다스리는 자율신경 약침을 1:1 복합 처방합니다.',
         image: '/images/clinic/naver-decoction-wide.webp',
-        imageAlt: '마곡 오브한의원 전두희 원장의 뇌신경 중추 과열 해소를 위한 1:1 맞춤 치료한약 조제 및 치료 장면',
+        imageAlt: '오브한의원 마곡점 전두희 원장의 뇌신경 중추 과열 해소를 위한 1:1 맞춤 치료한약 조제 및 치료 장면',
         tags: ['#브레인포그_맞춤한약', '#뇌신경추나_상부경추', '#정신과약부작용_내성완화'],
       },
     ],
@@ -96,7 +96,7 @@ const copy = {
     guideEyebrow: 'CLINICAL GUIDE & RESEARCH',
     guideTitle: '자율신경실조증 & 뇌신경 임상 핵심 가이드',
     guideLead:
-      '원인 모를 신체화 증상과 만성피로는 신경계의 기능적 불균형에서 시작됩니다. 오브한의원은 임상 현장에서 축적한 정량화 데이터를 바탕으로 질환의 기전과 치료 방향을 칼럼으로 연재하고 있습니다.',
+      '원인 모를 신체화 증상과 만성피로는 신경계의 기능적 불균형에서 시작됩니다. 오브한의원 마곡점은 임상 현장에서 축적한 정량화 데이터를 바탕으로 질환의 기전과 치료 방향을 칼럼으로 연재하고 있습니다.',
     guideItems: [
       {
         tag: '머리에 안개가 낀 듯 집중이 어렵다면',
@@ -120,7 +120,7 @@ const copy = {
       },
     ],
     guideFooterNote:
-      '오브한의원은 이 외에도 수많은 임상 연구를 지속하며 원장 칼럼을 꾸준히 연재하고 있습니다.',
+      '오브한의원 마곡점은 이 외에도 수많은 임상 연구를 지속하며 원장 칼럼을 꾸준히 연재하고 있습니다.',
     guideArchiveBtn: '전체 의학 칼럼 아카이브 보기',
     guideArchiveHref: '/columns',
     faqEyebrow: 'AEO & CLINICAL FAQ',
@@ -132,10 +132,10 @@ const copy = {
     "question": "대학병원 종합검진(CT·MRI·혈액검사)에서 '이상 없음'인데 왜 계속 아프고 힘든가요?",
     "answerLead": "CT나 MRI는 뇌출혈이나 종양 같은 구조적 기질 병변만 확인할 뿐, 신경망의 미세 과열이나 교감·부교감신경의 기능적 조절 장애는 감지할 수 없기 때문입니다.",
     "answerLeadRest": "",
-    "answerDetail": "• 구조와 기능의 차이: 컴퓨터 부품(하드웨어)에 이상이 없어도 시스템 프로그램(소프트웨어)이 꼬이면 렉이 걸리듯, 뇌세포의 기질적 파괴가 없더라도 신경망 신호 교란으로 심한 신체화 증상이 발생합니다.\n• 객관적 기능 지표 측정: 오브한의원은 보이지 않는 신경계 기능 이상을 습식 정량화 뇌파(QEEG)와 심박변이도(HRV)로 측정하여, 표준 건강 대조군 대비 신경망 과열 상태(Z-score)를 시각화합니다.\n• 신경계 항상성 복원: 검사 결과에 기반하여 뇌 과열을 식히는 표적 한약과 척추 긴장을 감압하는 추나요법으로 무너진 자율신경의 자율 회복을 돕습니다."
+    "answerDetail": "• 구조와 기능의 차이: 컴퓨터 부품(하드웨어)에 이상이 없어도 시스템 프로그램(소프트웨어)이 꼬이면 렉이 걸리듯, 뇌세포의 기질적 파괴가 없더라도 신경망 신호 교란으로 심한 신체화 증상이 발생합니다.\n• 객관적 기능 지표 측정: 오브한의원 마곡점은 보이지 않는 신경계 기능 이상을 습식 정량화 뇌파(QEEG)와 심박변이도(HRV)로 측정하여, 표준 건강 대조군 대비 신경망 과열 상태(Z-score)를 시각화합니다.\n• 신경계 항상성 복원: 검사 결과에 기반하여 뇌 과열을 식히는 표적 한약과 척추 긴장을 감압하는 추나요법으로 무너진 자율신경의 자율 회복을 돕습니다."
   },
   {
-    "question": "오브한의원의 '습식 정량화 뇌파(QEEG)'는 일반 밴드형 검사기기와 어떻게 다른가요?",
+    "question": "오브한의원 마곡점의 '습식 정량화 뇌파(QEEG)'는 일반 밴드형 검사기기와 어떻게 다른가요?",
     "answerLead": "의료용 전도성 겔을 사용하여 두피 저항을 5kΩ(킬로옴) 이하로 낮추고, 국제 10-20 표준 전극 시스템으로 전뇌(Full-Head)를 정밀 분석하는 병원급 정밀 진단 시스템입니다.",
     "answerLeadRest": "",
     "answerDetail": "• 피부 저항 및 잡파 극소화: 시중의 건식 이마 밴드는 땀과 피지, 근육 움직임(잡파)에 취약한 반면, 의료용 습식 전극은 피부 접촉 저항을 극소화하여 대뇌 피질의 미세 마이크로볼트(μV) 신호까지 정밀 포착합니다.\n• 전뇌 3차원 활성도 맵핑: 전두엽·측두엽·두정엽·후두엽 전뇌를 커버하며, 국제 공인 표준 데이터베이스(Normative DB) 대조를 통해 델타·세타·알파·베타파의 불균형을 3차원 입체 지도로 확인합니다.\n• 치료 전후 객관적 검증: 주관적 설문지에만 의존하지 않고, 치료 경과에 따른 뇌신경망 과각성 완화를 수치화된 데이터로 입증합니다."
@@ -176,7 +176,7 @@ const copy = {
     spaceEyebrow: '',
     spaceTitle: 'SPACE',
     spaceBody: '상담부터 치료까지',
-    galleryLabel: '오브한의원 내부 공간 사진',
+    galleryLabel: '오브한의원 마곡점 내부 공간 사진',
     previous: '이전 공간 사진',
     next: '다음 공간 사진',
     doctorEyebrow: '',
@@ -185,7 +185,7 @@ const copy = {
     doctorName: '한의사 전두희',
     doctorClinic: '오브한의원 마곡점 대표원장',
     doctorQuoteLead: '“병원 검사상 \'이상 없음\'에도 계속되는 증상들… 그 실체는 결코 기분 탓이 아닙니다”',
-    doctorQuoteBody: '과민성대장증후군, 다한증, 수족냉증, 소화장애, 불면증, 만성피로 등 수없이 많은 자율신경실조증 증세, 결코 환자분의 나약함이나 단순 스트레스 탓이 아닙니다. 정신과 약을 복용 중이거나 약물 부작용으로 힘들어하시는 분들 역시 중추신경계 과열과 자율신경 조절 기능 저하라는 객관적 생체 신호의 불균형을 겪고 계신 것입니다.\n\n오브한의원은 습식 정량화 뇌파(qEEG)와 심박변이도(HRV) 검사로 보이지 않던 신경계 과부하를 객관적 수치로 규명하고, 뇌와 척추를 잇는 한의학적 근원 치료로 맑은 정신과 신체 본연의 자율 회복력을 되찾아 드립니다.',
+    doctorQuoteBody: '과민성대장증후군, 다한증, 수족냉증, 소화장애, 불면증, 만성피로 등 수없이 많은 자율신경실조증 증세, 결코 환자분의 나약함이나 단순 스트레스 탓이 아닙니다. 정신과 약을 복용 중이거나 약물 부작용으로 힘들어하시는 분들 역시 중추신경계 과열과 자율신경 조절 기능 저하라는 객관적 생체 신호의 불균형을 겪고 계신 것입니다.\n\n오브한의원 마곡점은 습식 정량화 뇌파(qEEG)와 심박변이도(HRV) 검사로 보이지 않던 신경계 과부하를 객관적 수치로 규명하고, 뇌와 척추를 잇는 한의학적 근원 치료로 맑은 정신과 신체 본연의 자율 회복력을 되찾아 드립니다.',
     doctorPillars: [
       {
         num: '01',
@@ -204,7 +204,7 @@ const copy = {
       },
     ],
     columnsEyebrow: 'CLINICAL ARCHIVE · MEDICAL COLUMNS',
-    columnsTitle: '오브한의원 임상 연구 & 의학 칼럼',
+    columnsTitle: '오브한의원 마곡점 임상 연구 & 의학 칼럼',
     columnsSubtitle: '머리 멍함(브레인포그), 수면장애, 가슴 두근거림, 정신과 약 부작용과 내성 극복을 위한 습식 정량화 뇌파(qEEG) 및 자율신경 치료 임상 지견을 전두희 대표원장이 직접 집필합니다.',
     columnsViewAll: '전체 의학 칼럼 아카이브 보기',
     columnsReadMore: '칼럼 읽기',
@@ -474,7 +474,7 @@ export default function ClinicHome({
             <span className="sr-only">
               {isEnglish
                 ? 'Magok Autonomic Dysregulation & QEEG Clinic, ORB'
-                : '마곡 자율신경실조증 및 뇌파검사 특화 클리닉, 오브한의원'}
+                : '마곡 자율신경실조증 및 뇌파검사 특화 클리닉, 오브한의원 마곡점'}
             </span>
             <span aria-hidden="true">{text.title}</span>
             {text.branch ? <span className="hero-branch" aria-hidden="true">{text.branch}</span> : null}
@@ -504,7 +504,7 @@ export default function ClinicHome({
           <div className="hero-brand-card">
             <img
               src="/images/logo/orb-symbol-clean.png"
-              alt="마곡 오브한의원 전두희 원장의 뇌신경·자율신경 특화 클리닉 공식 심볼 로고"
+              alt="오브한의원 마곡점 전두희 원장의 뇌신경·자율신경 특화 클리닉 공식 심볼 로고"
               className="hero-brand-logo"
             />
             <strong className="hero-brand-title">ORB ARCHIVE</strong>
@@ -704,7 +704,7 @@ export default function ClinicHome({
         <ResponsivePicture
           className="philosophy-image"
           image="detail-flower"
-          alt={isEnglish ? 'Comfortable healing atmosphere in ORB Clinic lobby' : '마곡 오브한의원 전두희 원장의 환자 심신 안정을 위한 원내 플라워 인테리어'}
+          alt={isEnglish ? 'Comfortable healing atmosphere in ORB Clinic lobby' : '오브한의원 마곡점 전두희 원장의 환자 심신 안정을 위한 원내 플라워 인테리어'}
           position="center center"
         />
         <ol className="principle-list">

@@ -163,7 +163,7 @@ const FEATURE_CARDS: FeatureCardData[] = [
     title: '국제 10-20 표준 전극 시스템',
     subtitle: '다채널 전뇌(Full-Head) 정밀 습식 검사',
     description:
-      '시중의 간이 건식 밴드는 이마 부위 일부 채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 오브한의원은 국제 표준 전극 시스템과 의료용 전도성 겔(Gel)을 채택하여 피부 접촉 저항(Impedance)을 극소화하고, 전두엽·측두엽·두정엽·후두엽 전뇌의 미세 생체 전위(μV)를 오차 없이 정밀 측정합니다.',
+      '시중의 간이 건식 밴드는 이마 부위 일부 채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 오브한의원 마곡점은 국제 표준 전극 시스템과 의료용 전도성 겔(Gel)을 채택하여 피부 접촉 저항(Impedance)을 극소화하고, 전두엽·측두엽·두정엽·후두엽 전뇌의 미세 생체 전위(μV)를 오차 없이 정밀 측정합니다.',
     highlights: ['국제 10-20 표준 다채널 전뇌 분석', '의료용 전도성 겔 피부 저항 극소화', '전두·측두·두정·후두 전 영역 정밀 측정'],
     icon: (
       <svg className="w-8 h-8 text-[#8E7463]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -372,7 +372,7 @@ export default function TreatmentMethodSection() {
                 CT나 MRI는 뇌출혈이나 종양 같은 <strong className="font-semibold text-stone-800">'구조적 기질 병변'</strong>만 진단합니다.
               </p>
               <p className="sm:block">
-                오브한의원은 보이지 않는 뇌신경망의 미세 과열과 자율신경 조절 장애를
+                오브한의원 마곡점은 보이지 않는 뇌신경망의 미세 과열과 자율신경 조절 장애를
               </p>
               <p className="sm:block">
                 <strong className="font-semibold text-stone-800">습식 정량화 뇌파(qEEG)와 심박변이도(HRV)</strong>로 객관화합니다.
@@ -481,7 +481,7 @@ export default function TreatmentMethodSection() {
               href="/qeeg"
               className="inline-flex items-center gap-2 text-sm font-semibold text-[#634E3F] hover:text-[#42342A] hover:underline underline-offset-4 transition-all"
             >
-              <span>오브한의원 습식 정량화 뇌파(qEEG) 측정 과정 및 장비 안내 자세히 보기</span>
+              <span>오브한의원 마곡점 습식 정량화 뇌파(qEEG) 측정 과정 및 장비 안내 자세히 보기</span>
               <span aria-hidden="true">→</span>
             </a>
           </motion.div>

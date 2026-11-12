@@ -1,7 +1,7 @@
 export const SITE_URL = 'https://orbmed.co.kr';
 
 export const clinic = {
-  nameKo: '오브한의원',
+  nameKo: '오브한의원 마곡점',
   nameEn: 'ORB Korean Medicine Clinic',
   phoneDisplay: '02-6959-5982',
   phoneHref: 'tel:0269595982',
@@ -94,7 +94,7 @@ export const treatments: Treatment[] = [
     title: { ko: '자율신경실조증 : HRV, QEEG 정량뇌파검사', en: 'Autonomic System · QEEG' },
     shortTitle: { ko: '자율신경과 뇌파', en: 'Autonomic system & QEEG' },
     summary: {
-      ko: "오브한의원의 자율신경 항상성 재건 프로토콜은 단순한 증상 완화에 머무르지 않습니다. 교감신경 과항진으로 인한 만성 신경염증(Neuroinflammation) 유발 경로와 미주신경(Vagus Nerve) 활성 저하에 따른 장-뇌 축(Brain-Gut Axis) 신호 교란을 객관적으로 입증하고 바로잡습니다. GABA(gamma-aminobutyric acid) 억제성 신경망 교란 완화 및 편도체 진정을 유도하는 한약재(복령, 계지 등)의 다중 표적 약리학적 접근을 적용한 1:1 체질 맞춤 한약과, 상부경추-두개골 정렬을 교정하여 뇌혈류 및 뇌척수액 순환을 촉진하는 뇌신경 추나요법을 결합하여 무너진 신경계의 자체적인 항상성(Homeostasis)을 복원합니다.",
+      ko: "오브한의원 마곡점의 자율신경 항상성 재건 프로토콜은 단순한 증상 완화에 머무르지 않습니다. 교감신경 과항진으로 인한 만성 신경염증(Neuroinflammation) 유발 경로와 미주신경(Vagus Nerve) 활성 저하에 따른 장-뇌 축(Brain-Gut Axis) 신호 교란을 객관적으로 입증하고 바로잡습니다. GABA(gamma-aminobutyric acid) 억제성 신경망 교란 완화 및 편도체 진정을 유도하는 한약재(복령, 계지 등)의 다중 표적 약리학적 접근을 적용한 1:1 체질 맞춤 한약과, 상부경추-두개골 정렬을 교정하여 뇌혈류 및 뇌척수액 순환을 촉진하는 뇌신경 추나요법을 결합하여 무너진 신경계의 자체적인 항상성(Homeostasis)을 복원합니다.",
       en: 'We accurately diagnose brain fog, chronic fatigue, sleep disorders, and palpitations through multichannel wet QEEG and HRV autonomic testing. By visualizing neural hyperactivity on 3D brain maps, we prescribe individualized herbal formulas and upper-cervical Chuna therapy to restore neuro-autonomic balance without drug dependency.',
     },
     intro: {
@@ -102,7 +102,7 @@ export const treatments: Treatment[] = [
       en: 'No single test result determines a diagnosis. Sleep, fatigue, concentration, physical symptoms, and test findings are reviewed together when discussing care.',
     },
     imageAlt: {
-      ko: '마곡 오브한의원 3차원 정량화 뇌파(qEEG) 회전 뇌신경망 분석 모델',
+      ko: '오브한의원 마곡점 3차원 정량화 뇌파(qEEG) 회전 뇌신경망 분석 모델',
       en: '3D Quantitative EEG (qEEG) rotating brain model visualization at ORB Clinic',
     },
     concerns: {
@@ -169,7 +169,7 @@ export const treatments: Treatment[] = [
       en: 'Care considers not only where pain is felt, but also onset, movement, daily posture, and recovery pattern. Acupuncture, pharmacopuncture, Chuna, and daily guidance may be discussed after assessment.',
     },
     imageAlt: {
-      ko: '마곡 오브한의원 전두희 원장의 자율신경 회복을 위한 뇌신경 상부경추 추나요법 진료 모습',
+      ko: '오브한의원 마곡점 전두희 원장의 자율신경 회복을 위한 뇌신경 상부경추 추나요법 진료 모습',
       en: 'Upper-cervical neuro-structural Chuna manual therapy by Medical Director Doo-hee Jeon at ORB Clinic Magok',
     },
     concerns: {
@@ -231,7 +231,7 @@ export const treatments: Treatment[] = [
       en: 'Extreme calorie restriction disrupts autonomic homeostasis and triggers rebound weight gain. We integrate personalized metabolic herbs, Quantum Fit microwave lifting (sharing the same technology as ONDA lifting), and targeted Acurex Line pharmacopuncture to achieve sustainable, sculpted body contours.',
     },
     imageAlt: {
-      ko: '마곡 오브한의원 전두희 원장의 퀀텀핏 마이크로웨이브 리프팅 및 아큐렉스 감량 약침 다이어트 시술 모습',
+      ko: '오브한의원 마곡점 전두희 원장의 퀀텀핏 마이크로웨이브 리프팅 및 아큐렉스 감량 약침 다이어트 시술 모습',
       en: 'Quantum Fit microwave slimming lifting and Acurex herbal pharmacopuncture care at ORB Clinic Magok',
     },
     concerns: {
@@ -312,7 +312,7 @@ export const treatments: Treatment[] = [
       en: 'Body thermal distribution directly reflects the condition of the autonomic nervous system and neural circulation. We visualize imbalances such as facial flushing, cold extremities, and unexplained numbness with infrared thermography, guiding restorative herbal medicine and pharmacopuncture.',
     },
     imageAlt: {
-      ko: '마곡 오브한의원 전두희 원장의 전신 적외선 체열진단(DITI)을 통한 자율신경실조증 및 열대사장애 검사 장면',
+      ko: '오브한의원 마곡점 전두희 원장의 전신 적외선 체열진단(DITI)을 통한 자율신경실조증 및 열대사장애 검사 장면',
       en: 'Infrared DITI thermography examination for autonomic dysregulation and heat metabolism at ORB Clinic Magok',
     },
     concerns: {
@@ -379,13 +379,13 @@ export const treatments: Treatment[] = [
 ];
 
 export const gallery = [
-  { image: 'reception', label: { ko: '안내 데스크', en: 'Reception' }, alt: { ko: '마곡 오브한의원 전두희 원장 진료 접수 및 환자 안내를 위한 쾌적한 2층 안내 데스크 전경', en: 'Reception desk and entrance at ORB Korean Medicine Clinic Magok' } },
-  { image: 'hero-lobby', label: { ko: '로비와 대기 공간', en: 'Lobby & waiting' }, alt: { ko: '마곡나루역 오브한의원 전두희 원장의 신경계 안정 치료를 위한 라운지형 대기 로비 전경', en: 'Comfortable patient lounge and waiting area at ORB Clinic Magok' } },
-  { image: 'media-wall', label: { ko: '대기 공간', en: 'Waiting area' }, alt: { ko: '마곡 오브한의원 전두희 원장의 자율신경실조증 및 정량뇌파검사 임상 안내 미디어 월', en: 'Media display and clinical guide wall at ORB Clinic Magok' } },
-  { image: 'logo-reception', label: { ko: '브랜드 월', en: 'Brand wall' }, alt: { ko: '마곡 오브한의원 전두희 원장의 뇌신경·자율신경 특화 클리닉 공식 브랜드 월과 접수 공간', en: 'Official ORBMED brand wall and reception at ORB Clinic Magok' } },
-  { image: 'corridor', label: { ko: '진료실 복도', en: 'Care corridor' }, alt: { ko: '마곡 오브한의원 전두희 원장의 프라이빗 1인 치료실 및 뇌파검사실로 이어지는 독립 회랑', en: 'Private care corridor leading to QEEG diagnostic rooms at ORB Clinic Magok' } },
-  { image: 'consult-room', label: { ko: '진료실', en: 'Consultation room' }, alt: { ko: '마곡 오브한의원 전두희 대표원장의 1:1 심층 자율신경 문진 및 정밀 진단 검사실', en: 'In-depth consultation and diagnostic room of Director Doo-hee Jeon at ORB Clinic Magok' } },
-  { image: 'treatment-room', label: { ko: '치료 공간', en: 'Treatment rooms' }, alt: { ko: '마곡 오브한의원 전두희 원장의 뇌신경 상부경추 추나 및 자율신경 약침 치료를 위한 독립 1인 치료 공간', en: 'Individual private treatment room for neuro-cervical Chuna and acupuncture at ORB Clinic Magok' } },
+  { image: 'reception', label: { ko: '안내 데스크', en: 'Reception' }, alt: { ko: '오브한의원 마곡점 전두희 원장 진료 접수 및 환자 안내를 위한 쾌적한 2층 안내 데스크 전경', en: 'Reception desk and entrance at ORB Korean Medicine Clinic Magok' } },
+  { image: 'hero-lobby', label: { ko: '로비와 대기 공간', en: 'Lobby & waiting' }, alt: { ko: '오브한의원 마곡점 전두희 원장의 신경계 안정 치료를 위한 라운지형 대기 로비 전경', en: 'Comfortable patient lounge and waiting area at ORB Clinic Magok' } },
+  { image: 'media-wall', label: { ko: '대기 공간', en: 'Waiting area' }, alt: { ko: '오브한의원 마곡점 전두희 원장의 자율신경실조증 및 정량뇌파검사 임상 안내 미디어 월', en: 'Media display and clinical guide wall at ORB Clinic Magok' } },
+  { image: 'logo-reception', label: { ko: '브랜드 월', en: 'Brand wall' }, alt: { ko: '오브한의원 마곡점 전두희 원장의 뇌신경·자율신경 특화 클리닉 공식 브랜드 월과 접수 공간', en: 'Official ORBMED brand wall and reception at ORB Clinic Magok' } },
+  { image: 'corridor', label: { ko: '진료실 복도', en: 'Care corridor' }, alt: { ko: '오브한의원 마곡점 전두희 원장의 프라이빗 1인 치료실 및 뇌파검사실로 이어지는 독립 회랑', en: 'Private care corridor leading to QEEG diagnostic rooms at ORB Clinic Magok' } },
+  { image: 'consult-room', label: { ko: '진료실', en: 'Consultation room' }, alt: { ko: '오브한의원 마곡점 전두희 대표원장의 1:1 심층 자율신경 문진 및 정밀 진단 검사실', en: 'In-depth consultation and diagnostic room of Director Doo-hee Jeon at ORB Clinic Magok' } },
+  { image: 'treatment-room', label: { ko: '치료 공간', en: 'Treatment rooms' }, alt: { ko: '오브한의원 마곡점 전두희 원장의 뇌신경 상부경추 추나 및 자율신경 약침 치료를 위한 독립 1인 치료 공간', en: 'Individual private treatment room for neuro-cervical Chuna and acupuncture at ORB Clinic Magok' } },
 ] as const;
 
 export function getTreatment(slug: string) {

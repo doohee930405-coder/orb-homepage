@@ -17,13 +17,13 @@ export default function SiteFooter({ isEnglish = false }: SiteFooterProps) {
         <Link href="/admin/columns" title="관리자 페이지" style={{ color: 'inherit', textDecoration: 'none' }}>
           <strong>ORB</strong>
         </Link>
-        <span>{isEnglish ? 'ORB Korean Medicine Clinic' : '오브한의원'}</span>
+        <span>{isEnglish ? 'ORB Korean Medicine Clinic' : '오브한의원 마곡점'}</span>
       </div>
 
       {/* [중앙] */}
       <address className="footer-center-info">
         <p className="footer-info-row">
-          <span>상호 : {isEnglish ? 'ORB Korean Medicine Clinic' : '오브한의원'}</span>
+          <span>상호 : {isEnglish ? 'ORB Korean Medicine Clinic' : '오브한의원 마곡점'}</span>
           <span className="footer-sep">|</span>
           <span>대표원장 : 전두희 (한의사)</span>
           <span className="footer-sep">|</span>
@@ -96,7 +96,7 @@ export default function SiteFooter({ isEnglish = false }: SiteFooterProps) {
             </div>
             <div className="non-covered-body">
               <p>
-                오브한의원은 의료법 제45조 및 동법 시행규칙 제42조의2에 따라 비급여 진료비용을 투명하게 고지하고 있습니다.
+                오브한의원 마곡점은 의료법 제45조 및 동법 시행규칙 제42조의2에 따라 비급여 진료비용을 투명하게 고지하고 있습니다.
               </p>
               <p>
                 정확한 비급여 항목별(맞춤 한약, 뇌신경 추나요법, 정밀 뇌파 검사, 약침 치료 등) 세부 비용은 원내 데스크 및 상담실에 상세히 비치되어 있으며, 진료 및 상담 시 자세히 안내해 드립니다.

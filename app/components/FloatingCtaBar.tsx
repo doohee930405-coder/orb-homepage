@@ -75,7 +75,7 @@ const QUICK_ACTIONS: QuickActionItem[] = [
 
 export default function FloatingCtaBar() {
   return (
-    <aside aria-label="오브한의원 빠른 문의 및 예약" className="floating-cta-container">
+    <aside aria-label="오브한의원 마곡점 빠른 문의 및 예약" className="floating-cta-container">
       {/* 1. Desktop Fixed Right Vertical Dock (769px 이상) */}
       <div className="floating-cta-desktop" role="region" aria-label="퀵 액션 메뉴">
         <div className="floating-dock-badge">
