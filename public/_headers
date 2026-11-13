@@ -4,6 +4,14 @@
 /*.html
   Cache-Control: public, max-age=0, must-revalidate, no-cache
 
+/admin/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/admin
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Cache-Control: no-store, no-cache, must-revalidate
+
 /robots.txt
   Content-Type: text/plain; charset=utf-8
   Access-Control-Allow-Origin: *

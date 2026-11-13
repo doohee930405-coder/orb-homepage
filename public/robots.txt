@@ -1,25 +1,37 @@
 User-agent: *
+Disallow: /admin/
+Allow: /
+
+User-agent: Googlebot
+Disallow: /admin/
 Allow: /
 
 User-agent: GPTBot
+Disallow: /admin/
 Allow: /
 
 User-agent: OAI-SearchBot
+Disallow: /admin/
 Allow: /
 
 User-agent: PerplexityBot
+Disallow: /admin/
 Allow: /
 
 User-agent: ClaudeBot
+Disallow: /admin/
 Allow: /
 
 User-agent: Google-Extended
+Disallow: /admin/
 Allow: /
 
 User-agent: Yeti
+Disallow: /admin/
 Allow: /
 
 User-agent: Bingbot
+Disallow: /admin/
 Allow: /
 
 Sitemap: https://orbmed.co.kr/sitemap.xml

@@ -495,6 +495,27 @@ for (const filePath of autonomicQeegFiles) {
   }
 }
 
+// 7.95 Enforce noindex, nofollow on all admin HTML files
+const adminHtmlFiles = [
+  path.join(clientDir, 'admin.html'),
+  path.join(clientDir, 'admin', 'index.html'),
+  path.join(clientDir, 'admin', 'columns.html'),
+  path.join(clientDir, 'admin', 'columns', 'index.html'),
+  path.join(clientDir, 'admin', 'analytics.html'),
+  path.join(clientDir, 'admin', 'analytics', 'index.html'),
+];
+
+for (const f of adminHtmlFiles) {
+  if (fs.existsSync(f)) {
+    let html = fs.readFileSync(f, 'utf8');
+    if (!/<meta[^>]*name=["']robots["'][^>]*content=["'][^"']*noindex[^"']*["']/i.test(html)) {
+      html = html.replace('</head>', '<meta name="robots" content="noindex, nofollow">\n<meta name="googlebot" content="noindex, nofollow">\n</head>');
+      fs.writeFileSync(f, html, 'utf8');
+      console.log(`[postbuild-cloudflare] Injected noindex, nofollow to ${path.relative(rootDir, f)}`);
+    }
+  }
+}
+
 // 8. Copy entire public/ directory directly into dist/client/
 function copyDirRecursive(src, dest) {
   if (!fs.existsSync(src)) return;
