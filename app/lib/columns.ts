@@ -16,7 +16,7 @@ export function getMemoryStore(): Map<string, Column> {
 }
 
 export function normalizeCategory(rawCat: string = ''): string {
-  if (rawCat.includes('통증') || rawCat.includes('추나') || rawCat.includes('재활') || rawCat.includes('교정')) return '통증';
+  if (rawCat.includes('기타') || rawCat.includes('통증') || rawCat.includes('추나') || rawCat.includes('재활') || rawCat.includes('교정')) return '기타';
   if (/뇌파|qeeg/i.test(rawCat)) return '정량화뇌파검사';
   if (rawCat.includes('브레인포그')) return '브레인포그';
   if (rawCat.includes('다이어트')) return '다이어트';

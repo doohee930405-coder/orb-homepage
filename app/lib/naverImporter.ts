@@ -329,7 +329,7 @@ export function matchCategory(naverCategory: string = '', title: string = '', co
     return '위장관';
   }
   if (/통증|추나|교정|재활|관절|디스크|척추|체형|목통증|허리통증|어깨통증|근골격/.test(normCat)) {
-    return '통증';
+    return '기타';
   }
   if (/자율신경|실조증|어지럼|두근거림|공황|기립성|미주신경|심계|상열하한|상행성/.test(normCat)) {
     return '자율신경실조증';
@@ -345,7 +345,7 @@ export function matchCategory(naverCategory: string = '', title: string = '', co
     '위장관': 0,
     '갑상선': 0,
     '정량화뇌파검사': 0,
-    '통증': 0,
+    '기타': 0,
   };
 
   const scoreTerms = (cat: string, terms: string[]) => {
@@ -396,7 +396,7 @@ export function matchCategory(naverCategory: string = '', title: string = '', co
     '장벽', '밀착연접', '장관', '장내', '장염', '대장', '소장', '유산균', '소화', '복통'
   ]);
 
-  scoreTerms('통증', [
+  scoreTerms('기타', [
     '통증', '추나', '교정', '재활', '디스크', '척추', '골반', '경추', '요추',
     '관절', '목통증', '허리통증', '어깨통증', '체형교정', '근막', '신경통', '추나요법'
   ]);
