@@ -28,8 +28,8 @@ const BRIDGE_CONTENT = {
     },
     banner: {
       eyebrow: 'TRANSPARENCY & DYNAMIC PRECISION',
-      title: '처방된 모든 약재는 100% 투명하게 공개됩니다.\n단, 당신의 한약은 2주마다 새롭게 설계됩니다.',
-      body: '오브한의원 마곡점은 식약처 검증을 통과한 GMP 인증 의약품용 규격 한약재만을 사용하며, 모든 약재명과 구성을 숨김없이 투명하게 공개합니다. 하지만 같은 약재라도 어느 시점에, 어떤 비율로 배합하느냐에 따라 결과는 완전히 달라집니다. 자율신경계의 회복 단계에 맞춰 2~4주 간격으로 약재 구성과 배합 비율을 정밀하게 재설계(Dynamic Re-design)하는 것—이것이 오브한의원 한약 치료의 핵심입니다.',
+      title: '처방된 모든 약재는 100% 투명하게 공개됩니다.\n한약은 경과에 따라 새롭게 설계됩니다.',
+      body: '오브한의원 마곡점은 식약처 검증을 통과한 GMP 인증 의약품용 규격 한약재만을 사용하며, 모든 약재명과 구성을 숨김없이 투명하게 공개합니다. 자율신경계의 회복 단계에 맞춰 2~4주 간격으로 약재 구성과 배합 비율을 정밀하게 재설계합니다.',
       pillars: [
         {
           code: '01. SAFETY',
@@ -71,8 +71,8 @@ const BRIDGE_CONTENT = {
     },
     banner: {
       eyebrow: 'TRANSPARENCY & DYNAMIC PRECISION',
-      title: '100% of Prescribed Medicinal Herbs Are Openly Disclosed.\nYet, Your Formulation Is Re-Engineered Every 2 Weeks.',
-      body: "ORB Korean Medicine Clinic exclusively uses pharmaceutical-grade, MFDS GMP-certified herbal medicines and transparently discloses every ingredient without exception. However, even with the same herbs, therapeutic efficacy depends entirely on the timing and proportion of the blend. Tracking your autonomic nervous system's recovery and dynamically re-engineering ingredient proportions every 2 to 4 weeks (Dynamic Re-design)—this is the cornerstone of ORB Clinic's neuro-herbal care.",
+      title: '100% of Prescribed Medicinal Herbs Are Openly Disclosed.\nFormulations Are Re-Engineered Based on Clinical Progress.',
+      body: "ORB Korean Medicine Clinic exclusively uses pharmaceutical-grade, MFDS GMP-certified herbal medicines and transparently discloses every ingredient without exception. Ingredient compositions and proportions are precisely re-engineered every 2 to 4 weeks according to your autonomic nervous system's recovery progress.",
       pillars: [
         {
           code: '01. SAFETY',
