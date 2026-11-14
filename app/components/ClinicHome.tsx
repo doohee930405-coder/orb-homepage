@@ -544,10 +544,7 @@ export default function ClinicHome({
       <section className="protocol-section-wrapper bg-[#FAF8F5] pb-20 md:pb-28 px-6" id="protocol">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10 md:mb-14">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#8E7463] px-3 py-1.5 rounded-full bg-[#8E7463]/10 uppercase">
-              {isEnglish ? 'CORE PROTOCOL & CLINICAL TREATMENT' : '핵심 변증 및 원인 치료'}
-            </span>
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-extrabold text-stone-900 mt-3 tracking-tight leading-snug break-keep">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-extrabold text-stone-900 tracking-tight leading-snug break-keep">
               {isEnglish ? 'Autonomic Dysregulation Care: Upper Cervical Chuna & Herbal Medicine' : '자율신경실조증 치료: 상부경추 추나요법과 한약 처방'}
             </h2>
           </div>
@@ -571,8 +568,6 @@ export default function ClinicHome({
               <div className="protocol-card-body">
                 <h3 className="protocol-card-title">{step.title}</h3>
                 <h4 className="protocol-card-sub">{step.subtitle}</h4>
-                <p className="protocol-card-desc">{step.desc}</p>
-
               </div>
             </article>
           ))}

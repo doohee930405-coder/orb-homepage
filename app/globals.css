@@ -5219,7 +5219,7 @@ h3.faq-accordion-heading {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  padding: 28px 24px 30px;
+  padding: 26px 24px 28px;
 }
 
 .protocol-card-title {
@@ -5236,7 +5236,7 @@ h3.faq-accordion-heading {
   font-size: 0.92rem;
   font-weight: 650;
   line-height: 1.45;
-  margin: 0 0 16px;
+  margin: 0;
 }
 
 .protocol-card-desc {
