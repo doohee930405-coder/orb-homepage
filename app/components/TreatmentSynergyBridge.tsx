@@ -22,8 +22,8 @@ const BRIDGE_CONTENT = {
     },
     card2: {
       badge: 'STEP 02 · 신경약리 맞춤 한약',
-      title: '폭주하는 HPA축 호르몬을 제어해 과열된 뇌를 식힙니다',
-      body: '만성 스트레스와 신경염증으로 HPA축(시상하부-뇌하수체-부신)이 과활성화되면, 코르티솔과 아드레날린이 쉴 새 없이 분비되어 심계항진·불면·공황을 유발합니다. 정량화뇌파(QEEG)와 자율신경 데이터에 기반해 설계된 한약은 교감신경의 과흥분을 안정시켜 신경계의 화학적 항상성을 복원합니다.',
+      title: 'HPA축 호르몬을 제어해\n과열된 뇌를 식힙니다',
+      body: '만성 스트레스와 신경염증으로 HPA축(시상하부-뇌하수체-부신)이 과활성화되면, 코르티솔과 아드레날린이 쉴 새 없이 분비되어 심계항진·불면·공황을 유발합니다. 정량화뇌파(QEEG)와 자율신경 데이터에 기반해 설계된 한약은 교감신경의 과흥분을 안정시키고 무너진 부교감신경의 톤을 올려 신경계의 화학적 항상성을 복원합니다.',
       tags: ['#HPA축안정화', '#신경염증완화', '#정량뇌파기반설계'],
     },
     banner: {
@@ -65,8 +65,8 @@ const BRIDGE_CONTENT = {
     },
     card2: {
       badge: 'STEP 02 · Neuropharmacological Herbal Medicine',
-      title: 'Regulating Hyperactive HPA-Axis Hormones to Cool Down the Overheated Brain',
-      body: 'When chronic stress and neuroinflammation trigger HPA-axis (hypothalamic-pituitary-adrenal) hyperactivity, continuous surges of cortisol and adrenaline cause palpitations, insomnia, and panic episodes. Formulated through objective QEEG brain mapping and autonomic biometric data, our customized herbal prescriptions calm sympathetic overarousal to reestablish chemical neuro-homeostasis.',
+      title: 'Regulating HPA-Axis Hormones\nto Cool Down the Overheated Brain',
+      body: 'When chronic stress and neuroinflammation trigger HPA-axis (hypothalamic-pituitary-adrenal) hyperactivity, continuous surges of cortisol and adrenaline cause palpitations, insomnia, and panic episodes. Formulated through objective QEEG brain mapping and autonomic biometric data, our customized herbal prescriptions calm sympathetic overarousal and elevate parasympathetic tone to reestablish chemical neuro-homeostasis.',
       tags: ['#HPAAxisStabilization', '#NeuroinflammationRelief', '#QEEGGuidedFormulation'],
     },
     banner: {
@@ -148,7 +148,12 @@ export default function TreatmentSynergyBridge({ locale }: TreatmentSynergyBridg
               </div>
 
               <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-[#2C221E] leading-snug break-keep group-hover:text-[#9A6B56] transition-colors duration-200">
-                {content.card1.title}
+                {content.card1.title.split('\n').map((line, idx) => (
+                  <React.Fragment key={idx}>
+                    {line}
+                    {idx === 0 && <br />}
+                  </React.Fragment>
+                ))}
               </h3>
 
               <p className="text-sm sm:text-base text-[#5C534E] leading-relaxed break-keep">
@@ -177,7 +182,12 @@ export default function TreatmentSynergyBridge({ locale }: TreatmentSynergyBridg
               </div>
 
               <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-[#2C221E] leading-snug break-keep group-hover:text-[#9A6B56] transition-colors duration-200">
-                {content.card2.title}
+                {content.card2.title.split('\n').map((line, idx) => (
+                  <React.Fragment key={idx}>
+                    {line}
+                    {idx === 0 && <br />}
+                  </React.Fragment>
+                ))}
               </h3>
 
               <p className="text-sm sm:text-base text-[#5C534E] leading-relaxed break-keep">
