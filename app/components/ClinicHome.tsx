@@ -9,6 +9,7 @@ import TrackedLink from './TrackedLink';
 import FaqAccordion from './FaqAccordion';
 import HomeColumnsArchive from './HomeColumnsArchive';
 import TreatmentMethodSection from './TreatmentMethodSection';
+import TreatmentSynergyBridge from './TreatmentSynergyBridge';
 import { Column } from '../lib/columns';
 import {
   SITE_URL,
@@ -667,9 +668,14 @@ export default function ClinicHome({
             </span>
           </a>
         </div>
+      </section>
 
-        {/* 3.6 INTERACTIVE CLINICAL FAQ ACCORDION BLOCK (AEO / GEO OPTIMIZATION) */}
-        <div className="clinical-faq-block" id="faq">
+      {/* 3.6 TREATMENT PRINCIPLE & TRUST BRIDGE SECTION */}
+      <TreatmentSynergyBridge locale={locale} />
+
+      {/* 3.7 INTERACTIVE CLINICAL FAQ ACCORDION BLOCK (AEO / GEO OPTIMIZATION) */}
+      <section className="content-section clinical-faq-section reveal" id="faq">
+        <div className="clinical-faq-block">
           <div className="clinical-faq-header">
             <p className="clinical-guide-eyebrow">{text.faqEyebrow}</p>
             <h2 className="clinical-guide-title">{text.faqTitle}</h2>
