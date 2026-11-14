@@ -152,7 +152,6 @@ interface FeatureCardData {
   title: string;
   subtitle: string;
   description: string;
-  highlights: string[];
   icon: React.ReactNode;
 }
 
@@ -164,7 +163,6 @@ const FEATURE_CARDS: FeatureCardData[] = [
     subtitle: '다채널 전뇌(Full-Head) 정밀 습식 검사',
     description:
       '시중의 간이 건식 밴드는 이마 부위 일부 채널만 측정하여 두피 저항과 땀, 잡파 노이즈에 매우 취약합니다. 오브한의원 마곡점은 국제 표준 전극 시스템과 의료용 전도성 겔(Gel)을 채택하여 피부 접촉 저항(Impedance)을 극소화하고, 전두엽·측두엽·두정엽·후두엽 전뇌의 미세 생체 전위(μV)를 오차 없이 정밀 측정합니다.',
-    highlights: ['국제 10-20 표준 다채널 전뇌 분석', '의료용 전도성 겔 피부 저항 극소화', '전두·측두·두정·후두 전 영역 정밀 측정'],
     icon: (
       <svg className="w-8 h-8 text-[#8E7463]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         {/* 센서/정밀 타겟 아이콘 */}
@@ -182,7 +180,6 @@ const FEATURE_CARDS: FeatureCardData[] = [
     subtitle: '독립성분분석(ICA) 기반 아티팩트 정제',
     description:
       '뇌파는 마이크로볼트(μV) 단위의 극미세 신호이기 때문에 눈 깜빡임, 심장 박동(ECG), 저작근 및 두경부 근육의 떨림(EMG)에 쉽게 왜곡됩니다. 첨단 신호 처리 알고리즘과 전극별 실시간 모니터링을 통해 외부 노이즈와 근육 간섭을 원천 분리하고, 순수 대뇌 피질 신경망 신호만을 깨끗하게 추출합니다.',
-    highlights: ['눈 깜빡임·안구 운동 노이즈 제거', '심전도(ECG)·근전도(EMG) 간섭 차단', '순수 뇌 피질 신경망 신호 정제'],
     icon: (
       <svg className="w-8 h-8 text-[#8E7463]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         {/* 노이즈 차단 & 쉴드 아이콘 */}
@@ -198,7 +195,6 @@ const FEATURE_CARDS: FeatureCardData[] = [
     subtitle: 'Normative Database Z-Score & 3D 뇌지도',
     description:
       '단순한 파형 육안 판독에 그치지 않고, 동일 성별·연령대 건강한 수만 명의 정상 뇌파 표준 빅데이터(Normative DB)와 정밀 대조합니다. 표준편차 지표인 Z-score(Z=-3.00 ~ +3.00)로 수치화하여, 뇌 신경망의 과열(붉은색)과 기능 저하(푸른색)를 3차원 입체 지형도(3D Brain Map)로 시각화하여 입증합니다.',
-    highlights: ['성별·연령별 정상군 DB Z-score', '신경망 과열(Red)·저하(Blue) 3D 시각화', '객관적 데이터 기반 1:1 처방 설계'],
     icon: (
       <svg className="w-8 h-8 text-[#8E7463]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         {/* 뇌 신경망 및 3D 데이터 분석 아이콘 */}
@@ -447,23 +443,9 @@ export default function TreatmentMethodSection() {
                   </h5>
 
                   {/* 상세 설명 (위계 조절: text-stone-500, 작은 폰트) */}
-                  <p className="text-[13.5px] lg:text-sm text-stone-500 font-normal leading-relaxed text-left break-keep mb-6">
+                  <p className="text-[13.5px] lg:text-sm text-stone-500 font-normal leading-relaxed text-left break-keep">
                     {card.description}
                   </p>
-                </div>
-
-                {/* 하단 체크포인트 하이라이트 */}
-                <div className="pt-4 border-t border-stone-100/80">
-                  <ul className="space-y-2">
-                    {card.highlights.map((item, hIdx) => (
-                      <li key={hIdx} className="flex items-center gap-2 text-xs font-medium text-stone-700">
-                        <span className="w-4 h-4 rounded-full bg-[#8E7463]/15 text-[#8E7463] flex items-center justify-center text-[10px] font-bold shrink-0">
-                          ✓
-                        </span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </motion.article>
             ))}
