@@ -545,7 +545,7 @@ export default function ClinicHome({
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10 md:mb-14">
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-extrabold text-stone-900 tracking-tight leading-snug break-keep">
-              {isEnglish ? 'Autonomic Dysregulation Care: Upper Cervical Chuna & Herbal Medicine' : '자율신경실조증 치료: 상부경추 추나요법과 한약 처방'}
+              {isEnglish ? 'Autonomic Dysregulation Treatment Sequence' : '자율신경실조증 치료 순서'}
             </h2>
           </div>
           <div className="protocol-grid">
