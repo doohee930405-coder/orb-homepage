@@ -429,6 +429,13 @@ if (fs.existsSync(indexPath)) {
       headPart += '\n' + exactTwitterImage;
     }
 
+    const exactMsValidation = '<meta name="msvalidate.01" content="6CF1DF202B7427F0C2F8CD31227BC282"/>';
+    if (/<meta[^>]*name=["']msvalidate\.01["'][^>]*>/i.test(headPart)) {
+      headPart = headPart.replace(/<meta[^>]*name=["']msvalidate\.01["'][^>]*>/i, exactMsValidation);
+    } else {
+      headPart += '\n' + exactMsValidation;
+    }
+
     // Inject unified integrated JSON-LD at head top
     const headTagMatch = headPart.match(/<head[^>]*>/i);
     if (headTagMatch) {

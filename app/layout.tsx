@@ -36,6 +36,12 @@ export const metadata: Metadata = {
       en: '/en',
     },
   },
+  verification: {
+    other: {
+      'naver-site-verification': 'b19d9d8ee27b50ae5638467a973184ef2e7be5c0',
+      'msvalidate.01': '6CF1DF202B7427F0C2F8CD31227BC282',
+    },
+  },
   openGraph: {
     title: '오브한의원 마곡점 | 뇌파검사·자율신경·신경정신 클리닉 (마곡나루역)',
     description:
@@ -246,6 +252,10 @@ export default function RootLayout({
         <meta
           name="naver-site-verification"
           content="b19d9d8ee27b50ae5638467a973184ef2e7be5c0"
+        />
+        <meta
+          name="msvalidate.01"
+          content="6CF1DF202B7427F0C2F8CD31227BC282"
         />
       </head>
       <body className="antialiased">
