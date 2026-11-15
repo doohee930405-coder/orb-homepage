@@ -302,10 +302,10 @@ export default function TreatmentMethodSection() {
             자율신경실조증 환자분들이 매일 마주하는 고통
           </div>
 
-          <h3 className="text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-snug md:leading-tight mb-6">
+          <p className="text-2xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-snug md:leading-tight mb-6">
             "검사 결과는 늘 정상이라는데,<br className="hidden sm:inline" />
             내 몸은 왜 이렇게 괴롭고 힘들까요?"
-          </h3>
+          </p>
 
           <p className="text-sm md:text-base lg:text-lg text-stone-300 font-light leading-relaxed max-w-2xl mx-auto">
             원인을 알 수 없는 불안, 안개 낀 듯 멍한 머리, 멈추지 않는 심장 두근거림…<br className="hidden sm:inline" />
@@ -432,15 +432,15 @@ export default function TreatmentMethodSection() {
                     <span className="text-xs font-semibold text-[#8E7463] uppercase tracking-wider block mb-1">
                       {card.subtitle}
                     </span>
-                    <h4 className="text-2xl lg:text-[26px] font-extrabold text-stone-900 tracking-tight group-hover:text-[#634E3F] transition-colors duration-200">
+                    <h3 className="text-2xl lg:text-[26px] font-extrabold text-stone-900 tracking-tight group-hover:text-[#634E3F] transition-colors duration-200">
                       {card.keyword}
-                    </h4>
+                    </h3>
                   </div>
 
                   {/* 카드 소제목 */}
-                  <h5 className="text-sm font-bold text-stone-800 mb-4 pb-3 border-b border-stone-100">
+                  <p className="text-sm font-bold text-stone-800 mb-4 pb-3 border-b border-stone-100">
                     {card.title}
-                  </h5>
+                  </p>
 
                   {/* 상세 설명 (위계 조절: text-stone-500, 작은 폰트) */}
                   <p className="text-[13.5px] lg:text-sm text-stone-500 font-normal leading-relaxed text-left break-keep">

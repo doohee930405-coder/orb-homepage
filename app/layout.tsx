@@ -44,6 +44,21 @@ export const metadata: Metadata = {
     siteName: '오브한의원 마곡점',
     locale: 'ko_KR',
     type: 'website',
+    images: [
+      {
+        url: '/images/clinic/naver-qeeg-wide.webp',
+        width: 1200,
+        height: 630,
+        alt: '오브한의원 마곡점 습식 정량화 뇌파(QEEG) 및 자율신경 검사',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '오브한의원 마곡점 | 뇌파검사·자율신경·신경정신 클리닉 (마곡나루역)',
+    description:
+      '습식 정량화 뇌파(QEEG)로 뇌와 자율신경의 연결고리를 정밀 진단하는 오브한의원 마곡점입니다.',
+    images: ['/images/clinic/naver-qeeg-wide.webp'],
   },
   icons: {
     icon: [
@@ -186,8 +201,13 @@ const exactOfficialOrgAndPhysicianJsonLd = {
       ],
       "worksFor": {"@id": "https://orbmed.co.kr/#organization"},
       "memberOf": [
+        {"@type": "Organization", "name": "대한한의사협회"},
+        {"@type": "Organization", "name": "척추신경추나의학회"},
         {"@type": "Organization", "name": "대한뇌파한의학회"},
-        {"@type": "Organization", "name": "척추신경추나의학회"}
+        {"@type": "Organization", "name": "대한통합암학회"},
+        {"@type": "Organization", "name": "대한한방비만학회"},
+        {"@type": "Organization", "name": "대한한의학회"},
+        {"@type": "Organization", "name": "한의정보협동조합"}
       ]
     }
   ]
@@ -227,11 +247,6 @@ export default function RootLayout({
           name="naver-site-verification"
           content="b19d9d8ee27b50ae5638467a973184ef2e7be5c0"
         />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
       </head>
       <body className="antialiased">
         <SitePageViewTracker />

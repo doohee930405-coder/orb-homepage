@@ -401,13 +401,14 @@ export default async function ColumnDetailPage({
       relatedLink: relatedColumns.map((c) => `${SITE_URL}/columns/${c.slug}`),
       author: {
         '@type': 'Physician',
-        '@id': `${SITE_URL}/#physician-jeon`,
+        '@id': `${SITE_URL}/#physician`,
         name: '전두희',
         jobTitle: '한의사 / 대표원장',
-        description: '한의사, 대한뇌파한의학회 회원, 척추신경추나의학회 회원',
+        description: '오브한의원 마곡점 대표원장 전두희',
         url: SITE_URL,
         worksFor: {
           '@type': 'MedicalClinic',
+          '@id': `${SITE_URL}/#organization`,
           name: '오브한의원 마곡점',
           url: SITE_URL,
           telephone: '02-6959-5982',
@@ -419,6 +420,15 @@ export default async function ColumnDetailPage({
             addressCountry: 'KR',
           },
         },
+        memberOf: [
+          { '@type': 'Organization', name: '대한한의사협회' },
+          { '@type': 'Organization', name: '척추신경추나의학회' },
+          { '@type': 'Organization', name: '대한뇌파한의학회' },
+          { '@type': 'Organization', name: '대한통합암학회' },
+          { '@type': 'Organization', name: '대한한방비만학회' },
+          { '@type': 'Organization', name: '대한한의학회' },
+          { '@type': 'Organization', name: '한의정보협동조합' },
+        ],
       },
       publisher: {
         '@type': 'MedicalClinic',

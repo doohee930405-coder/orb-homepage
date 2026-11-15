@@ -351,8 +351,13 @@ if (fs.existsSync(indexPath)) {
       "medicalSpecialty": ["자율신경실조증", "신경정신", "습식 정량화뇌파(Wet QEEG)", "뇌신경추나"],
       "worksFor": {"@id": "https://orbmed.co.kr/#organization"},
       "memberOf": [
+        {"@type": "Organization", "name": "대한한의사협회"},
+        {"@type": "Organization", "name": "척추신경추나의학회"},
         {"@type": "Organization", "name": "대한뇌파한의학회"},
-        {"@type": "Organization", "name": "척추신경추나의학회"}
+        {"@type": "Organization", "name": "대한통합암학회"},
+        {"@type": "Organization", "name": "대한한방비만학회"},
+        {"@type": "Organization", "name": "대한한의학회"},
+        {"@type": "Organization", "name": "한의정보협동조합"}
       ]
     }
   ]
@@ -392,6 +397,10 @@ if (fs.existsSync(indexPath)) {
 
     if (/<meta[^>]*property=["']og:description["'][^>]*>/i.test(headPart)) {
       headPart = headPart.replace(/<meta[^>]*property=["']og:description["'][^>]*>/i, exactOgDesc);
+    } else {
+      headPart += '\n' + exactOgDesc;
+    }
+
     const exactOgSiteName = '<meta property="og:site_name" content="오브한의원 마곡점"/>';
     if (/<meta[^>]*property=["']og:site_name["'][^>]*>/i.test(headPart)) {
       headPart = headPart.replace(/<meta[^>]*property=["']og:site_name["'][^>]*>/i, exactOgSiteName);
@@ -399,8 +408,25 @@ if (fs.existsSync(indexPath)) {
       headPart += '\n' + exactOgSiteName;
     }
 
+    const exactOgImage = '<meta property="og:image" content="https://orbmed.co.kr/images/clinic/naver-qeeg-wide.webp"/>\n<meta property="og:image:width" content="1200"/>\n<meta property="og:image:height" content="630"/>\n<meta property="og:image:alt" content="오브한의원 마곡점 습식 정량화 뇌파(QEEG) 및 자율신경 검사"/>';
+    if (/<meta[^>]*property=["']og:image["'][^>]*>/i.test(headPart)) {
+      headPart = headPart.replace(/<meta[^>]*property=["']og:image["'][^>]*>/i, exactOgImage);
     } else {
-      headPart += '\n' + exactOgDesc;
+      headPart += '\n' + exactOgImage;
+    }
+
+    const exactTwitterCard = '<meta name="twitter:card" content="summary_large_image"/>';
+    if (/<meta[^>]*name=["']twitter:card["'][^>]*>/i.test(headPart)) {
+      headPart = headPart.replace(/<meta[^>]*name=["']twitter:card["'][^>]*>/i, exactTwitterCard);
+    } else {
+      headPart += '\n' + exactTwitterCard;
+    }
+
+    const exactTwitterImage = '<meta name="twitter:image" content="https://orbmed.co.kr/images/clinic/naver-qeeg-wide.webp"/>';
+    if (/<meta[^>]*name=["']twitter:image["'][^>]*>/i.test(headPart)) {
+      headPart = headPart.replace(/<meta[^>]*name=["']twitter:image["'][^>]*>/i, exactTwitterImage);
+    } else {
+      headPart += '\n' + exactTwitterImage;
     }
 
     // Inject unified integrated JSON-LD at head top
@@ -412,7 +438,7 @@ if (fs.existsSync(indexPath)) {
       headPart = unifiedJsonLdTag + '\n' + headPart;
     }
 
-    if (!headPart.includes('rel="shortcut icon"')) {
+    if (!headPart.includes('rel="icon"') && !headPart.includes('rel="shortcut icon"')) {
       const faviconHtml = [
         '<link rel="shortcut icon" href="/favicon.ico"/>',
         '<link rel="icon" type="image/x-icon" href="/favicon.ico"/>',

@@ -220,7 +220,7 @@ export const treatments: Treatment[] = [
     title: { ko: '통증 · 추나', en: 'Pain · Chuna' },
     shortTitle: { ko: '통증과 움직임', en: 'Pain & movement' },
     summary: {
-      ko: '상부경추와 척추의 구조적 틀어짐은 뇌혈류와 자율신경 전달 통로를 직접적으로 압박합니다. 단순 근육통 완화를 넘어 뇌신경과 자율신경계가 원활히 작동하도록 두개골-경추-골반 정렬을 바로잡는 뇌신경 추나요법과 심부 관절 가동 교정으로 만성 통증의 근본 원인을 해소합니다.',
+      ko: '목·허리 디스크, 협착증, 일자목 등 급·만성 척추·관절 통증은 단순 근육 문제를 넘어 뇌혈류와 자율신경 전달 통로를 압박합니다. 두개골-경추-골반 정렬을 바로잡는 상부경추·뇌신경 추나요법, 유착된 조직을 박리하는 심부 근막 도침치료, 신경 과흥분과 부종을 가라앉히는 염증 제어 약침치료를 결합해 통증의 구조적·기능적 근본 원인을 해소합니다.',
       en: 'Structural misalignment of the upper cervical spine directly compresses cerebral blood flow and autonomic pathways. Going beyond temporary pain relief, our neuro-cervical Chuna manual therapy realigns cranial, spinal, and pelvic structures to establish a structural foundation for long-term recovery.',
     },
     intro: {

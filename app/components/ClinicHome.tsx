@@ -567,7 +567,7 @@ export default function ClinicHome({
               </div>
               <div className="protocol-card-body">
                 <h3 className="protocol-card-title">{step.title}</h3>
-                <h4 className="protocol-card-sub">{step.subtitle}</h4>
+                <p className="protocol-card-sub">{step.subtitle}</p>
               </div>
             </article>
           ))}
@@ -728,10 +728,10 @@ export default function ClinicHome({
       <section className="space-section reveal" id="space">
         <div className="section-heading split-heading space-split-heading">
           <div>
-            <h4 className="space-title-large">
+            <p className="space-title-large">
               {text.spaceTitle}
               <span className="sr-only"> - {isEnglish ? 'Clinic Interior Space Tour' : '인테리어 공간 안내'}</span>
-            </h4>
+            </p>
           </div>
           <p className="space-body-text">{text.spaceBody}</p>
         </div>
