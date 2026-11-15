@@ -186,7 +186,7 @@ const copy = {
     doctorName: '한의사 전두희',
     doctorClinic: '오브한의원 마곡점 대표원장',
     doctorQuoteLead: '“병원 검사상 \'이상 없음\'에도 계속되는 증상들… 그 실체는 결코 기분 탓이 아닙니다”',
-    doctorQuoteBody: '과민성대장증후군, 다한증, 수족냉증, 소화장애, 불면증, 만성피로 등 수없이 많은 자율신경실조증 증세, 결코 환자분의 나약함이나 단순 스트레스 탓이 아닙니다. 정신과 약을 복용 중이거나 약물 부작용으로 힘들어하시는 분들 역시 중추신경계 과열과 자율신경 조절 기능 저하라는 객관적 생체 신호의 불균형을 겪고 계신 것입니다.\n\n오브한의원 마곡점은 습식 정량화 뇌파(qEEG)와 심박변이도(HRV) 검사로 보이지 않던 신경계 과부하를 객관적 수치로 규명하고, 뇌와 척추를 잇는 한의학적 근원 치료로 맑은 정신과 신체 본연의 자율 회복력을 되찾아 드립니다.',
+    doctorQuoteBody: '과민성대장증후군, 다한증, 수족냉증, 소화장애, 불면증, 만성피로 등 수없이 많은 자율신경실조증 증세, 결코 환자분의 나약함이나 단순 스트레스 탓이 아닙니다. 정신과 약을 복용 중이거나 약물 부작용으로 힘들어하시는 분들 역시 중추신경계 과열과 자율신경 조절 기능 저하라는 객관적 생체 신호의 불균형을 겪고 계신 것입니다.\n\n오브한의원 마곡점은 습식 정량화 뇌파(qEEG)와 심박변이도(HRV) 검사로 보이지 않던 신경계 과부하를 객관적 수치로 규명하고, 뇌와 척추를 잇는 입체적인 치료로 맑은 정신과 신체 본연의 자율 회복력을 되찾아 드립니다.',
     doctorPillars: [
       {
         num: '01',
@@ -802,7 +802,6 @@ export default function ClinicHome({
                   <article key={pillar.num} className="doctor-pillar-card">
                     <span className="pillar-num">{pillar.num}</span>
                     <h3 className="pillar-title">{pillar.title}</h3>
-                    <p className="pillar-desc">{pillar.desc}</p>
                   </article>
                 ))}
               </div>
