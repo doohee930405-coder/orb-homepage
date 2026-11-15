@@ -216,88 +216,8 @@ export const treatments: Treatment[] = [
     },
   },
   {
-    slug: 'diet',
-    number: '03',
-    image: 'diet-acurex-line.png',
-    imagePosition: 'center center',
-    title: { ko: '끝내는 다이어트', en: 'Diet' },
-    shortTitle: { ko: '끝내는 다이어트', en: 'Diet' },
-    summary: {
-      ko: '단순히 굶는 다이어트는 자율신경계를 교란하고 만성 요요를 유발합니다. 자율신경과 대사 효율을 회복하는 1:1 체질 맞춤 감량 한약과 온다(ONDA) 리프팅 동일 기술의 퀀텀핏, 아큐렉스 라인약침을 결합해 대사 균형을 바로잡고 지속 가능한 건강한 감량을 완성합니다.',
-      en: 'Extreme starvation disrupts the autonomic nervous system and causes chronic rebound weight gain. By integrating metabolic-reset customized herbal decoctions, Quantum Fit microwave lifting (same technology as ONDA), and Acurex Line pharmacopuncture, we restore metabolic balance for sustainable weight loss.',
-    },
-    intro: {
-      ko: '무리한 절식과 굶는 다이어트는 자율신경계를 무너뜨리고 요요를 유발합니다. 개인별 대사 효율과 신체 균형을 분석하여 식욕 안정 맞춤 한약, 온다 리프팅과 동일한 기술력의 퀀텀핏 리프팅, 고민 부위 지방 분해를 돕는 아큐렉스 라인 약침 치료를 결합해 건강하고 탄력 있는 체형 변화를 완성합니다.',
-      en: 'Extreme calorie restriction disrupts autonomic homeostasis and triggers rebound weight gain. We integrate personalized metabolic herbs, Quantum Fit microwave lifting (sharing the same technology as ONDA lifting), and targeted Acurex Line pharmacopuncture to achieve sustainable, sculpted body contours.',
-    },
-    imageAlt: {
-      ko: '오브한의원 마곡점 전두희 원장의 퀀텀핏 마이크로웨이브 리프팅 및 아큐렉스 감량 약침 다이어트 시술 모습',
-      en: 'Quantum Fit microwave slimming lifting and Acurex herbal pharmacopuncture care at ORB Clinic Magok',
-    },
-    concerns: {
-      ko: [
-        '반복되는 요요와 정체기로 인한 다이어트 실패',
-        '식욕 조절 곤란 및 스트레스성 폭식',
-        '군살·복부·팔뚝·이중턱 등 특정 부위 라인 및 처짐 고민',
-        '신진대사 저하와 부종을 동반한 체중 증가',
-      ],
-      en: [
-        'Recurrent yo-yo cycles and weight loss plateaus',
-        'Difficulty regulating appetite and stress eating',
-        'Stubborn fat and sagging contours in double chin, abdomen, or arms',
-        'Weight gain accompanied by sluggish metabolism and edema',
-      ],
-    },
-    care: {
-      ko: [
-        '체성분 및 자율신경 대사 상태 정밀 분석',
-        '개인별 체질 맞춤 끝내는 다이어트 한약 처방',
-        '고민 부위 아큐렉스 라인약침 및 퀀텀핏(온다 동일 기술) 듀얼 윤곽 시술',
-      ],
-      en: [
-        'Body composition and autonomic metabolic assessment',
-        'Personalized herbal prescription for metabolic balance',
-        'Dual contouring: Acurex Line pharmacopuncture & Quantum Fit (same technology as ONDA lifting)',
-      ],
-    },
-    medical: {
-      condition: {
-        ko: {
-          name: '대사저하형 비만 및 국소 체형 불균형 (이중턱, 복부, 팔뚝)',
-          alternateName: '요요 증후군, 대사 저하, 국소 지방 축적',
-          description: '무리한 절식 후 반복되는 요요현상, 스트레스성 식욕 항진, 부종 동반 체중 증가, 운동으로 빠지지 않는 국소 부위 군살 및 피부 처짐',
-          possibleTreatment: ['체질 맞춤 끝내는 다이어트 한약', '퀀텀핏(온다 동일 기술) 극초단파 리프팅', '아큐렉스 라인약침'],
-          associatedAnatomy: ['Subcutaneous adipose tissue', 'Facial contours', 'Lymphatic vessels'],
-        },
-        en: {
-          name: 'Metabolic Obesity, Stubborn Localized Adiposity & Sagging Contours',
-          alternateName: 'Yo-yo syndrome, Slow metabolic rate, Localized fat deposits',
-          description: 'Yo-yo cycles from crash dieting, appetite dysregulation, sluggish metabolism, stubborn double chin, and body laxity.',
-          possibleTreatment: ['Customized metabolic herbal medicine', 'Quantum Fit microwave lifting (same tech as ONDA)', 'Acurex Line pharmacopuncture'],
-          associatedAnatomy: ['Subcutaneous adipose tissue', 'Facial contours', 'Lymphatic vessels'],
-        },
-      },
-      therapy: {
-        ko: {
-          name: '퀀텀핏 마이크로웨이브 리프팅 & 아큐렉스 라인약침 듀얼 윤곽 시술',
-          alternateName: 'Quantum Fit & Acurex Line Dual Contouring',
-          description: '온다(ONDA) 리프팅과 동일한 2.45GHz 극초단파 에너지로 심부 지방세포 사멸과 콜라겐 수축을 유도하는 퀀텀핏과, 스테로이드·PPC 없는 순수 생약 성분으로 지방 림프 배출을 돕는 아큐렉스 라인약침의 듀얼 컨투어링 솔루션',
-          procedureType: 'NoninvasiveProcedure',
-          bodyLocation: ['Face', 'Double chin', 'Abdomen', 'Arms', 'Thighs'],
-        },
-        en: {
-          name: 'Quantum Fit Microwave Lifting & Acurex Line Dual Contouring',
-          alternateName: 'Quantum Fit & Acurex Line Dual Contouring',
-          description: 'Painless 2.45GHz microwave lipolysis (ONDA technology) paired with natural herbal pharmacopuncture for non-invasive sculpting.',
-          procedureType: 'NoninvasiveProcedure',
-          bodyLocation: ['Face', 'Double chin', 'Abdomen', 'Arms', 'Thighs'],
-        },
-      },
-    },
-  },
-  {
     slug: 'heat-metabolism',
-    number: '04',
+    number: '03',
     image: 'heat-metabolism-diti.png',
     imagePosition: 'center center',
     imageFit: 'contain',
@@ -372,6 +292,86 @@ export const treatments: Treatment[] = [
           description: 'Full-body infrared thermography visualization coupled with herbal and pharmacopuncture circulation therapy.',
           procedureType: 'NoninvasiveProcedure',
           bodyLocation: ['Whole body thermal distribution', 'Peripheral nerves'],
+        },
+      },
+    },
+  },,
+  {
+    slug: 'diet',
+    number: '04',
+    image: 'diet-acurex-line.png',
+    imagePosition: 'center center',
+    title: { ko: '끝내는 다이어트', en: 'Diet' },
+    shortTitle: { ko: '끝내는 다이어트', en: 'Diet' },
+    summary: {
+      ko: '단순히 굶는 다이어트는 자율신경계를 교란하고 만성 요요를 유발합니다. 자율신경과 대사 효율을 회복하는 1:1 체질 맞춤 감량 한약과 온다(ONDA) 리프팅 동일 기술의 퀀텀핏, 아큐렉스 라인약침을 결합해 대사 균형을 바로잡고 지속 가능한 건강한 감량을 완성합니다.',
+      en: 'Extreme starvation disrupts the autonomic nervous system and causes chronic rebound weight gain. By integrating metabolic-reset customized herbal decoctions, Quantum Fit microwave lifting (same technology as ONDA), and Acurex Line pharmacopuncture, we restore metabolic balance for sustainable weight loss.',
+    },
+    intro: {
+      ko: '무리한 절식과 굶는 다이어트는 자율신경계를 무너뜨리고 요요를 유발합니다. 개인별 대사 효율과 신체 균형을 분석하여 식욕 안정 맞춤 한약, 온다 리프팅과 동일한 기술력의 퀀텀핏 리프팅, 고민 부위 지방 분해를 돕는 아큐렉스 라인 약침 치료를 결합해 건강하고 탄력 있는 체형 변화를 완성합니다.',
+      en: 'Extreme calorie restriction disrupts autonomic homeostasis and triggers rebound weight gain. We integrate personalized metabolic herbs, Quantum Fit microwave lifting (sharing the same technology as ONDA lifting), and targeted Acurex Line pharmacopuncture to achieve sustainable, sculpted body contours.',
+    },
+    imageAlt: {
+      ko: '오브한의원 마곡점 전두희 원장의 퀀텀핏 마이크로웨이브 리프팅 및 아큐렉스 감량 약침 다이어트 시술 모습',
+      en: 'Quantum Fit microwave slimming lifting and Acurex herbal pharmacopuncture care at ORB Clinic Magok',
+    },
+    concerns: {
+      ko: [
+        '반복되는 요요와 정체기로 인한 다이어트 실패',
+        '식욕 조절 곤란 및 스트레스성 폭식',
+        '군살·복부·팔뚝·이중턱 등 특정 부위 라인 및 처짐 고민',
+        '신진대사 저하와 부종을 동반한 체중 증가',
+      ],
+      en: [
+        'Recurrent yo-yo cycles and weight loss plateaus',
+        'Difficulty regulating appetite and stress eating',
+        'Stubborn fat and sagging contours in double chin, abdomen, or arms',
+        'Weight gain accompanied by sluggish metabolism and edema',
+      ],
+    },
+    care: {
+      ko: [
+        '체성분 및 자율신경 대사 상태 정밀 분석',
+        '개인별 체질 맞춤 끝내는 다이어트 한약 처방',
+        '고민 부위 아큐렉스 라인약침 및 퀀텀핏(온다 동일 기술) 듀얼 윤곽 시술',
+      ],
+      en: [
+        'Body composition and autonomic metabolic assessment',
+        'Personalized herbal prescription for metabolic balance',
+        'Dual contouring: Acurex Line pharmacopuncture & Quantum Fit (same technology as ONDA lifting)',
+      ],
+    },
+    medical: {
+      condition: {
+        ko: {
+          name: '대사저하형 비만 및 국소 체형 불균형 (이중턱, 복부, 팔뚝)',
+          alternateName: '요요 증후군, 대사 저하, 국소 지방 축적',
+          description: '무리한 절식 후 반복되는 요요현상, 스트레스성 식욕 항진, 부종 동반 체중 증가, 운동으로 빠지지 않는 국소 부위 군살 및 피부 처짐',
+          possibleTreatment: ['체질 맞춤 끝내는 다이어트 한약', '퀀텀핏(온다 동일 기술) 극초단파 리프팅', '아큐렉스 라인약침'],
+          associatedAnatomy: ['Subcutaneous adipose tissue', 'Facial contours', 'Lymphatic vessels'],
+        },
+        en: {
+          name: 'Metabolic Obesity, Stubborn Localized Adiposity & Sagging Contours',
+          alternateName: 'Yo-yo syndrome, Slow metabolic rate, Localized fat deposits',
+          description: 'Yo-yo cycles from crash dieting, appetite dysregulation, sluggish metabolism, stubborn double chin, and body laxity.',
+          possibleTreatment: ['Customized metabolic herbal medicine', 'Quantum Fit microwave lifting (same tech as ONDA)', 'Acurex Line pharmacopuncture'],
+          associatedAnatomy: ['Subcutaneous adipose tissue', 'Facial contours', 'Lymphatic vessels'],
+        },
+      },
+      therapy: {
+        ko: {
+          name: '퀀텀핏 마이크로웨이브 리프팅 & 아큐렉스 라인약침 듀얼 윤곽 시술',
+          alternateName: 'Quantum Fit & Acurex Line Dual Contouring',
+          description: '온다(ONDA) 리프팅과 동일한 2.45GHz 극초단파 에너지로 심부 지방세포 사멸과 콜라겐 수축을 유도하는 퀀텀핏과, 스테로이드·PPC 없는 순수 생약 성분으로 지방 림프 배출을 돕는 아큐렉스 라인약침의 듀얼 컨투어링 솔루션',
+          procedureType: 'NoninvasiveProcedure',
+          bodyLocation: ['Face', 'Double chin', 'Abdomen', 'Arms', 'Thighs'],
+        },
+        en: {
+          name: 'Quantum Fit Microwave Lifting & Acurex Line Dual Contouring',
+          alternateName: 'Quantum Fit & Acurex Line Dual Contouring',
+          description: 'Painless 2.45GHz microwave lipolysis (ONDA technology) paired with natural herbal pharmacopuncture for non-invasive sculpting.',
+          procedureType: 'NoninvasiveProcedure',
+          bodyLocation: ['Face', 'Double chin', 'Abdomen', 'Arms', 'Thighs'],
         },
       },
     },
