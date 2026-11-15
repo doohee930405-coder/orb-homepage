@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import ClinicHome from './components/ClinicHome';
 import { getAllColumns } from './lib/columns';
 import { ensureQeegBrainmapImage } from './lib/syncImages';
+import { officialFaqJsonLd } from './lib/clinic';
 
 export const metadata: Metadata = {
   title: {
@@ -49,5 +50,15 @@ export default function Home() {
     views: col.views || 0,
     uv: col.uv || 0,
   }));
-  return <ClinicHome locale="ko" latestColumns={allColumns} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(officialFaqJsonLd, null, 2),
+        }}
+      />
+      <ClinicHome locale="ko" latestColumns={allColumns} />
+    </>
+  );
 }

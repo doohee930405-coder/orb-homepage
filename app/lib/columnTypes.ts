@@ -6,6 +6,7 @@ export const CLINIC_CATEGORIES = [
   '다이어트',
   '위장관',
   '갑상선',
+  '통증',
   '정량화뇌파검사',
   '기타',
 ] as const;

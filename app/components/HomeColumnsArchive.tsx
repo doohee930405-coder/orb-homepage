@@ -30,7 +30,25 @@ export default function HomeColumnsArchive({
     for (const c of columns) {
       counts[c.category] = (counts[c.category] || 0) + 1;
     }
-    return Object.keys(counts).map((cat) => ({
+    const order = [
+      '자율신경실조증',
+      '브레인포그',
+      '초민감자(HSP)',
+      'ADHD',
+      '다이어트',
+      '위장관',
+      '갑상선',
+      '통증',
+      '정량화뇌파검사',
+      '기타',
+    ];
+    const presentCats = Object.keys(counts);
+    presentCats.sort((a, b) => {
+      const idxA = order.indexOf(a);
+      const idxB = order.indexOf(b);
+      return (idxA !== -1 ? idxA : 999) - (idxB !== -1 ? idxB : 999);
+    });
+    return presentCats.map((cat) => ({
       name: cat,
       count: counts[cat],
     }));

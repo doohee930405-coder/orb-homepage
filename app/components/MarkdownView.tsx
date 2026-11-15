@@ -391,11 +391,57 @@ export function removeTopDuplicateImage(markdown: string): string {
   return markdown;
 }
 
+
+function repairMarkdownBolds(text: string): string {
+  if (!text) return '';
+  let repaired = text;
+
+  // Split bold headers into bullet:
+  // **Title\n\n- Subtitle:** -> - **Title - Subtitle**:
+  repaired = repaired.replace(
+    /\*\*([^\*\n]+)\n+-\s+([^\*\n]+):\*\*/g,
+    '- **$1 - $2**:'
+  );
+
+  // **Type 1...\n\n- Subtitle** -> - **Type 1... - Subtitle**:
+  repaired = repaired.replace(
+    /\*\*([^\*\n]+)\n+-\s+([^\*\n]+)\*\*/g,
+    '- **$1 - $2**'
+  );
+
+  // **[3편\n\n및 출처...]** -> **[3편 및 출처...]**
+  repaired = repaired.replace(
+    /\*\*([^\*\n]+)\n+([^\*\n]+)\*\*/g,
+    '**$1 $2**'
+  );
+
+  // **text* -> **text**
+  repaired = repaired.replace(/\*\*([^\*\n]+)\*(?!\*)/g, '**$1**');
+
+  // Fix lines with odd count of **
+  const lines = repaired.split('\n');
+  const fixedLines = lines.map((line) => {
+    const asterisks = (line.match(/\*\*/g) || []).length;
+    if (asterisks % 2 !== 0) {
+      if (line.trim().startsWith('**') && !line.trim().slice(2).includes('**')) {
+        return line + '**';
+      } else if (line.trim().endsWith('**') && !line.trim().slice(0, -2).includes('**')) {
+        return '**' + line;
+      } else {
+        return line + '**';
+      }
+    }
+    return line;
+  });
+
+  return fixedLines.join('\n');
+}
+
 export default function MarkdownView({ content, className = '', summary }: MarkdownViewProps) {
   if (!content) return null;
 
   // Step 1: Strip top duplicate summary block and duplicate summary paragraphs
-  const strippedContent = removeTopDuplicateImage(stripTopDuplicateSummary(content, summary));
+  const strippedContent = repairMarkdownBolds(removeTopDuplicateImage(stripTopDuplicateSummary(content, summary)));
 
   let cleanContent = strippedContent
     .replace(/\{\s*"title"\s*:\s*"[\s\S]*?"logNo"\s*:\s*\d+[\s\S]*?\}/gi, '')
@@ -500,7 +546,12 @@ export default function MarkdownView({ content, className = '', summary }: Markd
       );
       res = res.replace(
         /([가-힣\w\.\?\!\"\'\)\]])[\u200B\s]+(-\s+[A-Za-z가-힣])/g,
-        '$1\n\n$2'
+        (match, p1, p2, offset, str) => {
+          const before = str.slice(0, offset);
+          const asterisksBefore = (before.match(/\*\*/g) || []).length;
+          if (asterisksBefore % 2 !== 0) return match;
+          return `${p1}\n\n${p2}`;
+        }
       );
 
       // Other lists like [1] or (1) or ①-⑩
@@ -982,7 +1033,7 @@ export default function MarkdownView({ content, className = '', summary }: Markd
 
           if (isCallout) {
             return (
-              <div key={index} className="article-callout">
+              <div key={index} className="article-callout geo-summary-box">
                 {quoteLines.map((line, qIdx) => (
                   <p key={qIdx}>{renderInline(line)}</p>
                 ))}

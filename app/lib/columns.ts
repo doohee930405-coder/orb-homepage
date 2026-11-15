@@ -1,3 +1,44 @@
+
+export function repairMarkdownBolds(text: string): string {
+  if (!text) return '';
+  let repaired = text;
+
+  // 1. Fix single asterisk typo closing double asterisks: **text* -> **text**
+  repaired = repaired.replace(/\*\*([^\*\n]+)\*(?!\*)/g, '**$1**');
+
+  // 2. Fix bold headers split into bullet:
+  repaired = repaired.replace(
+    /\*\*([^\*\n]+)\n+-\s+([^\*\n]+):\*\*/g,
+    '- **$1 - $2**:'
+  );
+  repaired = repaired.replace(
+    /\*\*([^\*\n]+)\n+-\s+([^\*\n]+)\*\*/g,
+    '- **$1 - $2**'
+  );
+  repaired = repaired.replace(
+    /\*\*([^\*\n]+)\n+([^\*\n]+)\*\*/g,
+    '**$1 $2**'
+  );
+
+  // 3. Fix line-by-line odd count of **
+  const lines = repaired.split('\n');
+  const fixedLines = lines.map((line) => {
+    const asterisks = (line.match(/\*\*/g) || []).length;
+    if (asterisks % 2 !== 0) {
+      if (line.trim().startsWith('**') && !line.trim().slice(2).includes('**')) {
+        return line + '**';
+      } else if (line.trim().endsWith('**') && !line.trim().slice(0, -2).includes('**')) {
+        return '**' + line;
+      } else {
+        return line + '**';
+      }
+    }
+    return line;
+  });
+
+  return fixedLines.join('\n');
+}
+
 import fs from 'fs';
 import path from 'path';
 
@@ -16,7 +57,8 @@ export function getMemoryStore(): Map<string, Column> {
 }
 
 export function normalizeCategory(rawCat: string = ''): string {
-  if (rawCat.includes('기타') || rawCat.includes('통증') || rawCat.includes('추나') || rawCat.includes('재활') || rawCat.includes('교정')) return '기타';
+  if (rawCat.includes('통증') || rawCat.includes('추나') || rawCat.includes('재활') || rawCat.includes('교정')) return '통증';
+  if (rawCat.includes('기타')) return '기타';
   if (/뇌파|qeeg/i.test(rawCat)) return '정량화뇌파검사';
   if (rawCat.includes('브레인포그')) return '브레인포그';
   if (rawCat.includes('다이어트')) return '다이어트';
@@ -335,7 +377,7 @@ export function removeTopDuplicateImage(markdown: string): string {
 
 export function cleanAndRepairMarkdown(text: string): string {
   if (!text) return '';
-  let cleaned = text;
+  let cleaned = repairMarkdownBolds(text);
 
   // 1. Strip script, style, noscript tags and JS runtime signatures
   cleaned = cleanJsGarbageFromText(cleaned);
@@ -594,7 +636,12 @@ export function cleanAndRepairMarkdown(text: string): string {
       );
       res = res.replace(
         /([가-힣\w\.\?\!\"\'\)\]])[\u200B\s]+(-\s+[A-Za-z가-힣])/g,
-        '$1\n\n$2'
+        (match, p1, p2, offset, str) => {
+          const before = str.slice(0, offset);
+          const asterisksBefore = (before.match(/\*\*/g) || []).length;
+          if (asterisksBefore % 2 !== 0) return match;
+          return `${p1}\n\n${p2}`;
+        }
       );
 
       // 13-4. Other lists like [1] or (1) or ①-⑩

@@ -15,6 +15,53 @@ export function generateStaticParams() {
   return columns.map((c) => ({ slug: c.slug }));
 }
 
+
+// Helper: Extract clean text for meta description and Schema.org description (approx. 150 chars, no emojis)
+export function extractColumnCleanDescription(c: { summary?: string; content?: string }): string {
+  let raw = '';
+  // 1. If summary exists and is substantive, use it
+  if (c.summary && c.summary.trim().length >= 20) {
+    raw = c.summary.trim();
+  }
+  // 2. Otherwise look for top callout in the first 1500 chars of content
+  if (!raw && c.content) {
+    const topChunk = c.content.slice(0, 1500);
+    const calloutMatch = topChunk.match(/^>\s*(?:💡\s*|\[!NOTE\]\s*|\*{0,2}(?:임상\s*핵심\s*요약|핵심\s*요약|Medical\s*Summary))([\s\S]*?)(?=\n\n|\n(?!>)|$)/m);
+    if (calloutMatch && calloutMatch[0]) {
+      raw = calloutMatch[0].replace(/^>\s?/gm, '').trim();
+    }
+  }
+  // 3. Fallback to first body paragraph
+  if (!raw && c.content) {
+    const paras = c.content.split(/\n\s*\n/);
+    for (const p of paras) {
+      const cleanP = p.trim();
+      if (cleanP && !cleanP.startsWith('#') && !cleanP.startsWith('!') && !cleanP.startsWith('---') && !cleanP.startsWith('>')) {
+        raw = cleanP;
+        break;
+      }
+    }
+  }
+
+  let clean = (raw || '')
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}]/gu, '')
+    .replace(/💡|📌|👉|🔗|■|▶|•/g, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/^[>\s#\-*:]+/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  clean = clean.replace(/^(?:임상\s*핵심\s*요약(?:\s*\(Medical\s*Summary\))?|핵심\s*요약|Medical\s*Summary|요약)\s*[:：]?\s*/i, '').trim();
+
+  if (clean.length > 150) {
+    return clean.slice(0, 147) + '...';
+  }
+  return clean;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -42,10 +89,13 @@ export async function generateMetadata({
     : `${SITE_URL}${column.thumbnail}`;
 
   const authorName = column.author || '오브한의원 마곡점 대표원장 전두희';
+  const cleanDescription = extractColumnCleanDescription(column);
 
   return {
-    title: `${column.title} | 오브한의원 마곡점 전두희 원장 칼럼`,
-    description: column.summary,
+    title: {
+      absolute: `${column.title} | 오브한의원 마곡점 전두희 원장`,
+    },
+    description: cleanDescription,
     keywords: column.tags,
     authors: [{ name: authorName }],
     alternates: {
@@ -55,8 +105,8 @@ export async function generateMetadata({
       },
     },
     openGraph: {
-      title: `${column.title} | 오브한의원 마곡점`,
-      description: column.summary,
+      title: `${column.title} | 오브한의원 마곡점 전두희 원장`,
+      description: cleanDescription,
       url: pageUrl,
       siteName: '오브한의원 마곡점',
       locale: 'ko_KR',
@@ -77,7 +127,7 @@ export async function generateMetadata({
     twitter: {
       card: 'summary_large_image',
       title: `${column.title} | 오브한의원 마곡점 전두희 원장`,
-      description: column.summary,
+      description: cleanDescription,
       images: [imageUrl],
     },
     other: {
@@ -112,8 +162,21 @@ function extractFaqs(
   content: string,
   existingFaqs?: { question: string; answer: string }[]
 ): { question: string; answer: string }[] {
+  const isReferenceOrCitation = (q: string) =>
+    q.startsWith('[학술 논문 출처]') ||
+    q.startsWith('학술 논문 출처') ||
+    q.startsWith('[학술논문 출처]') ||
+    q.startsWith('[학술 논문]') ||
+    q.startsWith('참고문헌') ||
+    q.startsWith('참고 문헌') ||
+    q.startsWith('[참고문헌]') ||
+    q.includes('학술 논문 출처') ||
+    q.includes('학술논문') ||
+    q.includes('참고문헌') ||
+    q.includes('References');
+
   if (existingFaqs && existingFaqs.length > 0) {
-    return existingFaqs;
+    return existingFaqs.filter((f) => !isReferenceOrCitation(f.question));
   }
 
   const faqs: { question: string; answer: string }[] = [];
@@ -124,13 +187,12 @@ function extractFaqs(
     if (!match) continue;
 
     const rawQuestion = match[1].replace(/[*_#]/g, '').trim();
-    // Exclude routine administrative/reference sections
+    // Exclude routine administrative/reference sections and academic citations
     if (
+      isReferenceOrCitation(rawQuestion) ||
       rawQuestion.includes('오브한의원') ||
-      rawQuestion.includes('참고문헌') ||
       rawQuestion.includes('안내') ||
       rawQuestion.includes('의료법') ||
-      rawQuestion.includes('References') ||
       rawQuestion.length < 5
     ) {
       continue;
@@ -308,6 +370,7 @@ export default async function ColumnDetailPage({
 
   const citations = extractCitations(column.content);
   const faqs = extractFaqs(column.content, column.faqs);
+  const cleanDescription = extractColumnCleanDescription(column);
   const medicalSpecialties = getMedicalSpecialty(column.category);
 
   // Advanced Schema.org Graph for Google Medical SEO & AI Search Engines (AEO / GEO)
@@ -322,7 +385,7 @@ export default async function ColumnDetailPage({
         url: SITE_URL,
       },
       headline: column.title,
-      description: column.summary,
+      description: cleanDescription,
       inLanguage: 'ko-KR',
       mainEntityOfPage: {
         '@type': 'WebPage',
