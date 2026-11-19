@@ -243,6 +243,8 @@ function getMedicalSpecialty(category: string): string[] {
       return [...base, 'SensoryProcessingSensitivity', 'Neuropsychiatry'];
     case 'ADHD':
       return [...base, 'AttentionDeficitDisorder', 'Neurodevelopmental'];
+    case '열대사장애':
+      return [...base, 'ThermoregulationDisorders', 'Microcirculation', 'AutonomicThermogenesis'];
     case '다이어트':
       return [...base, 'MetabolicSyndrome', 'ObesityMedicine', 'RadiofrequencyTherapy'];
     case '위장관':

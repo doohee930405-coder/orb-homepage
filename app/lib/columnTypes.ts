@@ -3,6 +3,7 @@ export const CLINIC_CATEGORIES = [
   '브레인포그',
   '초민감자(HSP)',
   'ADHD',
+  '열대사장애',
   '다이어트',
   '위장관',
   '갑상선',

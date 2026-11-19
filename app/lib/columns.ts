@@ -61,6 +61,7 @@ export function normalizeCategory(rawCat: string = ''): string {
   if (rawCat.includes('기타')) return '기타';
   if (/뇌파|qeeg/i.test(rawCat)) return '정량화뇌파검사';
   if (rawCat.includes('브레인포그')) return '브레인포그';
+  if (rawCat.includes('열대사') || rawCat.includes('상열') || rawCat.includes('체열') || rawCat.includes('수족냉증') || rawCat.includes('안면홍조') || rawCat.includes('화끈')) return '열대사장애';
   if (rawCat.includes('다이어트')) return '다이어트';
   if (rawCat.includes('위장')) return '위장관';
   if (rawCat.includes('갑상선')) return '갑상선';
